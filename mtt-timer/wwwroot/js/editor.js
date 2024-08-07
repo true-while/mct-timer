@@ -1,6 +1,6 @@
 ﻿const toolbarOptions = [
     [{ 'size': ['normal', 'large', 'huge'] }],
-    [{ 'header': 1 }, { 'header': 2 }],
+    [{ 'header': 1 }],
     ['bold', 'italic'],
     [{ 'list': 'ordered' }, { 'list': 'bullet' }],
     [{ 'color': [] }, { 'background': [] }],

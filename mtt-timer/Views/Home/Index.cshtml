@@ -4,12 +4,33 @@
 <div id="group">
     <table id="group-tbl">
         <tr>
-            <td valign="top" align="left"><div id="timer"></div></td>
-            <td valign="top" align="right"><div id="resume">10:10 AM EST</div></td></tr>
+            <td valign="top" align="left">
+                <div class="infopad"><div class="title">remain time</div>
+                <div id="timer" class="numbers">
+                <div>
+                    <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
+                </div>
+                <button type="button" class="timer__btn timer__btn--control timer__btn--start">
+                    <span class="material-icons">play_arrow</span></button>
+                <button type="button" class="timer__btn timer__btn--reset">
+                    <span class="material-icons">timer</span>
+                </button>
+              </div></div></td>
+            <td valign="top" align="right">
+                <div class="infopad">
+                    <div class="title">brake ends at</div>
+                    <div id="resume" class="numbers">
+                        <div>
+                            <span id="when__part1"></span><span id="when__devider"></span><span id="when__part2"></span><span id="am"></span>
+                        </div>
+                        <div id="zone"></div>
+                        </div>
+</div></td>
+        </tr>
         <tr>
             <td colspan="2" valign="top">
                 <div id="editormain">
-                    <div id="note">note +</div>
+                    <!--div id="note">note +</!div-->
                     <div id="editor">
                     </div>
                  </div>

@@ -1,12 +1,17 @@
 ﻿class Timer {
-    constructor(root) {
-        root.innerHTML = Timer.getHTML();
+    constructor(timerroot, resumeroot) {              
 
         this.el = {
-            minutes: root.querySelector(".timer__part--minutes"),
-            seconds: root.querySelector(".timer__part--seconds"),
-            control: root.querySelector(".timer__btn--control"),
-            reset: root.querySelector(".timer__btn--reset")
+            timepart1: timerroot.querySelector("#timer__part1"),
+            timepart2: timerroot.querySelector("#timer__part2"),
+            timediv: timerroot.querySelector("#timer__devider"),
+            control: timerroot.querySelector(".timer__btn--control"),
+            reset: timerroot.querySelector(".timer__btn--reset"),         
+            whenpart1: resumeroot.querySelector("#when__part1"),
+            whenpart2: resumeroot.querySelector("#when__part2"),
+            whendiv: resumeroot.querySelector("#when__devider"),
+            zone: resumeroot.querySelector("#zone"),
+            am: resumeroot.querySelector("#am") 
         };
 
         this.interval = null;
@@ -21,22 +26,47 @@
         });
 
         this.el.reset.addEventListener("click", () => {
-            const inputMinutes = prompt("Enter number of minutes:");
+            const inputMinutes = parseInt(prompt("Enter number of minutes:"));
 
-            if (inputMinutes < 60) {
-                this.stop();
-                this.remainingSeconds = inputMinutes * 60;
-                this.updateInterfaceTime();
-            }
+            this.stop();   
+
+            this.remainingSeconds = inputMinutes * 60;
+
+            this.updateInterfaceTime();
+
+            this.start();
+         
         });
     }
 
     updateInterfaceTime() {
-        const minutes = Math.floor(this.remainingSeconds / 60);
-        const seconds = this.remainingSeconds % 60;
+        const hours = Math.floor(this.remainingSeconds / (60*60));
+        const minutes = Math.floor((this.remainingSeconds / 60) - (hours * 60));
+        const seconds = this.remainingSeconds - hours * (60*60) - minutes * 60;
+        
 
-        this.el.minutes.textContent = minutes.toString().padStart(2, "0");
-        this.el.seconds.textContent = seconds.toString().padStart(2, "0");
+        if (hours == 0) {
+            this.el.timepart1.textContent = minutes.toString().padStart(2, "0");
+            this.el.timepart2.textContent = seconds.toString().padStart(2, "0");
+        } else {
+            this.el.timepart1.textContent = hours.toString().padStart(2, "0");
+            this.el.timepart2.textContent = minutes.toString().padStart(2, "0");
+        }
+        
+        if (this.remainingSeconds < 60) {
+            this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
+        } else if (this.remainingSeconds < 180) {
+            this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "darkorange";
+        } else {
+            this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "black";
+        }
+
+        var enddate = moment().add(this.remainingSeconds, 's');
+        this.el.whenpart1.textContent = enddate.format("hh");
+        this.el.whenpart2.textContent = enddate.format("mm");
+        this.el.whendiv.textContent = ":"
+        this.el.am.textContent = enddate.format('A');
+        this.el.zone.textContent = "EST"; //tz('America/Los_Angeles')
     }
 
     updateInterfaceControls() {
@@ -73,24 +103,11 @@
 
         this.updateInterfaceControls();
     }
-
-    static getHTML() {
-        return `
-              <span class="timer__part timer__part--minutes">00</span>
-              <span class="timer__part">:</span>
-              <span class="timer__part timer__part--seconds">00</span>
-              <button type="button" class="timer__btn timer__btn--control timer__btn--start">
-                  <span class="material-icons">play_arrow</span>
-              </button>
-              <button type="button" class="timer__btn timer__btn--reset">
-                  <span class="material-icons">timer</span>
-              </button>
-          `;
-    }
 }
 
 new Timer(
-    document.querySelector("#timer")
+    document.querySelector("#timer"),
+    document.querySelector("#resume")
 );
 
 
