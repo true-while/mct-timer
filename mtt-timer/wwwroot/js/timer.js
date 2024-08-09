@@ -26,7 +26,7 @@
         });
 
         this.el.reset.addEventListener("click", () => {
-            const inputMinutes = parseInt(prompt("Enter number of minutes:"));
+            const inputMinutes = Number(prompt("Enter number of minutes:"));
 
             this.stop();   
 
@@ -105,10 +105,6 @@
     }
 }
 
-new Timer(
-    document.querySelector("#timer"),
-    document.querySelector("#resume")
-);
 
 
 

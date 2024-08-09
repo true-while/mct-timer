@@ -24,4 +24,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+
+app.MapControllerRoute(
+    name: "Timer",
+    pattern: "/{m?}/{t?}",
+    defaults: new { controller = "Home", action = "Timer" });
+
 app.Run();

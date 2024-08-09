@@ -1,9 +1,10 @@
 ﻿const toolbarOptions = [
-    [{ 'size': ['normal', 'large', 'huge'] }],
-    [{ 'header': 1 }],
+    [{ 'header': 1 }, { 'header': 2 }, { 'header': 3 }],
     ['bold', 'italic'],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+    [{ 'list': 'bullet' }],
+    [ { align: '' }, { align: 'center' }],
     [{ 'color': [] }, { 'background': [] }],
+
 ];
 
 

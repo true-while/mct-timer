@@ -1,51 +1,133 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Set your timer";
 }
-<div id="group">
-    <table id="group-tbl">
-        <tr>
-            <td valign="top" align="left">
-                <div class="infopad"><div class="title">remain time</div>
-                <div id="timer" class="numbers">
-                <div>
-                    <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
-                </div>
-                <button type="button" class="timer__btn timer__btn--control timer__btn--start">
-                    <span class="material-icons">play_arrow</span></button>
-                <button type="button" class="timer__btn timer__btn--reset">
-                    <span class="material-icons">timer</span>
-                </button>
-              </div></div></td>
-            <td valign="top" align="right">
-                <div class="infopad">
-                    <div class="title">brake ends at</div>
-                    <div id="resume" class="numbers">
-                        <div>
-                            <span id="when__part1"></span><span id="when__devider"></span><span id="when__part2"></span><span id="am"></span>
-                        </div>
-                        <div id="zone"></div>
-                        </div>
-</div></td>
-        </tr>
-        <tr>
-            <td colspan="2" valign="top">
-                <div id="editormain">
-                    <!--div id="note">note +</!div-->
-                    <div id="editor">
-                    </div>
-                 </div>
-            </td>
-        </tr>
 
-    </table>
-        
-       
+<div id="settings-mainbg">
+    <div id="settings-secondbg">
+        <div id="timer-set">
+            <div id="timer-go">
+                <div class="title">set timer</div>
+                <div class="timer-go-set">
+                    <span>
+                        <input id="custom-imput" type="text" value="" />
+                    </span>
+                    <span><select id="ampm">
+                        <option value="AM">AM</option><option value="PM">PM</option></select></span>
+
+                    <span class="button" id="go">
+                        <img class="img" src="/icons/play.png" />
+                    </span>
+                </div>
+                <div class="adds-group"><span class="adds" id="tophour">top hour</span><span class="adds" id="plus5">+5m</span></div>
+            </div>
+        </div>
+
+
+
+        <div id="timer-set">
+
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="10"
+               asp-route-t="c">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        00:10
+                    </div>
+                    <div class="title">Coffee</div>
+                </div>
+            </a>
+
+
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="15"
+               asp-route-t="c">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        00:15
+                    </div>
+                    <div class="title">Coffee</div>
+                </div>
+            </a>
+        </div>
+
+        <div id="timer-set">
+
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="45"
+               asp-route-t="l">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        00:45
+                    </div>
+                    <div class="title">Lunch</div>
+                </div>
+            </a>
+
+
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="60"
+               asp-route-t="l">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        01:00
+                    </div>
+                    <div class="title">Lunch</div>
+                </div>
+            </a>
+        </div>
+
+        <div id="timer-set">
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="30"
+               asp-route-t="l">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        00:30
+                    </div>
+                    <div class="title">Labs</div>
+                </div>
+            </a>
+
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="45"
+               asp-route-t="l">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        00:45
+                    </div>
+                    <div class="title">Labs</div>
+                </div>
+            </a>
+
+            <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="60"
+               asp-route-t="l">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        01:00
+                    </div>
+                    <div class="title">Labs</div>
+                </div>
+            </a>
+
+        </div>
+    </div>
 </div>
 
 
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/timer.js"></script>
-    <script type="text/javascript" src="~/js/editor.js"></script>
-    <script></script>
+    <script type="text/javascript" src="~/js/preset.js"></script>
+
+    <script>
+
+        var mtimer = new Preset(
+            document.querySelector("#timer-go")
+        )
+
+        // $(document).load(function () {
+        //     alert('AA');
+        //     $('#custom-imput').text = "0000";
+        //         });
+    </script>
 }

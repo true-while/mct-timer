@@ -1,0 +1,23 @@
+﻿
+start By time
+middle - editor
+
+return/settings
+Cosmos DB
+
+add/delete new intervals
+
+edit existed and new intervals
+
+save MSG
+
+timezones
+background upload
+location
+
+pin MSG
+
+QR code for mobile
+feedback
+AI monitoring
+

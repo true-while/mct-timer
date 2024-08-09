@@ -3,10 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - mtt_timer</title>
+    <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/mtt_timer.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/timer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/preset.css" asp-append-version="true" />
 
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -29,12 +30,8 @@
                 </div>
             </div>
         </nav-->
-
-    <div id="mainbg">
-        <!--main role="main" class="pb-3"-->
-            @RenderBody()
-        <!--/main-->
-    </div>
+            
+        @RenderBody()
 
     <!--footer class="border-top footer text-muted">
         <div class="container">

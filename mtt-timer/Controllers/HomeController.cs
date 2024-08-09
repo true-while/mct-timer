@@ -13,13 +13,22 @@ namespace mtt_timer.Controllers
             _logger = logger;
         }
 
+
+
+
+
         public IActionResult Index()
         {
             return View();
         }
 
-        public IActionResult Privacy()
+
+        public IActionResult Timer(string m = "15", string t = "coffee")
         {
+            TempData["length"] = m;
+            TempData["type"] = t;
+
+
             return View();
         }
 
