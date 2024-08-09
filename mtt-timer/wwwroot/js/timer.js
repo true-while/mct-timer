@@ -5,7 +5,7 @@
             timepart1: timerroot.querySelector("#timer__part1"),
             timepart2: timerroot.querySelector("#timer__part2"),
             timediv: timerroot.querySelector("#timer__devider"),
-            control: timerroot.querySelector(".timer__btn--control"),
+            home: timerroot.querySelector(".timer__btn--home"),
             reset: timerroot.querySelector(".timer__btn--reset"),         
             whenpart1: resumeroot.querySelector("#when__part1"),
             whenpart2: resumeroot.querySelector("#when__part2"),
@@ -14,23 +14,20 @@
             am: resumeroot.querySelector("#am") 
         };
 
+        this.originalSeconds = 0;
         this.interval = null;
         this.remainingSeconds = 0;
 
-        this.el.control.addEventListener("click", () => {
-            if (this.interval === null) {
-                this.start();
-            } else {
-                this.stop();
-            }
+        this.el.home.addEventListener("click", () => {
+            this.stop();
+            location.href = '/';
         });
 
-        this.el.reset.addEventListener("click", () => {
-            const inputMinutes = Number(prompt("Enter number of minutes:"));
 
+        this.el.reset.addEventListener("click", () => {
             this.stop();   
 
-            this.remainingSeconds = inputMinutes * 60;
+            this.remainingSeconds = this.originalSeconds
 
             this.updateInterfaceTime();
 
@@ -70,15 +67,15 @@
     }
 
     updateInterfaceControls() {
-        if (this.interval === null) {
-            this.el.control.innerHTML = `<span class="material-icons">play_arrow</span>`;
-            this.el.control.classList.add("timer__btn--start");
-            this.el.control.classList.remove("timer__btn--stop");
-        } else {
-            this.el.control.innerHTML = `<span class="material-icons">pause</span>`;
-            this.el.control.classList.add("timer__btn--stop");
-            this.el.control.classList.remove("timer__btn--start");
-        }
+        //if (this.interval === null) {
+        //    this.el.control.innerHTML = `<span class="material-icons">play_arrow</span>`;
+        //    this.el.control.classList.add("timer__btn--start");
+        //    this.el.control.classList.remove("timer__btn--stop");
+        //} else {
+        //    this.el.control.innerHTML = `<span class="material-icons">pause</span>`;
+        //    this.el.control.classList.add("timer__btn--stop");
+        //    this.el.control.classList.remove("timer__btn--start");
+        //}
     }
 
     start() {

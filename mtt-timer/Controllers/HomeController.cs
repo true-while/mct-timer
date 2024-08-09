@@ -14,7 +14,10 @@ namespace mtt_timer.Controllers
         }
 
 
-
+        public IActionResult Settings()
+        {
+            return View();
+        }
 
 
         public IActionResult Index()

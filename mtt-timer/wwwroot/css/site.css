@@ -3,3 +3,45 @@ body {
     margin: 0px;
 }
 
+#location-info {
+    display: none;
+    padding: 10px;
+    position: absolute;
+    right: 35px;
+    bottom: 10px;
+    background-color: rgba(0,0,0,0.8);
+    border-radius: 15px;
+    color: lightgray;
+    font: 500 16px Segoe UI;
+    border: 1px solid lightgray;
+}
+
+.location {
+    position: absolute;
+    right: 00px;
+    bottom: 00px;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+    .location .option {
+        width: 40px;
+        padding: 05px;
+        
+    }
+    .location:hover + #location-info {
+        cursor: pointer;
+        display: block;
+    }
+
+.menu {
+    position: absolute;
+    top: 00px;
+    right: 00px;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 10px;
+}
+.menu .option {
+    width: 40px;
+    padding: 05px;
+    cursor: pointer;
+}

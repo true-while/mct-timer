@@ -12,9 +12,10 @@
 
 #settings-secondbg {
     padding: 3px 0px;
-    margin: 20px;
-    background-color: rgba(0,0,0,0.4);
+    margin: 10px;
+    background-color: rgba(0,0,0,0.3);
     width: fit-content;
+    border-radius: 10px;
 }
 
 

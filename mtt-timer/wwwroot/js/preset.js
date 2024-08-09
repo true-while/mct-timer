@@ -58,7 +58,7 @@
 
             var mins = Math.floor(moment.duration(end.diff(moment())).add(1,'m').asMinutes());
             if (mins > 0) {
-                location.href = `./${mins}/c`;
+                location.href = `./timer/${mins}/c`;
             } 
         });
 

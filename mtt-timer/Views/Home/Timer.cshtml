@@ -3,26 +3,28 @@
 }
 
 <div id="timer-mainbg">
+    <div class="menu"><button type="button" class="button"><img src="./icons/gear.png" /></button></div>
     <div id="group">
         <table id="group-tbl">
             <tr>
-                <td valign="top" align="left">
+                <td >
                     <div class="infopad">
                         <div class="title">remain time</div>
-                        <div id="timer" class="numbers">
-                            <div>
+                        <div id="timer">
+                            <div class="numbers">
                                 <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
-                            </div>
-                            <button type="button" class="timer__btn timer__btn--control timer__btn--start">
-                                <span class="material-icons">play_arrow</span>
+                            </div><div>
+                            <button type="button" class="timer__btn timer__btn--home">
+                                <img class="material-icons" src="/icons/home-w.png" />
                             </button>
                             <button type="button" class="timer__btn timer__btn--reset">
-                                <span class="material-icons">timer</span>
+                                <img class="material-icons" src="/icons/reset-w.png" />
                             </button>
+                            </div>
                         </div>
                     </div>
                 </td>
-                <td valign="top" align="left">
+                <td  align="left" class="infopad-td">
                     <div class="infopad">
                         <div class="title">resume at</div>
                         <div id="resume" class="numbers">
@@ -67,8 +69,7 @@
             document.querySelector("#resume")
         );
 
-        mtimer.remainingSeconds = blengh * 60;
-        // mtimer.updateInterfaceTime();
+        mtimer.originalSeconds = mtimer.remainingSeconds = blengh * 60;
         mtimer.start();
 
     </script>

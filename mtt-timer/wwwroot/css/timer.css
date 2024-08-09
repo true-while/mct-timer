@@ -59,25 +59,31 @@
 .counter-normal {
     color: black;
 }
+.infopad-td
+{
+    text-align: left;
+    width: 100%;
+}
+
 
 .infopad {
     color: black;
-    display: inline-block;
     padding: 10px 10px 10px 10px;
-    border-radius: 15px;
+    border-radius: 20px;
     background: white;
     width: 200px;
     height: 200px;
     text-align: center;
+    border: 3px solid darkgrey;
 }
 
     .infopad .title {
-            font: 600 20px Segoe UI;
-            color: darkblue;
+        font: 600 20px Segoe UI;
+        color: darkblue;
     }
 
     .infopad .numbers {
-        font: 400 55px Segoe UI;
+        font: 400 60px Segoe UI;
         color: black;
     }
 
@@ -96,6 +102,7 @@
 }
 
 .timer__btn {
+    margin: 7px;
     padding: 0px;
     font-size: 10pt;
     width: 50px;
@@ -106,12 +113,19 @@
     background: #8208e6;
     cursor: pointer;
 }
-
-.timer__btn--start {
-    background: #00b84c;
+.material-icons {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    justify-content: center;
 }
 
-.timer__btn--stop {
-    background: #ff0256;
+.timer__btn--reset {
+    background-color: green;
+
+}
+
+.timer__btn--home {
+    background-color: purple;
 }
 
