@@ -14,11 +14,15 @@ namespace mtt_timer.Controllers
         }
 
 
-        public IActionResult Settings()
+        public IActionResult Inprogress()
         {
             return View();
         }
 
+        public IActionResult Info()
+        {
+            return View();
+        }
 
         public IActionResult Index()
         {

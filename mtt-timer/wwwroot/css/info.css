@@ -1,4 +1,4 @@
-#settings-mainbg {
+#info-mainbg {
     padding: 0px;
     margin: 0px;
     width: 100%;
@@ -10,7 +10,7 @@
     overflow: hidden;
 }
 
-#settings-secondbg {
+#info-secondbg {
     padding: 3px 0px;
     margin: 50px;
     background-color: rgba(0,0,0,0.3);
@@ -19,7 +19,7 @@
 }
 
 
-#settings-set {
+#info-set {
     margin: 10px;
     resize: both;
     display: flex;
@@ -28,7 +28,7 @@
 }
 
 
-.settings-text {
+.info-text {
     color: black;
     display: inline-block;
     margin: 7px 7px 7px 7px;
@@ -37,21 +37,21 @@
     background-color: white;
     text-align: justify-all;
     border: 3px solid darkgray;
+    
     overflow-y: scroll;
     height: 80vh;
 }
 
-    .settings-text .title {
+    .info-text .title {
         font: 600 20px Segoe UI;
         color: darkblue;
     }
 
-    .settings-text h1 {
+    .info-text h1 {
         font: 600 18px Segoe UI;
         color: black;
     }
-
-    .settings-text p {
+    .info-text p {
         font: 400 15px Segoe UI;
         color: black;
     }

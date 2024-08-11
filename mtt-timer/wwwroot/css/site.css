@@ -24,7 +24,7 @@ body {
     border-radius: 10px;
 }
     .location .option {
-        width: 40px;
+        width: 35px;
         padding: 05px;
         
     }
@@ -41,7 +41,7 @@ body {
     border-radius: 10px;
 }
 .menu .option {
-    width: 40px;
+    width: 35px;
     padding: 05px;
     cursor: pointer;
 }

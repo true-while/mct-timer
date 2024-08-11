@@ -1,0 +1,36 @@
+﻿@model mtt_timer.Models.WebSettings
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>WebSettings</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+           Prompt
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Prompt)
+        </dd>
+        <dt class = "col-sm-2">
+            Image description
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            Image preview
+        </dd>        
+        <dd class="col-sm-10">
+            <img src="@Html.DisplayFor(model => model.Path)" style="width:500px" />
+        </dt>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

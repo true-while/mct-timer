@@ -114,11 +114,14 @@
 }
 
     .timer-choise .title {
-        font: 600 22px Segoe UI;
+        font: 600 20px Segoe UI;
         color: darkblue;
+    }
+    .timer-choise .title img {
+        width: 60px;
     }
 
     .timer-choise .numbers {
-        font: 400 35px Segoe UI;
+        font: 400 30px Segoe UI;
         color: black;
     }

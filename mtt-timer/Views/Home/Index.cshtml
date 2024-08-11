@@ -5,8 +5,9 @@
 <div id="settings-mainbg">
   <div class="menu">
        <img class="option" src="./icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'"/>
-        <img class="option" src="./icons/gear-w.png" alt="settings" onclick="javascript:location.href='/settings'" />
-   </div>
+        <img class="option" src="./icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
+        <img class="option" src="./icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
+    </div>
     <div class="location">
         <img class="option" src="./icons/location-w.png" alt="image info" />
     </div>
@@ -37,13 +38,25 @@
         <div id="timer-set">
 
             <a asp-controller="Home" asp-action="Timer"
+               asp-route-m="5"
+               asp-route-t="c">
+                <div class="timer-choise">
+                    <div class="numbers">
+                        5 min
+                    </div>
+                    <div class="title"><img src="/icons/coffee-b.png" /></div>
+                </div>
+            </a>
+
+
+            <a asp-controller="Home" asp-action="Timer"
                asp-route-m="10"
                asp-route-t="c">
                 <div class="timer-choise">
                     <div class="numbers">
-                        00:10
+                       10 min
                     </div>
-                    <div class="title">Coffee</div>
+                    <div class="title"><img src="/icons/coffee-b.png" /></div>
                 </div>
             </a>
 
@@ -53,9 +66,9 @@
                asp-route-t="c">
                 <div class="timer-choise">
                     <div class="numbers">
-                        00:15
+                        15 min
                     </div>
-                    <div class="title">Coffee</div>
+                    <div class="title"><img src="/icons/coffee-b.png" /></div>
                 </div>
             </a>
         </div>
@@ -67,9 +80,9 @@
                asp-route-t="l">
                 <div class="timer-choise">
                     <div class="numbers">
-                        00:45
+                        45 min
                     </div>
-                    <div class="title">Lunch</div>
+                    <div class="title"><img src="/icons/lunch-b.png" /></div>
                 </div>
             </a>
 
@@ -79,9 +92,9 @@
                asp-route-t="l">
                 <div class="timer-choise">
                     <div class="numbers">
-                        01:00
+                        60 min
                     </div>
-                    <div class="title">Lunch</div>
+                    <div class="title"><img src="/icons/lunch-b.png" /></div>
                 </div>
             </a>
         </div>
@@ -92,9 +105,9 @@
                asp-route-t="l">
                 <div class="timer-choise">
                     <div class="numbers">
-                        00:30
+                        30 min
                     </div>
-                    <div class="title">Labs</div>
+                    <div class="title"><img src="/icons/lab-b.png" /></div>
                 </div>
             </a>
 
@@ -103,9 +116,9 @@
                asp-route-t="l">
                 <div class="timer-choise">
                     <div class="numbers">
-                        00:45
+                        45 min
                     </div>
-                    <div class="title">Labs</div>
+                    <div class="title"><img src="/icons/lab-b.png" /></div>
                 </div>
             </a>
 
@@ -114,9 +127,9 @@
                asp-route-t="l">
                 <div class="timer-choise">
                     <div class="numbers">
-                        01:00
+                        60 min
                     </div>
-                    <div class="title">Labs</div>
+                    <div class="title"><img src="/icons/lab-b.png" /></div>
                 </div>
             </a>
 
