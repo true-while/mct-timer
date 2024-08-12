@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mct-timer", "mtt-timer\mct-timer.csproj", "{09B61EAD-FBF7-42BD-A8E9-55F787460E38}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mct-timer", "mct-timer\mct-timer.csproj", "{09B61EAD-FBF7-42BD-A8E9-55F787460E38}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

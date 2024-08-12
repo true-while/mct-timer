@@ -1,0 +1,116 @@
+
+#settings-secondbg {
+    padding: 3px 0px;
+    margin: 10px;
+    background-color: rgba(0,0,0,0.3);
+    width: fit-content;
+    border-radius: 10px;
+}
+
+
+#timer-set {
+    margin: 20px;
+    overflow: visible;
+    resize: both;
+    display: flex;
+    position: static;
+    width: fit-content;
+}
+
+#timer-go {
+    color: black;
+    margin: 7px 7px 7px 7px;
+    padding: 10px 10px 10px 10px;
+    border-radius: 10px;
+    background: white;
+    width: 270px;
+    border: 3px solid darkgray;
+    position: relative
+}
+
+    #timer-go .adds-group {
+        margin-top: 10px;
+    }
+    #timer-go .adds {
+        color: white;
+        margin-right: 5px;
+        background-color: purple;
+        border-radius: 10px;
+        padding: 5px;
+        width: 100px;
+        height: 40px;
+        justify-content: center;
+        font: 600 14px Segoe UI;
+        cursor: pointer;
+    }
+        #timer-go #ampm {
+        padding: 7px 7px 6px 7px;
+        margin-left: 5px;
+        border-radius: 7px;
+        text-align: center;
+        font: 600 24px Segoe UI;
+        border: 2px solid black;
+        background-color: whitesmoke;
+    }
+
+    #timer-go .timer-go-set {
+        display: inline-flex;
+        justify-content: center;
+    }
+    #timer-go .title {
+        font: 600 24px Segoe UI;
+        text-align: left;
+        color: darkblue;
+        margin-bottom:7px;
+    }
+
+    #timer-go .button {
+        color: white;
+        background: green;
+        border-radius: 15px;
+        padding: 5px;
+        margin-left: 5px;
+        width: 50px;
+        height: 50px;
+        display: inline-flex;
+        justify-content: center;
+    }
+
+    #timer-go #custom-imput {
+        padding: 7px 7px 7px 7px;
+        margin: 0px;
+        border-radius: 7px;
+        text-align: center;
+        width: 110px;
+        font: 600 24px Segoe UI;
+        border: 2px solid black;
+        background-color: whitesmoke;
+    }
+
+
+
+.timer-choise {
+    color: black;
+    display: inline-block;
+    margin: 7px 7px 7px 7px;
+    padding: 7px 7px 7px 7px;
+    border-radius: 10px;
+    background-color: white;
+    width: 127px;
+    height: 127px;
+    text-align: center;
+    border: 3px solid darkgray;
+}
+
+    .timer-choise .title {
+        font: 600 20px Segoe UI;
+        color: darkblue;
+    }
+    .timer-choise .title img {
+        width: 60px;
+    }
+
+    .timer-choise .numbers {
+        font: 400 30px Segoe UI;
+        color: black;
+    }
