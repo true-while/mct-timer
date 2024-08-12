@@ -36,7 +36,7 @@ namespace mct_timer.Models
 
             ClientResult<GeneratedImage> imageResult = await client.GenerateImageAsync(promt, new ImageGenerationOptions()  {
                 Quality = GeneratedImageQuality.Standard,
-                Size = GeneratedImageSize.W1024xH1024,
+                Size = GeneratedImageSize.W1792xH1024,
                 ResponseFormat = GeneratedImageFormat.Bytes,
                 Style = GeneratedImageStyle.Vivid               
             });

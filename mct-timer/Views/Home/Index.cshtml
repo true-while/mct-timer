@@ -3,17 +3,19 @@
 }
 
 <div id="gbmainbg">
-  <div class="menu">
-       <img class="option" src="./icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'"/>
+    <div class="menu">
+        <img class="option" src="./icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
         <img class="option" src="./icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
         <img class="option" src="./icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
     </div>
     <div class="location">
-        <img class="option" src="./icons/location-w.png" alt="image info" />
+        <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank"><img class="option" src="./icons/location-w.png" alt="image info" /></a>
     </div>
+
     <div id="location-info">
-        Turkish, Caldam City
+        Turkish, Kekova
     </div>
+
     <div id="settings-secondbg">
         <div id="timer-set">
             <div id="timer-go">
@@ -22,8 +24,12 @@
                     <span>
                         <input id="custom-imput" type="text" value="" />
                     </span>
-                    <span><select id="ampm">
-                        <option value="AM">AM</option><option value="PM">PM</option></select></span>
+                    <span>
+                        <select id="ampm">
+                            <option value="AM">AM</option>
+                            <option value="PM">PM</option>
+                        </select>
+                    </span>
 
                     <span class="button" id="go">
                         <img class="img" src="/icons/play.png" />
@@ -54,7 +60,7 @@
                asp-route-t="coffee">
                 <div class="timer-choise">
                     <div class="numbers">
-                       10 min
+                        10 min
                     </div>
                     <div class="title"><img src="/icons/coffee-b.png" /></div>
                 </div>
@@ -77,7 +83,7 @@
 
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="45"
-               asp-route-t="labs">
+               asp-route-t="lunch">
                 <div class="timer-choise">
                     <div class="numbers">
                         45 min
@@ -89,7 +95,7 @@
 
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="60"
-               asp-route-t="labs">
+               asp-route-t="lunch">
                 <div class="timer-choise">
                     <div class="numbers">
                         60 min
@@ -102,7 +108,7 @@
         <div id="timer-set">
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="30"
-               asp-route-t="lunch">
+               asp-route-t="labs">
                 <div class="timer-choise">
                     <div class="numbers">
                         30 min
@@ -113,7 +119,7 @@
 
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="45"
-               asp-route-t="lunch">
+               asp-route-t="labs">
                 <div class="timer-choise">
                     <div class="numbers">
                         45 min
@@ -124,7 +130,7 @@
 
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="60"
-               asp-route-t="lunch">
+               asp-route-t="labs">
                 <div class="timer-choise">
                     <div class="numbers">
                         60 min
@@ -151,7 +157,7 @@
 
         var bgselector = new BGSelector(
             document.querySelector("#gbmainbg")
-            ,"settings"
+            , "settings"
         )
 
         // $(document).load(function () {
