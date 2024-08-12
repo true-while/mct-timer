@@ -8,3 +8,9 @@
 /mtt-timer/Properties
 /mtt-timer/bin/Release/net8.0
 /mtt-timer/appsettings.json
+/mct-timer/bin
+/mct-timer/obj
+/mct-timer/Properties
+/mct-timer/appsettings.json
+/mct-timer/appsettings.Development.json
+/mct-timer/TODO.txt
