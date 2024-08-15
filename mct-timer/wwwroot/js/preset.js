@@ -6,25 +6,24 @@
             ampm: root.querySelector("#ampm"),
             go: root.querySelector("#go"),
             tophour: root.querySelector("#tophour"),
-            plus5: root.querySelector("#plus5")
+            plus1: root.querySelector("#plus1"),
+            minus1: root.querySelector("#minus1"),
+            plus5: root.querySelector("#plus5"),
         };
 
         this.el.imp.value = moment().format('hh:mm');
         this.el.ampm.value = moment().format('A');
 
+        this.el.plus1.addEventListener("click", () => {
+            this.addMinutes(1); 
+        });
+
+        this.el.minus1.addEventListener("click", () => {
+            this.addMinutes(-1); 
+        });
+
         this.el.plus5.addEventListener("click", () => {
-
-            try {
-
-                var cur = new moment(this.el.imp.value + ' ' + ampm.value, 'hh:mm A');
-                var tophour = new moment(cur).add(5, 'm');
-                this.el.imp.value = tophour.format('hh:mm');
-                this.el.ampm.value = tophour.format('A');
-
-            } catch (e) {
-                return;
-            }
-
+            this.addMinutes(5); 
         });
 
         this.el.tophour.addEventListener("click", () => {
@@ -61,6 +60,20 @@
                 location.href = `./timer/${mins}/wait`;
             } 
         });
+
+    }
+    
+    addMinutes(quantity) {
+        try {
+
+            var cur = new moment(this.el.imp.value + ' ' + ampm.value, 'hh:mm A');
+            var tophour = new moment(cur).add(quantity, 'm');
+            this.el.imp.value = tophour.format('hh:mm');
+            this.el.ampm.value = tophour.format('A');
+
+        } catch (e) {
+            return;
+        }
 
     }
 }
