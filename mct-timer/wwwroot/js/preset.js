@@ -56,6 +56,7 @@
                 this.el.imp.value = newtime.format('hh:00');
                 this.el.ampm.value = newtime.format('A');
                 this.el.datevalue.value = newtime;
+                this.el.imp.style.color = "black";
 
             } catch (e) {
                 return;
@@ -69,6 +70,7 @@
 
             var mins = Math.floor(moment.duration(end.diff(moment())).add(1,'m').asMinutes());
             if (mins > 0) {
+                this.el.imp.style.color = "black";
                 location.href = `./timer/${mins}/wait`;
             } else {
                 this.el.imp.style.color = "red";
@@ -95,6 +97,7 @@
                 this.el.imp.value = newtime.format('hh:mm');
                 this.el.ampm.value = newtime.format('A');
                 this.el.datevalue.value = newtime;
+                this.el.imp.style.color = "black";
             }
 
         } catch (e) {
