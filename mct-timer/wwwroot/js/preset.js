@@ -69,8 +69,6 @@
 
             var mins = Math.floor(moment.duration(end.diff(moment())).add(1,'m').asMinutes());
             if (mins > 0) {
-
-                this.el.imp.value = this.el.datevalue.value = "";  //clean value to not restore it back when the browser returned by "back" button
                 location.href = `./timer/${mins}/wait`;
             } else {
                 this.el.imp.style.color = "red";
