@@ -3,11 +3,19 @@ using Microsoft.Extensions.DependencyInjection;
 using mct_timer.Models;
 using System;
 using System.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Azure.Cosmos.Core;
+using Newtonsoft.Json.Linq;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
     options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
 
+builder.Services.AddHttpContextAccessor();
+//builder.Services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor());
 
 
 var config = builder.Configuration.GetSection("ConfigMng");
@@ -21,9 +29,18 @@ builder.Services.AddSingleton<IBlobRepo>(blob);
 // Dalle generator
 DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"]);
 builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
+builder.Services.AddTransient<AuthService>();
+
+
+
+//builder.Services.AddAuthentication();
+
+builder.Services.AddAuthentication();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -39,7 +56,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -65,5 +82,11 @@ app.MapControllerRoute(
 //    name: "Settings",
 //    pattern: "/settings",
 //    defaults: new { controller = "Web", action = "Index" });
+
+
+
+
+app.MapGet("/test", () => "OK!")
+    .RequireAuthorization();
 
 app.Run();

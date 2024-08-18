@@ -7,5 +7,6 @@
         public string StorageAccountString { get; set; }
         public string Container { get; set; }
         public string OpenAIModel { get; set; }
+        public string JWT { get; set; }
     }
 }

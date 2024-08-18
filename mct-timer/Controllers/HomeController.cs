@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using mct_timer.Models;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 
 namespace mct_timer.Controllers
 {
@@ -14,6 +15,7 @@ namespace mct_timer.Controllers
         }
 
 
+        [JwtAuthenticationAttribute]
         public IActionResult Inprogress()
         {
             return View();
