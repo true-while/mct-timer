@@ -4,12 +4,14 @@
 
 <div id="gbmainbg" style="overflow: auto">
     <div class="menu">
-        <img class="option" src="./icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
-        <img class="option" src="./icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
-        <img class="option" src="./icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
+        <img class="option" src="./icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'"/>
+        <img class="option" src="./icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'"/>
+        <img class="option" src="./icons/info-w.png" alt="info" onclick="javascript:location.href='/info'"/>
     </div>
     <div class="location">
-        <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank"><img class="option" src="./icons/location-w.png" alt="image info" /></a>
+        <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank">
+            <img class="option" src="./icons/location-w.png" alt="image info"/>
+        </a>
     </div>
 
     <div id="location-info">
@@ -22,7 +24,7 @@
                 <div class="title">set timer</div>
                 <div class="timer-go-set">
                     <span>
-                        <input id="custom-imput" type="text" value="" />
+                        <input id="custom-imput" type="text" value=""/>
                     </span>
                     <span>
                         <select id="ampm">
@@ -32,16 +34,24 @@
                     </span>
 
                     <span class="button" id="go">
-                        <img class="img" src="/icons/play.png" />
+                        <img class="img" src="/icons/play.png"/>
                     </span>
                 </div>
-                <div class="adds-group"><span class="adds" id="tophour">top hour</span><span class="adds" id="plus1">+1m</span><span class="adds" id="minus1">-1m</span><span class="adds" id="plus5">+5m</span></div>
+                <div class="adds-group">
+                    <span>
+                        <select id="timezone">
+                        </select>
+                    </span>
+
+                </div>
+                <div class="adds-group">
+                    <span class="adds" id="tophour">top hour</span><span class="adds" id="plus1">+1m</span><span class="adds" id="minus1">-1m</span><span class="adds" id="plus5">+5m</span>
+                </div>
             </div>
         </div>
 
 
-
-        <div id="timer-set">
+        <div id="timer-set-break">
 
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="5"
@@ -50,7 +60,9 @@
                     <div class="numbers">
                         5 min
                     </div>
-                    <div class="title"><img src="/icons/coffee-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/coffee-b.png"/>
+                    </div>
                 </div>
             </a>
 
@@ -62,7 +74,9 @@
                     <div class="numbers">
                         10 min
                     </div>
-                    <div class="title"><img src="/icons/coffee-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/coffee-b.png"/>
+                    </div>
                 </div>
             </a>
 
@@ -74,12 +88,14 @@
                     <div class="numbers">
                         15 min
                     </div>
-                    <div class="title"><img src="/icons/coffee-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/coffee-b.png"/>
+                    </div>
                 </div>
             </a>
         </div>
 
-        <div id="timer-set">
+        <div id="timer-set-lunch">
 
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="45"
@@ -88,7 +104,9 @@
                     <div class="numbers">
                         45 min
                     </div>
-                    <div class="title"><img src="/icons/lunch-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/lunch-b.png"/>
+                    </div>
                 </div>
             </a>
 
@@ -100,12 +118,14 @@
                     <div class="numbers">
                         60 min
                     </div>
-                    <div class="title"><img src="/icons/lunch-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/lunch-b.png"/>
+                    </div>
                 </div>
             </a>
         </div>
 
-        <div id="timer-set">
+        <div id="timer-set-lab">
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="30"
                asp-route-t="labs">
@@ -113,7 +133,9 @@
                     <div class="numbers">
                         30 min
                     </div>
-                    <div class="title"><img src="/icons/lab-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/lab-b.png"/>
+                    </div>
                 </div>
             </a>
 
@@ -124,7 +146,9 @@
                     <div class="numbers">
                         45 min
                     </div>
-                    <div class="title"><img src="/icons/lab-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/lab-b.png"/>
+                    </div>
                 </div>
             </a>
 
@@ -135,13 +159,15 @@
                     <div class="numbers">
                         60 min
                     </div>
-                    <div class="title"><img src="/icons/lab-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/lab-b.png"/>
+                    </div>
                 </div>
             </a>
 
         </div>
-        
-        <div id="timer-set">
+
+        <div id="timer-set-session">
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="30"
                asp-route-t="wait">
@@ -149,7 +175,9 @@
                     <div class="numbers">
                         30 min
                     </div>
-                    <div class="title"><img src="/icons/wait-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/wait-b.png"/>
+                    </div>
                 </div>
             </a>
 
@@ -160,7 +188,9 @@
                     <div class="numbers">
                         60 min
                     </div>
-                    <div class="title"><img src="/icons/wait-b.png" /></div>
+                    <div class="title">
+                        <img src="/icons/wait-b.png"/>
+                    </div>
                 </div>
             </a>
         </div>
@@ -173,8 +203,6 @@
     <script type="text/javascript" src="~/js/preset.js"></script>
 
     <script>
-
-
         var mtimer = new Preset(
             document.querySelector("#timer-go")
         )

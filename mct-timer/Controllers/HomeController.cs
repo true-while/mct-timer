@@ -30,12 +30,12 @@ namespace mct_timer.Controllers
         }
 
 
-        public IActionResult Timer(string m = "15", string t = "coffee")
+        public IActionResult Timer(string m = "15", string z = "America/New_York", string t = "coffee")
         {
             TempData["length"] = m;
+            TempData["timezone"] = z;
             TempData["type"] = t;
-
-
+            
             return View();
         }
 

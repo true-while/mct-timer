@@ -20,6 +20,7 @@
 
         this.el.home.addEventListener("click", () => {
             this.stop();
+            
             location.href = '/';
         });
 
@@ -32,7 +33,6 @@
             this.updateInterfaceTime();
 
             this.start();
-         
         });
     }
 
@@ -42,7 +42,7 @@
         const seconds = this.remainingSeconds - hours * (60*60) - minutes * 60;
         
 
-        if (hours == 0) {
+        if (hours === 0) {
             this.el.timepart1.textContent = minutes.toString().padStart(2, "0");
             this.el.timepart2.textContent = seconds.toString().padStart(2, "0");
         } else {
@@ -58,12 +58,15 @@
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "black";
         }
 
-        var enddate = moment().add(this.remainingSeconds, 's');
-        this.el.whenpart1.textContent = enddate.format("hh");
-        this.el.whenpart2.textContent = enddate.format("mm");
+        const endDate = moment().tz(timezoneName).add(this.remainingSeconds, 's');
+        this.el.whenpart1.textContent = endDate.format("hh");
+        this.el.whenpart2.textContent = endDate.format("mm");
         this.el.whendiv.textContent = ":"
-        this.el.am.textContent = enddate.format('A');
-        this.el.zone.textContent = "EST"; //tz('America/Los_Angeles')
+        this.el.am.textContent = endDate.format('A');
+        
+        const timeZoneShortName = timezoneName.split("/")[1].replace("_", " ");
+        
+        this.el.zone.textContent = timeZoneShortName;
     }
 
     updateInterfaceControls() {

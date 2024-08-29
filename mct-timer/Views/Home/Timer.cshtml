@@ -3,7 +3,7 @@
 }
 
 <div id="gbmainbg">
-   <div id="group">
+    <div id="group">
         <table id="group-tbl">
             <tr>
                 <td >
@@ -12,18 +12,19 @@
                         <div id="timer">
                             <div class="numbers">
                                 <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
-                            </div><div>
-                            <button type="button" class="timer__btn timer__btn--home">
-                                <img class="material-icons" src="/icons/home-w.png" />
-                            </button>
-                            <button type="button" class="timer__btn timer__btn--reset">
-                                <img class="material-icons" src="/icons/reset-w.png" />
-                            </button>
+                            </div>
+                            <div>
+                                <button type="button" class="timer__btn timer__btn--home">
+                                    <img class="material-icons" src="/icons/home-w.png"/>
+                                </button>
+                                <button type="button" class="timer__btn timer__btn--reset">
+                                    <img class="material-icons" src="/icons/reset-w.png"/>
+                                </button>
                             </div>
                         </div>
                     </div>
                 </td>
-                <td  align="left" class="infopad-td">
+                <td align="left" class="infopad-td">
                     <div class="infopad">
                         <div class="title">resume at</div>
                         <div id="resume" class="numbers">
@@ -52,29 +53,27 @@
 </div>
 
 
-
-
 @section Scripts
 {
     <script type="text/javascript" src="~/js/timer.js"></script>
     <script type="text/javascript" src="~/js/editor.js"></script>
     <script>
-        var blengh = Number('@TempData["length"]');
-        var btype = '@TempData["type"]';
+        const breakLength = Number('@TempData["length"]');
+        const timezoneNameUrlEncoded = '@TempData["timezone"]';
+        const timezoneName = decodeURIComponent(timezoneNameUrlEncoded);
+        const breakType = '@TempData["type"]';
 
-
-        var mtimer = new Timer(
+        const mtimer = new Timer(
             document.querySelector("#timer"),
             document.querySelector("#resume")
         );
 
-        mtimer.originalSeconds = mtimer.remainingSeconds = blengh * 60;
+        mtimer.originalSeconds = mtimer.remainingSeconds = breakLength * 60;
         mtimer.start();
 
         var bgselector = new BGSelector(
-            document.querySelector("#gbmainbg")
-            , btype
+            document.querySelector("#gbmainbg"),
+            breakType
         )
-
     </script>
 }

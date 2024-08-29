@@ -60,7 +60,7 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "Timer",
-    pattern: "/timer/{m?}/{t?}",
+    pattern: "/timer/{m?}/{z?}/{t?}",
     defaults: new { controller = "Home", action = "Timer" });
 
 //app.MapControllerRoute(
