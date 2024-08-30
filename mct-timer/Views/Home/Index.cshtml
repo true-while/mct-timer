@@ -24,7 +24,8 @@
                 <div class="title">set timer</div>
                 <div class="timer-go-set">
                     <span>
-                        <input id="custom-imput" type="text" value=""/>
+                        <input id="datevalue" type="hidden" value="" />
+                        <input id="custom-imput" type="text" value="" />
                     </span>
                     <span>
                         <select id="ampm">
@@ -34,7 +35,7 @@
                     </span>
 
                     <span class="button" id="go">
-                        <img class="img" src="/icons/play.png"/>
+                        <img class="img" src="/icons/play.png" />
                     </span>
                 </div>
                 <div class="adds-group">
@@ -159,15 +160,13 @@
                     <div class="numbers">
                         60 min
                     </div>
-                    <div class="title">
-                        <img src="/icons/lab-b.png"/>
-                    </div>
+                    <div class="title"><img src="/icons/lab-b.png" /></div>
                 </div>
             </a>
 
         </div>
-
-        <div id="timer-set-session">
+        
+        <div id="timer-set">
             <a asp-controller="Home" asp-action="Timer"
                asp-route-m="30"
                asp-route-t="wait">
@@ -175,9 +174,7 @@
                     <div class="numbers">
                         30 min
                     </div>
-                    <div class="title">
-                        <img src="/icons/wait-b.png"/>
-                    </div>
+                    <div class="title"><img src="/icons/wait-b.png" /></div>
                 </div>
             </a>
 
@@ -188,9 +185,7 @@
                     <div class="numbers">
                         60 min
                     </div>
-                    <div class="title">
-                        <img src="/icons/wait-b.png"/>
-                    </div>
+                    <div class="title"><img src="/icons/wait-b.png" /></div>
                 </div>
             </a>
         </div>
@@ -203,6 +198,8 @@
     <script type="text/javascript" src="~/js/preset.js"></script>
 
     <script>
+
+
         var mtimer = new Preset(
             document.querySelector("#timer-go")
         )
