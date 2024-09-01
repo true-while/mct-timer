@@ -16,6 +16,9 @@ namespace mct_timer.Controllers
         {
             _logger = logger;
             _config = config;
+
+            if (AuthService.GetInstance == null)
+                AuthService.Init(logger, config);
         }
 
 

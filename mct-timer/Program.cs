@@ -11,12 +11,17 @@ using Microsoft.Azure.Cosmos.Core;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.CodeAnalysis.Options;
+using System.Net;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
     options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
+
+builder.Services.AddDbContext<UsersContext>(options =>
+    options.UseCosmos(builder.Configuration.GetConnectionString("UsersContext") ?? throw new InvalidOperationException("Connection string 'UsersContext' not found."), "webapp"));
+
 
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor());
@@ -28,20 +33,9 @@ builder.Services.Configure<ConfigMng>(config);
 builder.Services.AddSingleton<AuthService>();
 
 
-var env = config["env"];
 
-if (env != "prod")
-{
-    MemoryCache cache = new MemoryCache(new MemoryCacheOptions() { });
 
-    builder.Services.AddDbContext<WebSettingsContext>(options =>
-        options.UseMemoryCache(cache));
 
-    builder.Services.AddSingleton<IBlobRepo>(new BlobTest());
-    builder.Services.AddSingleton<IDalleGenerator>(new DalleTest());
-}
-else
-{
     builder.Services.AddDbContext<WebSettingsContext>(options =>
         options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
 
@@ -53,11 +47,11 @@ else
     DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"]);
     builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
 
-}
 
 
 
-builder.Services.AddAuthentication(cfg => {
+builder.Services
+    .AddAuthentication(cfg => {
     cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -74,8 +68,15 @@ builder.Services.AddAuthentication(cfg => {
         ValidateIssuer = false,
         ValidateAudience = false,
         ClockSkew = TimeSpan.Zero
+        
+
     };
-});
+}).AddCookie(options =>
+ {
+     options.LoginPath = "Account/Login";
+     options.LogoutPath = "Account/Logout";
+ });
+
 
 
 // Add services to the container.
@@ -99,6 +100,15 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStatusCodePages(async context =>
+{
+    var response = context.HttpContext.Response;
+
+    if (response.StatusCode == (int)HttpStatusCode.Unauthorized ||
+            response.StatusCode == (int)HttpStatusCode.Forbidden)
+        response.Redirect("/Account/Login");
+});
 
 app.MapControllerRoute(
     name: "default",

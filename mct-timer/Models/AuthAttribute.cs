@@ -25,7 +25,9 @@ namespace mct_timer.Models
 
                     if (result)
                     {
-                        var user = jwt.Claims.First(x=>x.Type == "id")?.Value;
+                        //var user = jwt.Claims.First(x=>x.Type == "id")?.Value;
+                        //TO DO 
+                        //Register user sign in
                        
                     }
 

@@ -1,11 +1,34 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model mct_timer.Models.Login
+
 @{
+    ViewData["Title"] = "Login";
 }
 
-
 <h1>Login</h1>
-<h3>To setup and save your settings please create your account or login with existed account.</h3>
+<h3>To setup and save your settings please <a 
+    asp-controller="Account"
+    asp-action="Create">create your account</a> or login with existed account.</h3>
+
+<span class="color:red">@TempData["Error"]</span>
 
 
+<div>
+    <div>
+        <form asp-action="login">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="form-group">
+                <label asp-for="email" class="control-label"></label>
+                <input asp-for="email" class="form-control" />
+                <span asp-validation-for="email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="password" class="control-label"></label>
+                <input asp-for="password" class="form-control" />
+                <span asp-validation-for="password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Login" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

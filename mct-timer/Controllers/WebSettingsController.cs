@@ -77,7 +77,7 @@ namespace mct_timer.Controllers
         public async Task<IActionResult> Create([Bind("Prompt","Name")] WebSettings webSettings)
         {
             webSettings.ID = Guid.NewGuid();
-            webSettings.User = "aivanov";            
+            webSettings.User = "ivanov";            
 
             //gen image
             var imggen = await _gen.GetImage(webSettings.Prompt);
