@@ -13,6 +13,8 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.CodeAnalysis.Options;
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Configuration.AddUserSecrets<Program>();
+
 builder.Services.AddDbContext<WebSettingsContext>(options =>
     options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
 

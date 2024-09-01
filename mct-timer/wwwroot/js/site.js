@@ -1,4 +1,5 @@
-﻿class BGSelector {
+﻿
+class BGSelector {
     constructor(root, btype) {
 
         switch (btype) {
