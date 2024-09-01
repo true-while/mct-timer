@@ -74,4 +74,18 @@ namespace mct_timer.Models
 
 
     }
+
+
+    public class BlobTest : IBlobRepo
+    {
+        public Uri GetImageSASLink(string name)
+        {
+            return new Uri("");
+        }
+
+        public Task<Uri> SaveImage(string name, BinaryData data, Dictionary<string, string> mdata)
+        {
+            return new Task<Uri>( () => new Uri("") );
+        }
+    }
 }

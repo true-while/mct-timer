@@ -1,7 +1,10 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using NuGet.Protocol;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace mct_timer.Models
 {
@@ -9,34 +12,23 @@ namespace mct_timer.Models
     public class JwtAuthenticationAttribute : ActionFilterAttribute
     {
 
-
-
-
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-
-                //.AddJwtBearer(x => {
-                //     {
-                //         var key = config["JWT"];
-                //         x.TokenValidationParameters = new TokenValidationParameters
-                //         {
-                //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
-                //             ValidateIssuer = false,
-                //             ValidateAudience = false
-                //         };
-                //     }
-                // });
-
             var request = filterContext.HttpContext.Request;
             var token = request.Cookies["jwt"];
 
             if (token != null)
             {
-                var userName = new User(); //Authentication.ValidateToken(token);
-                if (userName == null)
-                {
-                    filterContext.Result = new UnauthorizedResult();
-                }
+
+                    JwtSecurityToken jwt;
+                    var result  = AuthService.GetInstance.Validate(token, out jwt);
+
+                    if (result)
+                    {
+                        var user = jwt.Claims.First(x=>x.Type == "id")?.Value;
+                       
+                    }
+
             }
             else
             {

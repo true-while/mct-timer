@@ -2,20 +2,24 @@ using Microsoft.AspNetCore.Mvc;
 using mct_timer.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 
 namespace mct_timer.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IOptions<ConfigMng> _config;
 
-        public HomeController(ILogger<HomeController> logger)
+
+        public HomeController(ILogger<HomeController> logger, IOptions<ConfigMng> config)
         {
             _logger = logger;
+            _config = config;
         }
 
 
-        [JwtAuthenticationAttribute]
+        [JwtAuthentication]
         public IActionResult Inprogress()
         {
             return View();

@@ -9,6 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.Azure.Cosmos.Core;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.CodeAnalysis.Options;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
@@ -21,21 +23,58 @@ builder.Services.AddHttpContextAccessor();
 var config = builder.Configuration.GetSection("ConfigMng");
 
 builder.Services.Configure<ConfigMng>(config);
-
-// Blob generator
-BlobRepo blob = new BlobRepo(config["StorageAccountString"], config["Container"]);
-builder.Services.AddSingleton<IBlobRepo>(blob);
-
-// Dalle generator
-DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"]);
-builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
-builder.Services.AddTransient<AuthService>();
+builder.Services.AddSingleton<AuthService>();
 
 
+var env = config["env"];
 
-//builder.Services.AddAuthentication();
+if (env != "prod")
+{
+    MemoryCache cache = new MemoryCache(new MemoryCacheOptions() { });
 
-builder.Services.AddAuthentication();
+    builder.Services.AddDbContext<WebSettingsContext>(options =>
+        options.UseMemoryCache(cache));
+
+    builder.Services.AddSingleton<IBlobRepo>(new BlobTest());
+    builder.Services.AddSingleton<IDalleGenerator>(new DalleTest());
+}
+else
+{
+    builder.Services.AddDbContext<WebSettingsContext>(options =>
+        options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
+
+    // Blob generator
+    BlobRepo blob = new BlobRepo(config["StorageAccountString"], config["Container"]);
+    builder.Services.AddSingleton<IBlobRepo>(blob);
+
+    // Dalle generator
+    DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"]);
+    builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
+
+}
+
+
+
+builder.Services.AddAuthentication(cfg => {
+    cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    cfg.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(x => {
+    x.RequireHttpsMetadata = false;
+    x.SaveToken = false;
+    x.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8
+            .GetBytes(config["JWT"])
+        ),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

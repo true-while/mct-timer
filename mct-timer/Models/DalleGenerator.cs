@@ -10,7 +10,7 @@ namespace mct_timer.Models
     public interface IDalleGenerator
     {
 
-        public Task<GeneratedImage> GenerateImage(string promt);
+        public Task<GeneratedImage> GetImage(string promt);
 
 
     }
@@ -27,7 +27,7 @@ namespace mct_timer.Models
             _model = model;
         }
 
-        public async Task<GeneratedImage> GenerateImage(string promt = "background image for my site")
+        public async Task<GeneratedImage> GetImage(string promt = "background image for my site")
         {    
 
             AzureKeyCredential credential = new AzureKeyCredential(_key);
@@ -43,6 +43,14 @@ namespace mct_timer.Models
 
             return imageResult.Value;
             
+        }
+    }
+
+    public class DalleTest : IDalleGenerator
+    {
+        public Task<GeneratedImage> GetImage(string promt)
+        {
+            return new Task<GeneratedImage>(() => null);
         }
     }
 }
