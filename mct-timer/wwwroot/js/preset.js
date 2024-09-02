@@ -25,11 +25,9 @@
     constructor(root) {
 
         this.state = this.STATE_VALID;
-        this.timerDuration = 0;
 
         this.el = {
             input: root.querySelector("#custom-input"),
-            // datevalue: root.querySelector("#datevalue"),
             ampm: root.querySelector("#ampm"),
             timezone: root.querySelector("#timezone"),
             go: root.querySelector("#go"),
@@ -39,7 +37,6 @@
             plus5: root.querySelector("#plus5"),
         };
 
-        // this.el.datevalue.value = moment();
         this.el.input.value = moment().format('hh:mm');
         this.el.ampm.value = moment().format('A');
 
@@ -64,10 +61,6 @@
 
         this.el.input.addEventListener("change", () => {
             this.onDurationFieldChanged();
-        // });
-        //
-        // this.el.input.addEventListener("change", () => {
-        //     this.setTimerDurationField(moment(this.el.input.value + ' ' + this.el.ampm.value, 'hh:mm A'));
         });
 
         this.el.ampm.addEventListener("change", () => {
