@@ -20,6 +20,7 @@
 
         this.el.home.addEventListener("click", () => {
             this.stop();
+            
             location.href = '/';
         });
 
@@ -32,7 +33,6 @@
             this.updateInterfaceTime();
 
             this.start();
-         
         });
     }
 
@@ -40,9 +40,11 @@
         const hours = Math.floor(this.remainingSeconds / (60*60));
         const minutes = Math.floor((this.remainingSeconds / 60) - (hours * 60));
         const seconds = this.remainingSeconds - hours * (60*60) - minutes * 60;
-        
 
-        if (hours == 0) {
+        if (this.remainingSeconds <= 0) {
+            this.el.timepart1.textContent = "--";
+            this.el.timepart2.textContent = "--";
+        } else if (hours === 0) {
             this.el.timepart1.textContent = minutes.toString().padStart(2, "0");
             this.el.timepart2.textContent = seconds.toString().padStart(2, "0");
         } else {
@@ -50,7 +52,9 @@
             this.el.timepart2.textContent = minutes.toString().padStart(2, "0");
         }
         
-        if (this.remainingSeconds < 60) {
+        if (this.remainingSeconds < 0) {
+            this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
+        } else if (this.remainingSeconds < 60) {
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
         } else if (this.remainingSeconds < 180) {
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "darkorange";
@@ -58,12 +62,16 @@
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "black";
         }
 
-        var enddate = moment().add(this.remainingSeconds, 's');
-        this.el.whenpart1.textContent = enddate.format("hh");
-        this.el.whenpart2.textContent = enddate.format("mm");
+        const endDate = moment().tz(timezoneName).add(this.remainingSeconds, 's');
+        this.el.whenpart1.textContent = endDate.format("hh");
+        this.el.whenpart2.textContent = endDate.format("mm");
         this.el.whendiv.textContent = ":"
-        this.el.am.textContent = enddate.format('A');
-        this.el.zone.textContent = "EST"; //tz('America/Los_Angeles')
+        this.el.am.textContent = endDate.format('A');
+
+        const split = timezoneName.split("/");
+        const timeZoneShortName = split[split.length-1].replace("_", " ");
+        
+        this.el.zone.textContent = timeZoneShortName;
     }
 
     updateInterfaceControls() {
