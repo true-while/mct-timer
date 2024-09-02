@@ -18,6 +18,7 @@ namespace mct_timer.Controllers
         private readonly AuthService _auth;
         private readonly ILogger<HomeController> _logger;
         private readonly UsersContext _ac_context;
+        private readonly IKeyVaultMng _keyvault;
 
         private readonly CookieOptions cOptions = new CookieOptions()
         {
@@ -34,6 +35,7 @@ namespace mct_timer.Controllers
               IHttpContextAccessor context,
               IOptions<ConfigMng> config,
               ILogger<HomeController> logger,
+              IKeyVaultMng keyvault,
               UsersContext ac_context
               )
         {
@@ -41,6 +43,7 @@ namespace mct_timer.Controllers
             _config = config;
             _logger = logger;
             _ac_context = ac_context;
+            _keyvault = keyvault;
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -52,19 +55,26 @@ namespace mct_timer.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Login(Login login)
         {
+            if (login.email==null || login.password == null)
+            {
+                TempData["Error"] = "Not empty password and email required for login in";
+                return View();
+            }
 
-            var user = _ac_context.Users.FirstOrDefault(x => x.Email == login.email && login.password == x.Password);
+            
+            var user = _ac_context.Users.FirstOrDefault(x => x.Email == login.email);
+            
 
-            if (user != null)
+            if (user != null && _keyvault.Decrypt(user.Password) == login.password)
             {
                 var token = AuthService.GetInstance.Create(user);
                 _context.HttpContext.Response.Cookies.Append("jwt", token, cOptions);
-                
-                return View("Info",user);
+
+                return RedirectToRoute("Settings");
             }
             else
             {
-                TempData["Error"] = "Provided credentials is incorrect";
+                TempData["Error"] = "Provided credential is incorrect";
                 return View();
             }
 
@@ -102,12 +112,19 @@ namespace mct_timer.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Name", "Email","Password")] User user)
         {
-            if (_ac_context.Users.FirstOrDefault(x => x.Name == user.Name)!=null)
+            if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email))
+            {
+                TempData["Error"] = "Your name, email and password required.";
+            }
+            else if (_ac_context.Users.FirstOrDefault(x => x.Email == user.Email)!=null)
             {
                 TempData["Error"] = "The user with the same email already exists.";
             }
-            else
+            else if (ModelState.IsValid)
             {
+
+                user.Email = user.Email.Trim().ToLower();
+                user.Password = _keyvault.Encrypt(user.Password);
                 _ac_context.Users.Add(user);
                 _ac_context.SaveChanges();
 
@@ -116,8 +133,9 @@ namespace mct_timer.Controllers
                 if (_context.HttpContext != null)
                 {
                     _context.HttpContext.Response.Cookies.Append("jwt", token, cOptions);
-                    return View("Info", user);
-                }else
+                    return RedirectToRoute("Settings");
+                }
+                else
                 {
                     return View("Login");
                 }
@@ -129,28 +147,29 @@ namespace mct_timer.Controllers
 
 
 
-        [HttpGet]
-        public IActionResult Info()
-        {
-            var request = _context.HttpContext.Request;
-            var token = request.Cookies["jwt"];
+        //[HttpGet]
+        //public IActionResult Info()
+        //{
+        //    var request = _context.HttpContext.Request;
+        //    var token = request.Cookies["jwt"];
 
-            if (token != null)
-            {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+        //    if (token != null)
+        //    {
+        //        JwtSecurityToken jwt;
+        //        var result = AuthService.GetInstance.Validate(token, out jwt);
 
-                if (result)
-                {
-                    var user = jwt.Claims.First(x => x.Type == "id")?.Value;
-                    return View(user);
-                }
-            }
+        //        if (result)
+        //        {
+        //            var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+        //            var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+        //            return View(user);
+        //        }
+        //    }
 
-            _logger.LogError("Token was not read properly from Account Info page");
-            return View("Login");
+        //    _logger.LogError("Token was not read properly from Account Info page");
+        //    return View("Login");
 
-        }
+        //}
     }
 }
 

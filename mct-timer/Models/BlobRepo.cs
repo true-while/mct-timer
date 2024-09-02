@@ -12,8 +12,6 @@ namespace mct_timer.Models
     {
         public Task<Uri> SaveImage(String name, BinaryData data, Dictionary<string, string> mdata);
         public Uri GetImageSASLink(String name);
-
-
     }
 
     public class BlobRepo : IBlobRepo

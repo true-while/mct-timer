@@ -58,3 +58,78 @@ body {
     padding: 05px;
     cursor: pointer;
 }
+
+.form {
+    background-color: white;
+    color: black;
+    display: inline-block;
+    margin: 30px 30px 30px 30px;
+    padding: 30px 30px 30px 30px;
+    border-radius: 10px;
+    text-align: left;
+    border: 3px solid darkgray;
+    font: 600 24px Segoe UI;
+}
+
+    .form .submit {
+        color: white;
+        background: green;
+        border-radius: 15px;
+        padding: 5px;
+        margin-left: 5px;
+        height: 50px;
+        display: inline-flex;
+        justify-content: center;
+        font: 600 20px Segoe UI;
+        text-transform: uppercase;
+    }
+
+    .form table {
+        margin: 20px 0px 20px 0px;        
+    }
+    .form .info {
+        font: 400 18px Segoe UI;
+        color: darkblue;
+    }
+    .form .back {
+        color: white;
+        background: purple;
+        border-radius: 15px;
+        padding: 5px;
+        margin-left: 5px;
+        height: 50px;
+        display: inline-flex;
+        justify-content: center;
+        font: 400 20px Segoe UI;
+        text-transform: uppercase;
+    }
+
+    .form .error {
+        margin: 10px 0 10px 0;
+        color: red;
+        font-style: italic;
+        font: 500 16px Segoe UI;
+    }
+
+    .form select {
+        padding: 7px 7px 6px 7px;
+        margin-left: 5px;
+        border-radius: 7px;
+        text-align: center;
+        border: 2px solid black;
+        background-color: whitesmoke;
+    }
+    .form .text-danger {
+        color: darkred;
+        font-style: italic;
+        font: 500 16px Segoe UI;
+    }
+ .form .form-control-text {
+        padding: 7px 7px 7px 7px;
+        margin: 0px;
+        border-radius: 7px;
+        text-align: left;
+        font: 600 24px Segoe UI;
+        border: 2px solid black;
+        background-color: whitesmoke;
+    }

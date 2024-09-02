@@ -43,7 +43,7 @@
         font: 600 14px Segoe UI;
         cursor: pointer;
     }
-        #timer-go #ampm {
+    #timer-go #ampm {
         padding: 7px 7px 6px 7px;
         margin-left: 5px;
         border-radius: 7px;

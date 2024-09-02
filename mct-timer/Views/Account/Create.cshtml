@@ -1,40 +1,75 @@
 ﻿@model mct_timer.Models.User
 
 @{
-    ViewData["Title"] = "Create an account";
+    ViewData["Title"] = "Create your account";
 }
 
 
-<h1>@ViewData["Title"]</h1>
-<h3>To setup and save your settings please create your account or <a 
-    asp-controller="Account" 
-    asp-action="login">login</a> with existed account.</h3>
 
-<span class="color:red">@TempData["Error"]</span>
-
-<div>
-    <div>
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div id="gbmainbg">
+    <div class="menu">
+        <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
     </div>
+    <div class="location">
+        <a href="https://maps.app.goo.gl/tSMZLH5erYiWjrQg6" target="_blank"><img class="option" src="~/icons/location-w.png" alt="image info" /></a>
+    </div>
+    <div id="location-info">
+        Italy, Castle della Dragonara
+    </div>
+
+    <form asp-action="Create">
+         <div class="form" style="width:500px">
+            <h1>@ViewData["Title"]</h1>
+            <span class="info">
+                To setup and save your settings please create your account or <a asp-controller="Account"
+                                                                                 asp-action="login">login</a> with existed account.
+            </span>
+            
+            
+            <div class="error">@TempData["Error"]</div>
+            <div asp-validation-summary="ModelOnly" class="error">
+                
+            </div>
+            <table cellpadding="5">
+                <tr>
+                    <td align="right"><label asp-for="Name" class="control-label"></label></td>
+                    <td>:</td>
+                    <td><input asp-for="Name" class="form-control-text" /></td>
+                </tr>
+                <tr><td colspan="3"><span asp-validation-for="Name" class="text-danger"></span></td></tr>
+
+                <tr>
+                    <td align="right"><label asp-for="Email" class="control-label"></label></td>
+                    <td>:</td>
+                    <td><input asp-for="Email" class="form-control-text" /></td>
+                </tr>
+                <tr><td colspan="3"><span asp-validation-for="Email" class="text-danger"></span></td></tr>
+
+                <tr>
+                    <td align="right"><label asp-for="Password" class="control-label"></label></td>
+                    <td>:</td>
+                    <td><input asp-for="Password" class="form-control-text" /></td>
+                </tr>
+                <tr><td colspan="3"><span asp-validation-for="Password" class="text-danger"></span></td></tr>
+
+            </table>
+
+            <div class="form-group">
+                <input type="button" value="BACK" class="back" onclick="javascript:location.href = '/'" />
+                <input type="submit" value="Register" class="submit" />
+            </div>
+    </form>
 </div>
 
+
+@section Scripts
+{
+
+    <script>
+        var bgselector = new BGSelector(
+            document.querySelector("#gbmainbg")
+            , "account"
+        )
+
+    </script>
+}

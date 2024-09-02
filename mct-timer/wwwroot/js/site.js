@@ -27,6 +27,9 @@ class BGSelector {
             case "inprogress":
                 root.style.backgroundImage = "url(/bg-lib/inprogress.jpg)";
                 break;
+            case "account":
+                root.style.backgroundImage = "url(/bg-lib/account.jpg)";
+                break;
             default:
                 root.style.backgroundImage = "url(/bg-lib/break.jpg)";
                 break; 

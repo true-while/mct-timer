@@ -109,7 +109,6 @@ namespace mct_timer.Models
         {
             var claimidentity = new ClaimsIdentity();
 
-            claimidentity.AddClaim(new Claim("id", user.Id.ToString()));
             claimidentity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
             claimidentity.AddClaim(new Claim(ClaimTypes.Email, user.Email));
 

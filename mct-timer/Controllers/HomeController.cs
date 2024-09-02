@@ -23,7 +23,7 @@ namespace mct_timer.Controllers
 
 
         [JwtAuthentication]
-        public IActionResult Inprogress()
+        public IActionResult Settings()
         {
             return View();
         }
