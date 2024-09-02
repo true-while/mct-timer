@@ -1,0 +1,40 @@
+﻿@model mct_timer.Models.User
+
+@{
+    ViewData["Title"] = "Create an account";
+}
+
+
+<h1>@ViewData["Title"]</h1>
+<h3>To setup and save your settings please create your account or <a 
+    asp-controller="Account" 
+    asp-action="login">login</a> with existed account.</h3>
+
+<span class="color:red">@TempData["Error"]</span>
+
+<div>
+    <div>
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+

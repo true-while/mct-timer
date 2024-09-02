@@ -10,6 +10,7 @@ using mct_timer.Models;
 
 namespace mct_timer.Controllers
 {
+    [JwtAuthentication]
     public class WebSettingsController : Controller
     {
         private readonly WebSettingsContext _context;
@@ -76,10 +77,10 @@ namespace mct_timer.Controllers
         public async Task<IActionResult> Create([Bind("Prompt","Name")] WebSettings webSettings)
         {
             webSettings.ID = Guid.NewGuid();
-            webSettings.User = "aivanov";            
+            webSettings.User = "ivanov";            
 
             //gen image
-            var imggen = await _gen.GenerateImage(webSettings.Prompt);
+            var imggen = await _gen.GetImage(webSettings.Prompt);
             webSettings.Description = imggen.RevisedPrompt;
 
             //sage image

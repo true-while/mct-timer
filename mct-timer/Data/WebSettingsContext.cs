@@ -12,5 +12,5 @@ using mct_timer.Models;
         {
         }
 
-        public DbSet<mct_timer.Models.WebSettings> WebSettings { get; set; } = default!;
+        public DbSet<WebSettings> WebSettings { get; set; } = default!;
     }
