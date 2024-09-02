@@ -1,8 +1,35 @@
 ﻿class Preset {
+    validationStates = [
+        {
+            valid: false,
+            message: 'NULL',
+        },
+        {
+            valid: true,
+            message: '',
+        },
+        {
+            valid: false,
+            message: 'please provide valid time in format {hours:minutes}',
+        },
+        {
+            valid: false,
+            message: 'please provide a time in the future',
+        }
+    ];
+
+    STATE_VALID = 1
+    STATE_INVALID = 2
+    STATE_PAST = 3
+
     constructor(root) {
 
-       this.el = {
-            imp: root.querySelector("#custom-imput"),
+        this.state = this.STATE_VALID;
+        this.timerDuration = 0;
+
+        this.el = {
+            input: root.querySelector("#custom-input"),
+            // datevalue: root.querySelector("#datevalue"),
             ampm: root.querySelector("#ampm"),
             timezone: root.querySelector("#timezone"),
             go: root.querySelector("#go"),
@@ -12,12 +39,12 @@
             plus5: root.querySelector("#plus5"),
         };
 
-        this.el.datevalue.value = moment();
-        this.el.imp.value = moment().format('hh:mm');
+        // this.el.datevalue.value = moment();
+        this.el.input.value = moment().format('hh:mm');
         this.el.ampm.value = moment().format('A');
 
         // Fill in the timezone
-        var usertimeZone = moment.tz.guess();
+        let usertimeZone = moment.tz.guess();
 
         if (!usertimeZone) {
             usertimeZone = "America/New_York";
@@ -35,109 +62,129 @@
             this.el.timezone.add(option);
         }
 
-        this.el.imp.addEventListener("change", () => {           
-            try {
-                this.el.datevalue.value = moment(this.el.imp.value + ' ' + this.el.ampm.value, 'hh:mm A');
-                this.el.imp.style.color = "black";
-            } catch (e) {
-                alert('please provide valid time in format {hours:minutes}');
-                return;
-            }
+        this.el.input.addEventListener("change", () => {
+            this.onDurationFieldChanged();
+        // });
+        //
+        // this.el.input.addEventListener("change", () => {
+        //     this.setTimerDurationField(moment(this.el.input.value + ' ' + this.el.ampm.value, 'hh:mm A'));
         });
 
         this.el.ampm.addEventListener("change", () => {
-                this.addMinutes(12*60);  //add 12 hours
+            this.addMinutes(12 * 60);  //add 12 hours
         });
 
         this.el.plus1.addEventListener("click", () => {
-            this.addMinutes(1); 
+            this.addMinutes(1);
         });
 
         this.el.minus1.addEventListener("click", () => {
-            this.addMinutes(-1); 
+            this.addMinutes(-1);
         });
 
         this.el.plus5.addEventListener("click", () => {
-            this.addMinutes(5); 
+            this.addMinutes(5);
         });
 
         this.el.tophour.addEventListener("click", () => {
+            const currrentDuration = this.getTimerDuration();
 
-
-            var cur = this.getCurrentValue();
-           
-
-            try {               
-                var newtime = new moment(cur).add(1, 'h');
-                newtime.minute(0);
-                newtime.second(0);
-                this.el.imp.value = newtime.format('hh:00');
-                this.el.ampm.value = newtime.format('A');
-                this.el.datevalue.value = newtime;
-                this.el.imp.style.color = "black";
-
+            try {
+                const newDuration = currrentDuration.add(1, 'h');
+                newDuration.minute(0);
+                newDuration.second(0);
+                
+                this.setTimerDuration(newDuration)
             } catch (e) {
                 return;
             }
-
         });
 
         this.el.go.addEventListener("click", () => {
+            this.durationFieldUpdated();
 
-            try {
-                const end = this.getCurrentValue();
-
-                // end = new moment(this.el.imp.value + ' ' + ampm.value, 'hh:mm A');
-            } catch (e) {
-                alert('please provide valid time in format {hours:minutes}');
+            if (!this.getValidationState().valid) {
+                alert(this.getValidationState().message);
                 return;
             }
 
-            var mins = Math.floor(moment.duration(end.diff(moment())).add(1,'m').asMinutes());
-
-            if (!end.isValid()) {
-                alert('please provide valid time in format {hours:minutes}');
-                return;
-            }
-
-            if (end.isBefore(moment())) {
-                alert('please provide a time in the future');
-                return;
-            }
-            
             const timezone = this.el.timezone.value;
-            
+
+            const duration = this.getTimerDuration().diff(moment(), 'minutes');
             const timezoneUrlEncoded = encodeURIComponent(timezone);
 
-            var mins = Math.floor(moment.duration(end.diff(moment())).add(1, 'm').asMinutes());
-            if (mins > 0) {
-                this.el.imp.style.color = "black";
-                location.href = `./timer/${mins}/${timezoneUrlEncoded}/wait`;
-            } else {
-                this.el.imp.style.color = "red";
-            }
+            location.href = `./timer/${duration}/${timezoneUrlEncoded}/wait`;
         });
-
     }
 
-    getCurrentValue() {
-            return new moment(this.el.datevalue.value);
+    getValidationState() {
+        return this.validationStates[this.state];
+    }
+
+    setValidationState(state) {
+        this.state = state;
+
+        if (this.getValidationState().valid) {
+            this.el.input.style.color = "black";
+        } else {
+            this.el.input.style.color = "red";
+        }
+    }
+
+    onDurationFieldChanged() {
+        this.durationFieldUpdated()
+    }
+
+    durationFieldUpdated() {
+        const duration = this.getTimerDurationField();
+        
+        const durationMoment = moment(duration, 'hh:mm');
+
+        if (!durationMoment.isValid()) {
+            this.setValidationState(this.STATE_INVALID);
+            return;
+        }
+
+        const minutes = Math.floor(moment.duration(durationMoment.diff(moment())).add(1, 'm').asMinutes());
+
+        if (minutes <= 0) {
+            this.setValidationState(this.STATE_PAST);
+            return;
+        }
+        
+        this.setValidationState(this.STATE_VALID);
+
+        this.timerDuration = minutes;
+    }
+
+    getTimerDuration() {
+        return moment(this.el.input.value + ' ' + this.el.ampm.value, 'hh:mm A');
     }
     
+    setTimerDuration(duration) {
+        this.el.input.value = duration.format('hh:mm');
+        this.el.ampm.value = duration.format('A');
+
+        this.durationFieldUpdated();  // Force validation to re-run
+    }
+
+    setTimerDurationField(duration) {
+        this.el.input.value = duration;
+
+        this.durationFieldUpdated();  // Force validation to re-run
+    }
+    
+    getTimerDurationField() {
+        return this.el.input.value;
+    }
+
     addMinutes(quantity) {
         try {
+            const currentDuration = this.getTimerDuration();
+            const newDuration = new moment(currentDuration).add(quantity, 'm');
+            newDuration.second(0);
 
-            var cur =  this.getCurrentValue();
-            var newtime = new moment(cur).add(quantity, 'm');
-            newtime.second(0);
-
-            if (newtime > moment()) {
-                this.el.imp.value = newtime.format('hh:mm');
-                this.el.ampm.value = newtime.format('A');
-                this.el.datevalue.value = newtime;
-                this.el.imp.style.color = "black";
-            }
-
+            this.setTimerDuration(newDuration);
         } catch (e) {
             return;
         }
