@@ -1,19 +1,20 @@
 ﻿
 class BGSelector {
     constructor(root, btype) {
+        var index = Math.floor(Math.random() * 5);  // from 0 to 4
 
         switch (btype) {
             case "preset":
                 root.style.backgroundImage = "url(/bg-lib/index.jpg)";
                 break;
             case "settings":
-                root.style.backgroundImage = "url(/bg-lib/index.jpg)";
+                root.style.backgroundImage = "url(/bg-lib/settings.jpg)";
                 break;
             case "info":
                 root.style.backgroundImage = "url(/bg-lib/info.jpg)";
                 break;
             case "coffee":
-                root.style.backgroundImage = "url(/bg-lib/coffee.jpg)";
+                root.style.backgroundImage = `url(/bg-lib/coffee${index}.jpg)`;
                 break;
             case "lunch":
                 root.style.backgroundImage = "url(/bg-lib/lunch.jpg)";
