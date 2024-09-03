@@ -103,12 +103,24 @@
             }
 
             const timezone = this.el.timezone.value;
-
             const duration = this.getTimerDuration().diff(moment(), 'minutes');
-            const timezoneUrlEncoded = encodeURIComponent(timezone);
 
-            location.href = `./timer/${duration}/${timezoneUrlEncoded}/wait`;
+            this.startTimer(timezone, duration, 'wait');
         });
+    }
+
+    startTimer(timezone, duration, timerType) {
+        const timezoneUrlEncoded = encodeURIComponent(timezone);
+
+        const timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
+
+        location.href = timerUri;
+    }
+    
+    startDefaultTimer(duration, timerType) {
+        const timezone = this.el.timezone.value;
+        
+        this.startTimer(timezone, duration, timerType);
     }
 
     getValidationState() {
@@ -183,7 +195,6 @@
             console.error(e)
             return;
         }
-
     }
 }
 
