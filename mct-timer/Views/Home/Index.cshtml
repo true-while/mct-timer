@@ -1,16 +1,18 @@
-﻿@{
+﻿@model mct_timer.Models.Personalization
+
+@{
     ViewData["Title"] = "Set your timer";
 }
 
 <div id="gbmainbg" style="overflow: auto">
     <div class="menu">
-        <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'"/>
-        <img class="option" src="~/icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'"/>
-        <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'"/>
+        <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
+        <img class="option" src="~/icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
+        <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
     </div>
     <div class="location">
         <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank">
-            <img class="option" src="~/icons/location-w.png" alt="image info"/>
+            <img class="option" src="~/icons/location-w.png" alt="image info" />
         </a>
     </div>
 
@@ -18,14 +20,28 @@
         Turkey, Kekova
     </div>
 
-    <div id="settings-secondbg">
-        <div id="timer-set">
-            <div id="timer-go">
+    <div id="preset-secondbg">
+
+        <div id="timer-go">
+
+        <div id="timer-defaults" class="timer-set">
+            <div class="custom-timer" style=" display: inline-block">
+                <span class="title">TZ</span>
+                <span>
+                    <select id="timezone">
+                    </select>
+                </span>
+            </div>
+        </div>
+
+
+        <div id="timer-set-go" class="timer-set">
+            <div class="custom-timer">
                 <div class="title">set timer</div>
                 <div class="timer-go-set">
                     <span>
-                        <input id="datevalue" type="hidden" value=""/>
-                        <input id="custom-input" type="text" value=""/>
+                        <input id="datevalue" type="hidden" value="" />
+                        <input id="custom-input" type="text" value="" />
                     </span>
                     <span>
                         <select id="ampm">
@@ -35,145 +51,37 @@
                     </span>
 
                     <span class="button" id="go">
-                        <img class="img" src="/icons/play.png"/>
+                        <img class="img" src="/icons/play.png" />
                     </span>
-                </div>
-                <div class="adds-group">
-                    <span>
-                        <select id="timezone">
-                        </select>
-                    </span>
-
                 </div>
                 <div class="adds-group">
                     <span class="adds" id="tophour">top hour</span><span class="adds" id="plus1">+1m</span><span class="adds" id="minus1">-1m</span><span class="adds" id="plus5">+5m</span>
                 </div>
             </div>
         </div>
-
-
-        <div id="timer-set-break">
-            <a onclick="timer.startDefaultTimer(5, 'coffee')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        5 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/coffee-b.png"/>
-                    </div>
-                </div>
-            </a>
-
-
-            <a onclick="timer.startDefaultTimer(10, 'coffee')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        10 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/coffee-b.png"/>
-                    </div>
-                </div>
-            </a>
-
-
-            <a onclick="timer.startDefaultTimer(15, 'coffee')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        15 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/coffee-b.png"/>
-                    </div>
-                </div>
-            </a>
         </div>
 
-        <div id="timer-set-lunch">
-            <a onclick="timer.startDefaultTimer(45, 'lunch')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        45 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/lunch-b.png"/>
-                    </div>
-                </div>
-            </a>
+        <table cellpadding="7">
+            @foreach (var grp in Model.Groups)
+            {
+                <tr>
+                    @foreach (var item in grp.Items)
+                    {
 
-
-            <a onclick="timer.startDefaultTimer(60, 'lunch')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        60 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/lunch-b.png"/>
-                    </div>
-                </div>
-            </a>
-        </div>
-
-        <div id="timer-set-lab">
-            <a onclick="timer.startDefaultTimer(30, 'labs')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        30 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/lab-b.png"/>
-                    </div>
-                </div>
-            </a>
-
-            <a onclick="timer.startDefaultTimer(45, 'labs')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        45 min
-                    </div>
-                    <div class="title">
-                        <img src="/icons/lab-b.png"/>
-                    </div>
-                </div>
-            </a>
-
-            <a onclick="timer.startDefaultTimer(60, 'labs')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        60 min
-                    </div>
-                    <div class="title">
-                        <img src="~/icons/lab-b.png"/>
-                    </div>
-                </div>
-            </a>
-
-        </div>
-
-        <div id="timer-set-session">
-            <a onclick="timer.startDefaultTimer(30, 'wait')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        30 min
-                    </div>
-                    <div class="title">
-                        <img src="~/icons/wait-b.png"/>
-                    </div>
-                </div>
-            </a>
-
-            <a onclick="timer.startDefaultTimer(60, 'wait')">
-                <div class="timer-choice">
-                    <div class="numbers">
-                        60 min
-                    </div>
-                    <div class="title">
-                        <img src="~/icons/wait-b.png"/>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
+                        <td>
+                            <div class="timer-choice" onclick="timer.startDefaultTimer(@item.Length, '@item.Type.ToString()')">
+                            <div class="numbers">
+                                @item.Length min
+                            </div>
+                            <div class="title">
+                                <img src="/icons/@item.Type.ToString()-b.png" />
+                            </div>
+                        </div>
+                        </td>                        
+                    }
+                </tr>
+            }
+        </table>        
 </div>
 
 

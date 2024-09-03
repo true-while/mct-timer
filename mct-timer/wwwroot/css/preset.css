@@ -1,23 +1,24 @@
 
-#settings-secondbg {
-    padding: 3px 0px;
-    margin: 10px;
+#preset-secondbg {
+    padding: 7px;
+    margin: 30px;
     background-color: rgba(0, 0, 0, 0.3);
     width: fit-content;
     border-radius: 10px;
 }
 
 
-#timer-set {
+
+/*.defaults {
     margin: 10px;
     overflow: visible;
     resize: both;
     display: flex;
     position: static;
     width: fit-content;
-}
+}*/
 
-#timer-go {
+.custom-timer {
     color: black;
     margin: 7px 7px 7px 7px;
     padding: 10px 10px 10px 10px;
@@ -28,11 +29,11 @@
     position: relative
 }
 
-#timer-go .adds-group {
+.custom-timer .adds-group {
     margin-top: 10px;
 }
 
-#timer-go .adds {
+.custom-timer .adds {
     color: white;
     margin-right: 5px;
     background-color: purple;
@@ -45,8 +46,8 @@
     cursor: pointer;
 }
 
-#timer-go #ampm {
-    padding: 7px 7px 6px 7px;
+.custom-timer #ampm {
+    padding: 7px 7px 7px 7px;
     margin-left: 5px;
     border-radius: 7px;
     text-align: center;
@@ -55,32 +56,30 @@
     background-color: whitesmoke;
 }
 
+
 #timezone {
-    color: white;
-    margin-right: 5px;
-    background-color: purple;
-    border-radius: 10px;
-    padding: 5px;
-    width: 250px;
-    height: 40px;
-    justify-content: center;
-    font: 600 14px Segoe UI;
-    cursor: pointer;
+    padding: 2px;
+    border-radius: 4px;
+    text-align: left;
+    font: 500 17px Segoe UI;
+    border: 2px solid black;
+    background-color: whitesmoke;
 }
 
-#timer-go .timer-go-set {
+
+.custom-timer .timer-go-set {
     display: inline-flex;
     justify-content: center;
 }
 
-#timer-go .title {
+.custom-timer .title {
     font: 600 24px Segoe UI;
     text-align: left;
     color: darkblue;
     margin-bottom: 7px;
 }
 
-#timer-go .button {
+.custom-timer .button {
     color: white;
     background: green;
     border-radius: 15px;
@@ -92,7 +91,7 @@
     justify-content: center;
 }
 
-#timer-go #custom-input {
+.custom-timer #custom-input {
     padding: 7px 7px 7px 7px;
     margin: 0px;
     border-radius: 7px;
@@ -107,7 +106,6 @@
 .timer-choice {
     color: black;
     display: inline-block;
-    margin: 7px 7px 7px 7px;
     padding: 7px 7px 7px 7px;
     border-radius: 10px;
     background-color: white;
@@ -115,6 +113,7 @@
     height: 127px;
     text-align: center;
     border: 3px solid darkgray;
+    cursor: pointer;
 }
 
 .timer-choice .title {

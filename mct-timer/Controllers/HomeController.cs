@@ -35,7 +35,21 @@ namespace mct_timer.Controllers
 
         public IActionResult Index()
         {
-            return View();
+
+            //default preset
+
+            Personalization info = new Personalization();
+            info.Ampm = true;
+            info.TimeZone = "EST";
+            info.Language = "en";
+            info.Groups = new List<PresetGroup>()
+            {
+                { new PresetGroup() { Items = new List<PresetItem>() { { new PresetItem(5,PresetType.Coffee) },{ new PresetItem(10, PresetType.Coffee) },{ new PresetItem(15, PresetType.Coffee) } } } },    //coffee
+                { new PresetGroup() { Items = new List<PresetItem>() { { new PresetItem(45,PresetType.Lunch) },{ new PresetItem(60, PresetType.Lunch) } } } },    //lunch
+                { new PresetGroup() { Items = new List<PresetItem>() { { new PresetItem(30,PresetType.Lab) },{ new PresetItem(45, PresetType.Lab) },{ new PresetItem(60, PresetType.Lab) } } }},    //labs
+                { new PresetGroup() { Items = new List<PresetItem>() { { new PresetItem(30,PresetType.Wait) },{ new PresetItem(60, PresetType.Wait) } } }},     //wait
+            };
+            return View(info);
         }
 
 

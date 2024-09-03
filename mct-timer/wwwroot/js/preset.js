@@ -142,9 +142,9 @@
     }
 
     durationFieldUpdated() {
-        const duration = this.getTimerDurationField();
+        //const duration = this.getTimerDurationField();
         
-        const durationMoment = moment(duration, 'hh:mm');
+        const durationMoment = this.getTimerDuration(); //moment(duration, 'hh:mm');
 
         if (!durationMoment.isValid()) {
             this.setValidationState(this.STATE_INVALID);
