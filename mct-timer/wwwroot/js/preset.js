@@ -37,10 +37,11 @@
             plus5: root.querySelector("#plus5"),
         };
 
-        this.el.input.value = moment().format('hh:mm');
-        this.el.ampm.value = moment().format('A');
+        const defaultDuration = moment().add(10, 'm');
+        this.el.input.value = defaultDuration.format('hh:mm');
+        this.el.ampm.value = defaultDuration.format('A');
 
-        // Fill in the timezone
+        // Fill in the default timezone
         let usertimeZone = moment.tz.guess();
 
         if (!usertimeZone) {
@@ -64,7 +65,7 @@
         });
 
         this.el.ampm.addEventListener("change", () => {
-            this.addMinutes(12 * 60);  //add 12 hours
+            // this.addMinutes(12 * 60);  //add 12 hours
         });
 
         this.el.plus1.addEventListener("click", () => {
@@ -179,6 +180,7 @@
 
             this.setTimerDuration(newDuration);
         } catch (e) {
+            console.error(e)
             return;
         }
 
