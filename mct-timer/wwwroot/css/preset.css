@@ -104,7 +104,7 @@
 }
 
 
-.timer-choise {
+.timer-choice {
     color: black;
     display: inline-block;
     margin: 7px 7px 7px 7px;
@@ -117,16 +117,16 @@
     border: 3px solid darkgray;
 }
 
-.timer-choise .title {
+.timer-choice .title {
     font: 600 20px Segoe UI;
     color: darkblue;
 }
 
-.timer-choise .title img {
+.timer-choice .title img {
     width: 60px;
 }
 
-.timer-choise .numbers {
+.timer-choice .numbers {
     font: 400 30px Segoe UI;
     color: black;
 }
