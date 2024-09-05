@@ -76,12 +76,16 @@
     }
 
     .infopad #zone {
-        font: 500 24px Segoe UI;
+        font: 500 30px Segoe UI;
         color: black;
         margin-top: 12px;
     }
+    .infopad #zone-full {
+        font: 400 14px Segoe UI;
+        color: black;
+    }
     .infopad #am {
-        font: 300 24px Segoe UI;
+        font: 400 24px Segoe UI;
         color: black;
     }
 

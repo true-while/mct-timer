@@ -11,6 +11,7 @@
             whenpart2: resumeroot.querySelector("#when__part2"),
             whendiv: resumeroot.querySelector("#when__devider"),
             zone: resumeroot.querySelector("#zone"),
+            zoneFull: resumeroot.querySelector("#zone-full"),
             am: resumeroot.querySelector("#am") 
         };
 
@@ -41,7 +42,7 @@
         const minutes = Math.floor((this.remainingSeconds / 60) - (hours * 60));
         const seconds = this.remainingSeconds - hours * (60*60) - minutes * 60;
 
-        if (this.remainingSeconds <= 0) {
+        if (this.remainingSeconds < 0) {
             this.el.timepart1.textContent = "--";
             this.el.timepart2.textContent = "--";
         } else if (hours === 0) {
@@ -68,11 +69,15 @@
         this.el.whendiv.textContent = ":"
         this.el.am.textContent = endDate.format('A');
 
-        const split = timezoneName.split("/");
-        const timeZoneShortName = split[split.length-1].replace("_", " ");
-        
+        //const split = timezoneName.split("/");
+        const timeZoneShortName = moment.tz(timezoneName).zoneAbbr();
+
+        //split[split.length - 1].replace("_", " ");
+        //moment.tz(String).zoneAbbr();
         this.el.zone.textContent = timeZoneShortName;
+        this.el.zoneFull.textContent = timezoneName;
     }
+
 
     updateInterfaceControls() {
         //if (this.interval === null) {

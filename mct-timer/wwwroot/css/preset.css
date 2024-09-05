@@ -7,9 +7,34 @@
     border-radius: 10px;
 }
 
+.timer-defaults {
+    color: black;
+    margin: 7px 7px 7px 7px;
+    padding: 10px 10px 10px 10px;
+    border-radius: 10px;
+    background: white;
+    width: stretch;
+    border: 3px solid darkgray;
+    position: relative
+}
 
+    .timer-defaults .title {
+        font: 600 24px Segoe UI;
+        text-align: left;
+        color: darkblue;
+        margin-bottom: 7px;
+    }
 
-/*.defaults {
+    .timer-defaults #timezone {
+        padding: 2px;
+        border-radius: 4px;
+        text-align: left;
+        font: 500 18px Segoe UI;
+        border: 2px solid black;
+        background-color: whitesmoke;
+        width: stretch;
+    }
+    /*.defaults {
     margin: 10px;
     overflow: visible;
     resize: both;
@@ -17,17 +42,16 @@
     position: static;
     width: fit-content;
 }*/
-
-.custom-timer {
-    color: black;
-    margin: 7px 7px 7px 7px;
-    padding: 10px 10px 10px 10px;
-    border-radius: 10px;
-    background: white;
-    width: 270px;
-    border: 3px solid darkgray;
-    position: relative
-}
+    .custom-timer {
+        color: black;
+        margin: 7px 7px 7px 7px;
+        padding: 10px 10px 10px 10px;
+        border-radius: 10px;
+        background: white;
+        width: 270px;
+        border: 3px solid darkgray;
+        position: relative
+    }
 
 .custom-timer .adds-group {
     margin-top: 10px;
@@ -57,14 +81,7 @@
 }
 
 
-#timezone {
-    padding: 2px;
-    border-radius: 4px;
-    text-align: left;
-    font: 500 17px Segoe UI;
-    border: 2px solid black;
-    background-color: whitesmoke;
-}
+
 
 
 .custom-timer .timer-go-set {
