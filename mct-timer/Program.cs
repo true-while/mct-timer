@@ -20,7 +20,7 @@ builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
 {
-    ConnectionString = builder.Configuration.GetConnectionString("WebSettingsContext")
+    ConnectionString = builder.Configuration["ApplicationInsights"]
 });
 
 
