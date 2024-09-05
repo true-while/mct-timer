@@ -61,7 +61,7 @@
     <script>
         const breakLength = Number('@TempData["length"]');
         const timezoneNameUrlEncoded = '@TempData["timezone"]';
-        const timezoneName = decodeURIComponent(timezoneNameUrlEncoded);
+        const timezoneName = decodeURIComponent(timezoneNameUrlEncoded.replace('.', '/'));
         const breakType = '@TempData["type"]';
 
         const mtimer = new Timer(

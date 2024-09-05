@@ -12,9 +12,17 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.CodeAnalysis.Options;
 using System.Net;
+using Microsoft.ApplicationInsights;
+using Microsoft.AspNetCore.Mvc.Filters;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
+
+builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
+{
+    ConnectionString = builder.Configuration.GetConnectionString("WebSettingsContext")
+});
+
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
     options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
@@ -32,6 +40,10 @@ var config = builder.Configuration.GetSection("ConfigMng");
 builder.Services.Configure<ConfigMng>(config);
 builder.Services.AddSingleton<AuthService>();
 
+TelemetryClient ai = new TelemetryClient();
+builder.Services.AddSingleton<TelemetryClient>(ai);
+
+
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
         options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
@@ -45,7 +57,7 @@ DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["O
 builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
 
 //KeyVault
-KeyVaultMng keymng = new KeyVaultMng(config["KeyVault"], config["PssKey"]);
+KeyVaultMng keymng = new KeyVaultMng(config["KeyVault"], config["PssKey"],ai);
 builder.Services.AddSingleton<IKeyVaultMng>(keymng);
 
 builder.Services

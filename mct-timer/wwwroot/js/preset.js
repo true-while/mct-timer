@@ -150,7 +150,7 @@
     }
 
     startTimer(timezone, duration, timerType) {
-        const timezoneUrlEncoded = encodeURIComponent(timezone);
+        const timezoneUrlEncoded = encodeURIComponent(timezone.replace('/','.'));
 
         const timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
 
