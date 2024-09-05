@@ -105,10 +105,6 @@
             this.onDurationFieldChanged();
         });
 
-        this.el.ampm.addEventListener("change", () => {
-            // this.addMinutes(12 * 60);  //add 12 hours
-        });
-
         this.el.plus1.addEventListener("click", () => {
             this.addMinutes(1);
         });
