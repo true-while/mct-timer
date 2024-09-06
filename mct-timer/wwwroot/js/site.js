@@ -1,5 +1,4 @@
-﻿
-class BGSelector {
+﻿class BGSelector {
     constructor(root, btype) {
         var index = Math.floor(Math.random() * 5);  // from 0 to 4
 

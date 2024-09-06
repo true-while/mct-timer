@@ -1,4 +1,5 @@
 ﻿using mct_timer.Models;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -16,7 +17,6 @@ namespace mct_timer.Controllers
         private readonly IHttpContextAccessor _context;
         private readonly IOptions<ConfigMng> _config;
         private readonly AuthService _auth;
-        private readonly ILogger<HomeController> _logger;
         private readonly UsersContext _ac_context;
         private readonly IKeyVaultMng _keyvault;
 
@@ -34,14 +34,13 @@ namespace mct_timer.Controllers
         public AccountController(
               IHttpContextAccessor context,
               IOptions<ConfigMng> config,
-              ILogger<HomeController> logger,
+              TelemetryClient logger,
               IKeyVaultMng keyvault,
               UsersContext ac_context
               )
         {
             _context = context;
             _config = config;
-            _logger = logger;
             _ac_context = ac_context;
             _keyvault = keyvault;
 

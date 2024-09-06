@@ -74,6 +74,7 @@
                 });
 
         } catch (e) {
+            appInsights.TrackException(e);
             timezonesames = [{ text: moment.tz.guess(), value: moment.tz.guess() }];
         }
 
@@ -127,6 +128,8 @@
                 
                 this.setTimerDuration(newDuration)
             } catch (e) {
+
+                appInsights.TrackException(e);
                 return;
             }
         });
@@ -150,6 +153,9 @@
     }
 
     startTimer(timezone, duration, timerType) {
+
+        appInsights.trackMetric({ name: "CustomTimer", tz: timezone, lenght: duration, tp: timerType  });
+
         const timezoneUrlEncoded = encodeURIComponent(timezone.replace('/','.'));
 
         const timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
@@ -234,7 +240,7 @@
 
             this.setTimerDuration(newDuration);
         } catch (e) {
-            console.error(e)
+            appInsights.TrackException(e);
             return;
         }
     }

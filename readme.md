@@ -50,6 +50,7 @@ For local exaction the configuration file should be provided with following temp
     "KeyVault": "<keyvault address>",
     "PssKey": "<key name>"
   },
+  "ApplicationInsights": "<cs copy from AI page>",  
   "AllowedHosts": "*",
   "ConnectionStrings": {
     "WebSettingsContext": "<connection string to cosmos db>",
@@ -59,3 +60,4 @@ For local exaction the configuration file should be provided with following temp
 }
 ````
 
+If you tend to use Managed Identity you need provide Role 'Key Vault Crypto User' for the web site account. 

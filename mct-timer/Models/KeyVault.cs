@@ -21,11 +21,11 @@ namespace mct_timer.Models
         CryptographyClient _crypto = null;
         string _key;
         string _keyvault;
-        TelemetryClient _clt;
+        TelemetryClient _appInsights;
 
         public KeyVaultMng(string keyvault, string key, TelemetryClient clt)
         {
-            _clt = clt;
+            _appInsights = clt;
             _key = key;
             _keyvault = keyvault;     
 
@@ -48,7 +48,7 @@ namespace mct_timer.Models
             }
             catch (Exception ex)
             {
-                _clt.TrackException(ex);
+                _appInsights.TrackException(ex);
             }
         }
 

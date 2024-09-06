@@ -3,16 +3,17 @@ using mct_timer.Models;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
+using Microsoft.ApplicationInsights;
 
 namespace mct_timer.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly TelemetryClient _logger;
         private readonly IOptions<ConfigMng> _config;
 
 
-        public HomeController(ILogger<HomeController> logger, IOptions<ConfigMng> config)
+        public HomeController(TelemetryClient logger, IOptions<ConfigMng> config)
         {
             _logger = logger;
             _config = config;

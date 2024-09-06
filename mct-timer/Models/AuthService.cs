@@ -8,13 +8,14 @@ using System.Configuration;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.ApplicationInsights;
 
 namespace mct_timer.Models
 {
     public class AuthService
     {
 
-        ILogger<HomeController> _log;
+        TelemetryClient _log;
         IOptions<ConfigMng> _config;
         static AuthService _this;
 
@@ -26,7 +27,7 @@ namespace mct_timer.Models
             }
         }
 
-        public static AuthService Init(ILogger<HomeController> log, IOptions<ConfigMng> config)
+        public static AuthService Init(TelemetryClient log, IOptions<ConfigMng> config)
         {
             _this = new AuthService();
             _this._log = log;
@@ -39,7 +40,7 @@ namespace mct_timer.Models
         {}
 
         // init in program.cs with injection
-        public AuthService(ILogger<HomeController> log, IOptions<ConfigMng> config)
+        public AuthService(TelemetryClient log, IOptions<ConfigMng> config)
         {
             Init(log,config);
         }
@@ -72,10 +73,12 @@ namespace mct_timer.Models
 
             }
             catch (SecurityTokenValidationException ex)
-            {             
+            {
 
                 // Log the reason why the token is not valid
-                _log.LogError(ex, "Error in validation token");
+                _log.TrackException(ex);
+                _log.TrackTrace(String.Format("Authentication token was invalid: {0}",token));
+
                 jwt = null;
                 return false;
             }
