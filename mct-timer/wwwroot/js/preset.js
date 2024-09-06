@@ -33,6 +33,7 @@
             plus1: root.querySelector("#plus1"),
             minus1: root.querySelector("#minus1"),
             plus5: root.querySelector("#plus5"),
+            datevalue: root.querySelector("#datevalue"),
         };
 
         this.state = this.STATE_VALID;
@@ -48,7 +49,7 @@
         const defaultDuration = moment().tz(this.tz); //.add(1, 's');
         this.el.input.value = defaultDuration.format('hh:mm');
         this.el.ampm.value = defaultDuration.format('A');
-
+        this.el.datevalue.value = defaultDuration.format('YYYY-MM-DD');
           
 
         var timezonesames = [{ text: moment.tz.guess(), value: moment.tz.guess() }];
@@ -100,6 +101,7 @@
             const defaultDuration = currrentDuration.tz(this.tz);
             this.el.input.value = defaultDuration.format('hh:mm');
             this.el.ampm.value = defaultDuration.format('A');
+            this.el.datevalue.value = defaultDuration.format('YYYY-MM-DD');
         });
 
         this.el.input.addEventListener("change", () => {
@@ -156,7 +158,7 @@
 
         appInsights.trackMetric({ name: "CustomTimer", tz: timezone, lenght: duration, tp: timerType  });
 
-        const timezoneUrlEncoded = encodeURIComponent(timezone.replace('/','.'));
+        const timezoneUrlEncoded = encodeURIComponent(timezone.replace('/','@'));
 
         const timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
 
@@ -188,7 +190,6 @@
     }
 
     durationFieldUpdated() {
-        //const duration = this.getTimerDurationField();
         
         const durationMoment = this.getTimerDuration().tz(this.tz,true); //moment(duration, 'hh:mm');
 
@@ -212,25 +213,17 @@
     }
 
     getTimerDuration() {
-        return moment(this.el.input.value + ' ' + this.el.ampm.value, 'hh:mm A');
+        return moment(this.el.datevalue.value + ' ' + this.el.input.value + ' ' + this.el.ampm.value, 'YYYY-MM-DD hh:mm A');
     }
     
     setTimerDuration(duration) {
         this.el.input.value = duration.format('hh:mm');
         this.el.ampm.value = duration.format('A');
+        this.el.datevalue.value = duration.format('YYYY-MM-DD');
 
         this.durationFieldUpdated();  // Force validation to re-run
     }
 
-    setTimerDurationField(duration) {
-        this.el.input.value = duration;
-
-        this.durationFieldUpdated();  // Force validation to re-run
-    }
-    
-    getTimerDurationField() {
-        return this.el.input.value;
-    }
 
     addMinutes(quantity) {
         try {
