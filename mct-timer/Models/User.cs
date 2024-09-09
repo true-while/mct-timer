@@ -24,8 +24,20 @@ namespace mct_timer.Models
 
 
         public string DefTZ { get; set; }
+        public bool? Ampm { get; set; }
         public List<Background> Backgrounds { get; set; }
 
+
+        //public static User Default
+        //{
+        //    get
+        //    {
+        //        return new User() { 
+        //            Ampm = true,
+        //            DefTZ = TimeZone.CurrentTimeZone.StandardName
+        //        };
+        //    }
+        //}
     }
 
     public class Background

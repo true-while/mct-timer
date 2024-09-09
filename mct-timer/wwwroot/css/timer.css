@@ -85,6 +85,7 @@
         color: black;
     }
     .infopad #am {
+        padding-left:3px;
         font: 400 24px Segoe UI;
         color: black;
     }

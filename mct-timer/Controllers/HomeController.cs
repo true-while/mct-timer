@@ -195,12 +195,10 @@ namespace mct_timer.Controllers
             }
             return new UnauthorizedResult();
         }
-                
 
-                [JwtAuthentication]
-        public IActionResult Settings()
+
+        private User? GetUserInfo()
         {
-
             var token = _context.HttpContext.Request.Cookies["jwt"];
 
             if (token != null)
@@ -211,11 +209,22 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
-
-                    return View(user);
+                    var user = this._ac_context.Users.FirstOrDefault(x => x.Email == email);
+                    return user;
                 }
             }
+
+            return null;
+        }
+
+        [JwtAuthentication]
+        public IActionResult Settings()
+        {
+            var user = GetUserInfo();
+
+            if (user != null)
+                return View(user);
+            
             return new UnauthorizedResult();
         }
 
@@ -246,11 +255,17 @@ namespace mct_timer.Controllers
 
         public IActionResult Timer(string m = "15", string z = "America/New_York", string t = "coffee")
         {
-            TempData["length"] = m;
-            TempData["timezone"] = z;
-            TempData["type"] = t;
+            var user = GetUserInfo();
+
+            var model = new mct_timer.Models.Timer()
+            {
+               Length = int.Parse(m),
+               Timezone = z,
+               BreakType = (PresetType)Enum.Parse(typeof(PresetType), t, true),
+               Ampm = user?.Ampm ?? true
+            };
             
-            return View();
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

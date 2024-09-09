@@ -15,21 +15,25 @@
             am: resumeroot.querySelector("#am") 
         };
 
-        this.originalSeconds = 0;
-        this.interval = null;
-        this.remainingSeconds = 0;
+        this.ampm = true;
+        this.originalEnd;             //original end time
+        this.originalSeconds = 0;    //original amount of seconds
+        this.interval = null;       //timer for 1 second
+        this.remainingSeconds = 0; // calculated value
+        this.timezoneName;  //full time zone, should be pass outside 
+        this.timezoneAbr;  //short timezone name, should be pass outside 
 
+        //stop and return to preset
         this.el.home.addEventListener("click", () => {
-            this.stop();
-            
+            this.stop();            
             location.href = '/';
         });
 
-
+        //restart interval: add to the current time the timer length
         this.el.reset.addEventListener("click", () => {
             this.stop();   
 
-            this.remainingSeconds = this.originalSeconds
+            this.originalEnd = moment.tz(this.timezoneName).add(this.originalSeconds, 'seconds');
 
             this.updateInterfaceTime();
 
@@ -37,10 +41,18 @@
         });
     }
 
+    //update numbers and colors.
     updateInterfaceTime() {
+
+
+
+        this.remainingSeconds = moment.duration(this.originalEnd.diff(moment().tz(this.timezoneName))).asSeconds() 
+
+
         const hours = Math.floor(this.remainingSeconds / (60*60));
         const minutes = Math.floor((this.remainingSeconds / 60) - (hours * 60));
-        const seconds = this.remainingSeconds - hours * (60*60) - minutes * 60;
+        const seconds = Math.floor(this.remainingSeconds - hours * (60*60) - minutes * 60);
+
 
         if (this.remainingSeconds < 0) {
             this.el.timepart1.textContent = "--";
@@ -63,34 +75,17 @@
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "black";
         }
 
-        const endDate = moment().tz(timezoneName).add(this.remainingSeconds, 's');
-        this.el.whenpart1.textContent = endDate.format("hh");
-        this.el.whenpart2.textContent = endDate.format("mm");
+        if (this.ampm) { this.el.whenpart1.textContent = this.originalEnd.format('h'); } else { this.el.whenpart1.textContent = this.originalEnd.format('HH'); }
+        this.el.whenpart2.textContent = this.originalEnd.format('mm');
         this.el.whendiv.textContent = ":"
-        this.el.am.textContent = endDate.format('A');
+        if (this.ampm) { this.el.am.textContent = this.originalEnd.format('A'); }
 
-        //const split = timezoneName.split("/");
-        const timeZoneShortName = moment.tz(timezoneName).zoneAbbr();
-
-        //split[split.length - 1].replace("_", " ");
-        //moment.tz(String).zoneAbbr();
-        this.el.zone.textContent = timeZoneShortName;
-        this.el.zoneFull.textContent = timezoneName;
+        this.el.zone.textContent = this.timezoneAbr;
+        this.el.zoneFull.textContent = this.timezoneName;
     }
 
 
-    updateInterfaceControls() {
-        //if (this.interval === null) {
-        //    this.el.control.innerHTML = `<span class="material-icons">play_arrow</span>`;
-        //    this.el.control.classList.add("timer__btn--start");
-        //    this.el.control.classList.remove("timer__btn--stop");
-        //} else {
-        //    this.el.control.innerHTML = `<span class="material-icons">pause</span>`;
-        //    this.el.control.classList.add("timer__btn--stop");
-        //    this.el.control.classList.remove("timer__btn--start");
-        //}
-    }
-
+    //start new 1sec interval
     start() {
         if (this.remainingSeconds === 0) return;
 
@@ -103,15 +98,13 @@
             }
         }, 1000);
 
-        this.updateInterfaceControls();
     }
 
+    //stop for restart
     stop() {
         clearInterval(this.interval);
 
         this.interval = null;
-
-        this.updateInterfaceControls();
     }
 }
 

@@ -1,4 +1,7 @@
-﻿@{
+﻿@model Timer
+
+
+@{
     ViewData["Title"] = "MCT Timer";
 }
 
@@ -59,18 +62,28 @@
     <script type="text/javascript" src="~/js/timer.js"></script>
     <script type="text/javascript" src="~/js/editor.js"></script>
     <script>
-        const breakLength = Number('@TempData["length"]');
-        const timezoneNameUrlEncoded = '@TempData["timezone"]';
-        const timezoneName = decodeURIComponent(timezoneNameUrlEncoded.replace('@@','/'));
-        const breakType = '@TempData["type"]';
+   
+        const breakLength = Number('@Model.Length');
+        const timezoneNameUrlEncoded = '@Model.Timezone';
+        var timezone = timezoneNameUrlEncoded.replace('@@', '/');
+        var timezoneName = decodeURIComponent(timezone);
+        var timezoneAbr = moment.tz(timezoneName).zoneAbbr();
+        if (timezoneAbr.includes('0')) timezoneAbr = "GMT" + timezoneAbr;
+
 
         const mtimer = new Timer(
             document.querySelector("#timer"),
             document.querySelector("#resume")
         );
 
+        mtimer.ampm = '0Model.Ampm';
+        mtimer.timezoneName = timezoneName;
+        mtimer.timezoneAbr = timezoneAbr;
         mtimer.originalSeconds = mtimer.remainingSeconds = breakLength * 60;
+        mtimer.originalEnd = moment.tz(timezoneName).add(breakLength, 'minutes');
         mtimer.start();
+
+        const breakType = '@Model.BreakType';
 
         var bgselector = new BGSelector(
             document.querySelector("#gbmainbg"),
