@@ -158,7 +158,7 @@
 
         appInsights.trackMetric({ name: "CustomTimer", tz: timezone, lenght: duration, tp: timerType  });
 
-        const timezoneUrlEncoded = encodeURIComponent(timezone.replace('/','@'));
+        const timezoneUrlEncoded = encodeURIComponent(timezone.replaceAll('/','@'));
 
         const timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
 

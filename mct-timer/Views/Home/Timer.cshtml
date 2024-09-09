@@ -65,7 +65,7 @@
    
         const breakLength = Number('@Model.Length');
         const timezoneNameUrlEncoded = '@Model.Timezone';
-        var timezone = timezoneNameUrlEncoded.replace('@@', '/');
+        var timezone = timezoneNameUrlEncoded.replaceAll('@@', '/');
         var timezoneName = decodeURIComponent(timezone);
         var timezoneAbr = moment.tz(timezoneName).zoneAbbr();
         if (timezoneAbr.includes('0')) timezoneAbr = "GMT" + timezoneAbr;
