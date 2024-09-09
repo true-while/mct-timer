@@ -83,8 +83,8 @@ builder.Services
     };
 }).AddCookie(options =>
  {
-     options.LoginPath = "Account/Login";
-     options.LogoutPath = "Account/Logout";
+     options.LoginPath = "~/Login";
+     options.LogoutPath = "~/Logout";
  });
 
 
@@ -93,6 +93,20 @@ builder.Services
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthorization();
+
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions
+        .AddPageApplicationModelConvention("/UploadBg",
+            model =>
+            {
+                model.Filters.Add(
+                    new GenerateAntiforgeryTokenCookieAttribute());
+                model.Filters.Add(
+                    new DisableFormValueModelBindingAttribute());
+            });   
+});
+
 
 var app = builder.Build();
 

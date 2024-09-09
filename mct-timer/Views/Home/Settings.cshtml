@@ -1,4 +1,6 @@
-﻿@{
+﻿@model mct_timer.Models.User
+
+@{
     ViewData["Title"] = "Settings";
 }
 
@@ -15,8 +17,19 @@
     </div>
 
 
+    <form asp-action="UploadBG">
+        <div class="form">
+            <h1>@ViewData["Title"]</h1>
+            <span class="info">
+               You can customize your background by loading your favorite images:
+            </span>
 
-    <h1>@ViewData["Title"]</h1>
+            <div class="error">@TempData["Error"]</div>
+            <div class="bglist-bg">
+                @await Html.PartialAsync("PartialBGs", Model.Backgrounds)
+            </div>
+        </div>
+    </form>
 
 </div>
 

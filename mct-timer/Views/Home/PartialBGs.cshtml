@@ -1,0 +1,55 @@
+﻿@model IEnumerable<mct_timer.Models.Background>
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<table class="bglist" cellpadding="5">
+    <thead>
+        <tr class="bglist-title">
+            <th>
+                Image
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BgType)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr class="bglist-record">
+            <td>
+                @Html.DisplayFor(modelItem => item.Url)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BgType)
+            </td>
+            <td>
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}   
+        <tr class="bglist-upload">
+            <td><input type="file" id="File" name="File" /></td>
+            <td>
+                <div><input type="text" size="20" id="Location" name="Location" /></div>                
+            </td>
+            <td>
+                <select id="BgType" name="BgType">
+                 @foreach (var val in  Enum.GetValues(typeof(PresetType)))
+                 {
+                    <option value="@val">@val</option>
+                 }
+                </select>
+            </td>
+            <td><input type="submit" value="UPLOAD" class="submit" /></td>
+        </tr>
+    </tbody>
+</table>

@@ -133,3 +133,34 @@ body {
         border: 2px solid black;
         background-color: whitesmoke;
     }
+
+.bglist-bg {
+    background-color: darkgreen;
+    padding:1px;
+    width:stretch;
+    border-radius: 7px;
+}
+.bglist {
+    text-align: left;
+    border: 2px solid darkgreen;
+    width: 100px;
+    background-color: white;
+}
+.bglist td{
+    border: 2px solid darkgreen;
+}
+.bglist-title {
+    background-color: darkgreen;
+    color: white;
+    font: 600 20px Segoe UI;
+}
+
+.bglist-record {
+    font: 400 14px Segoe UI;
+    color: darkslategrey;
+    background-color: white;
+}
+
+.bglist-upload {
+    font: 400 16px Segoe UI;
+}

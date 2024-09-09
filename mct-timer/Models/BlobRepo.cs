@@ -12,6 +12,7 @@ namespace mct_timer.Models
     {
         public Task<Uri> SaveImage(String name, BinaryData data, Dictionary<string, string> mdata);
         public Uri GetImageSASLink(String name);
+        public Task<bool> DeleteImage(String name);
     }
 
     public class BlobRepo : IBlobRepo
@@ -36,6 +37,13 @@ namespace mct_timer.Models
 
             return file.Uri;
         
+        }
+
+        public async Task<bool> DeleteImage(String name)
+        {
+            await _client.DeleteBlobAsync(name);
+            return true;
+
         }
 
         public Uri GetImageSASLink(String name)
@@ -84,6 +92,21 @@ namespace mct_timer.Models
         public Task<Uri> SaveImage(string name, BinaryData data, Dictionary<string, string> mdata)
         {
             return new Task<Uri>( () => new Uri("") );
+        }
+
+        Task<bool> IBlobRepo.DeleteImage(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Uri IBlobRepo.GetImageSASLink(string name)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<Uri> IBlobRepo.SaveImage(string name, BinaryData data, Dictionary<string, string> mdata)
+        {
+            throw new NotImplementedException();
         }
     }
 }
