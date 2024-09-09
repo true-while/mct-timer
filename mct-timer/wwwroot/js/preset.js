@@ -60,8 +60,8 @@
         timezonesames  = Object.values(moment.tz._zones)
             .filter(function (k) {
                     var name = k.name;
-                    if (!name) name = k;
-                    return name.indexOf('/') >= 0;
+                if (!name) name = k;
+                return name.indexOf('/') >= 0 && name.indexOf('Etc') != 0;
                 })
             .map(function (k) {
                 var name = k.name;
