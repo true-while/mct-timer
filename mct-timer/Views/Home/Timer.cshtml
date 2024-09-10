@@ -68,7 +68,7 @@
         var timezone = timezoneNameUrlEncoded.replaceAll('@@', '/');
         var timezoneName = decodeURIComponent(timezone);
         var timezoneAbr = moment.tz(timezoneName).zoneAbbr();
-        if (timezoneAbr.includes('0')) timezoneAbr = "GMT" + timezoneAbr;
+        if (timezoneAbr.includes('-') || timezoneAbr.includes('+')) timezoneAbr = "GMT" + timezoneAbr;
 
 
         const mtimer = new Timer(
