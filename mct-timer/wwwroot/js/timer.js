@@ -54,9 +54,9 @@
         const seconds = Math.floor(this.remainingSeconds - hours * (60*60) - minutes * 60);
 
 
-        if (this.remainingSeconds < 0) {
-            this.el.timepart1.textContent = "--";
-            this.el.timepart2.textContent = "--";
+        if (this.remainingSeconds <= 0) {
+            this.el.timepart1.textContent = "00";
+            this.el.timepart2.textContent = "00";
         } else if (hours === 0) {
             this.el.timepart1.textContent = minutes.toString().padStart(2, "0");
             this.el.timepart2.textContent = seconds.toString().padStart(2, "0");
