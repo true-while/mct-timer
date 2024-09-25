@@ -315,8 +315,11 @@ namespace mct_timer.Controllers
 
         private User BgLinkPrep(User usr)
         {
+            if (usr.Backgrounds == null)
+                usr.Backgrounds = new List<Background>();
+
             foreach (var bg in usr.Backgrounds)
-                bg.Url = Path.Combine(_config.Value.WebCDN, "s", Path.GetFileNameWithoutExtension(bg.Url) + ".png");
+                    bg.Url = Path.Combine(_config.Value.WebCDN, "s", Path.GetFileNameWithoutExtension(bg.Url) + ".png");
             return usr;
         }
     }
