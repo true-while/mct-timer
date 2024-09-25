@@ -24,7 +24,7 @@ namespace mct_timer.Controllers
         private readonly UsersContext _ac_context;
         private readonly IBlobRepo _blobRepo;
         private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
-        private readonly string _tempFilePath = @"c:\tmp\";
+        private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
 
         public HomeController(
             TelemetryClient logger,
@@ -148,6 +148,7 @@ namespace mct_timer.Controllers
                         {
                             return BadRequest(ModelState);
                         }
+                        Directory.CreateDirectory(_tempFilePath);
 
                         using (var targetStream = System.IO.File.Create(
                             Path.Combine(_tempFilePath, trustedFileNameForFileStorage)))
@@ -217,6 +218,7 @@ namespace mct_timer.Controllers
 
                             System.IO.File.Delete(file);
                             bg.Url = uri.ToString();
+                            if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
                             user.Backgrounds.Add(bg);
 
                             _ac_context.Update(user);
