@@ -14,6 +14,10 @@ using Microsoft.CodeAnalysis.Options;
 using System.Net;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Azure.Core;
+using Azure.Identity;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Azure.Cosmos;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
@@ -23,19 +27,29 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
     ConnectionString = builder.Configuration["ApplicationInsights"]
 });
 
+var config = builder.Configuration.GetSection("ConfigMng");
+
+//to test locally you need implement steps provided in readme file.
+TokenCredential ctoken = new DefaultAzureCredential(
+                    new DefaultAzureCredentialOptions()
+                    {
+                        TenantId = config["TenantID"],
+                        AdditionallyAllowedTenants = { "*" },
+                    });
+
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
-    options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
-
+    options.UseCosmos(config["CosmosDBEndpoint"], ctoken, "webapp"));
+   
 builder.Services.AddDbContext<UsersContext>(options =>
-    options.UseCosmos(builder.Configuration.GetConnectionString("UsersContext") ?? throw new InvalidOperationException("Connection string 'UsersContext' not found."), "webapp"));
+    options.UseCosmos(config["CosmosDBEndpoint"], ctoken, "webapp"));
 
 
 builder.Services.AddHttpContextAccessor();
 //builder.Services.AddSingleton<IHttpContextAccessor>(new HttpContextAccessor());
 
 
-var config = builder.Configuration.GetSection("ConfigMng");
+
 
 builder.Services.Configure<ConfigMng>(config);
 builder.Services.AddSingleton<AuthService>();
@@ -94,18 +108,29 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddRazorPages(options =>
-{
-    options.Conventions
-        .AddPageApplicationModelConvention("/UploadBg",
-            model =>
-            {
-                model.Filters.Add(
-                    new GenerateAntiforgeryTokenCookieAttribute());
-                model.Filters.Add(
-                    new DisableFormValueModelBindingAttribute());
-            });   
-});
+//builder.Services.AddRazorPages(options =>
+////{
+////    options.Conventions.ConfigureFilter(model =>
+////    {
+////        if (model.RelativePath.Contains("/Home/Settings"))
+////        {
+////            //return new AddHeaderAttribute(
+////            //    "OtherPagesPage2Header",
+////            //    new string[] { "OtherPages/Page2 Header Value" });
+////        }
+////        return new EmptyFilter();
+////    });
+
+//    //options.Conventions
+//    //    .AddFolderApplicationModelConvention("/Home",
+//    //        model =>
+//    //        {
+//    //            model.Filters.Add(
+//    //                new GenerateAntiforgeryTokenCookieAttribute());
+//    //            model.Filters.Add(
+//    //                new DisableFormValueModelBindingAttribute());
+//    //        });   
+//});
 
 
 var app = builder.Build();
@@ -152,6 +177,11 @@ app.MapControllerRoute(
     name: "Timer",
     pattern: "/timer/{m?}/{z?}/{t?}",
     defaults: new { controller = "Home", action = "Timer" });
+
+app.MapControllerRoute(
+    name: "DeleteBG",
+    pattern: "/deletebg/{bgid?}",
+    defaults: new { controller = "Home", action = "DeleteBG" });
 
 app.MapControllerRoute(
     name: "Login",

@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = "View";
 }
-
+<div class="bglist-bg">
 <table class="bglist" cellpadding="5">
     <thead>
         <tr class="bglist-title">
@@ -23,7 +23,7 @@
 @foreach (var item in Model) {
         <tr class="bglist-record">
             <td>
-                @Html.DisplayFor(modelItem => item.Url)
+               <img src="@Html.DisplayFor(modelItem => item.Url)" />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Location)
@@ -32,24 +32,11 @@
                 @Html.DisplayFor(modelItem => item.BgType)
             </td>
             <td>
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                @Html.ActionLink("x", "deletebg", new {  bgid=item.id })
             </td>
         </tr>
 }   
-        <tr class="bglist-upload">
-            <td><input type="file" id="File" name="File" /></td>
-            <td>
-                <div><input type="text" size="20" id="Location" name="Location" /></div>                
-            </td>
-            <td>
-                <select id="BgType" name="BgType">
-                 @foreach (var val in  Enum.GetValues(typeof(PresetType)))
-                 {
-                    <option value="@val">@val</option>
-                 }
-                </select>
-            </td>
-            <td><input type="submit" value="UPLOAD" class="submit" /></td>
-        </tr>
+      
     </tbody>
 </table>
+</div>

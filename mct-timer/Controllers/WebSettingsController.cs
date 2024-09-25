@@ -90,7 +90,7 @@ namespace mct_timer.Controllers
             mdata["prompt"] = webSettings.Prompt;
             
            
-            webSettings.Path = await _repo.SaveImage(webSettings.GetFileName(),  imggen.ImageBytes, mdata);
+            webSettings.Path = await _repo.SaveImageAsync(webSettings.GetFileName(),  imggen.ImageBytes, mdata);
 
             //if (ModelState.IsValid)
             //{

@@ -4,15 +4,16 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
+using Mono.TextTemplating;
 
 namespace mct_timer.Models
 {
 
     public interface IBlobRepo
     {
-        public Task<Uri> SaveImage(String name, BinaryData data, Dictionary<string, string> mdata);
+        public Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata);
         public Uri GetImageSASLink(String name);
-        public Task<bool> DeleteImage(String name);
+        public Task<bool> DeleteImageAsync(String name);
     }
 
     public class BlobRepo : IBlobRepo
@@ -29,7 +30,7 @@ namespace mct_timer.Models
             _container = container;
         }
 
-        public async Task<Uri> SaveImage(String name, BinaryData data, Dictionary<string, string> mdata)
+        public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
         {
             await _client.UploadBlobAsync(name, data);
             BlobClient file = _client.GetBlobClient(name);
@@ -39,9 +40,19 @@ namespace mct_timer.Models
         
         }
 
-        public async Task<bool> DeleteImage(String name)
+        public async Task<bool> DeleteImageAsync(String name)
         {
-            await _client.DeleteBlobAsync(name);
+
+            var blobs = _client.GetBlobs(BlobTraits.None, BlobStates.None, "l/" + name).ToList();
+            blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "s/" + name));
+            blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "m/" + name));
+
+            foreach (var item in blobs)
+            {
+                await _client.DeleteBlobIfExistsAsync(item.Name);
+            }
+           
+
             return true;
 
         }
@@ -82,31 +93,4 @@ namespace mct_timer.Models
     }
 
 
-    public class BlobTest : IBlobRepo
-    {
-        public Uri GetImageSASLink(string name)
-        {
-            return new Uri("");
-        }
-
-        public Task<Uri> SaveImage(string name, BinaryData data, Dictionary<string, string> mdata)
-        {
-            return new Task<Uri>( () => new Uri("") );
-        }
-
-        Task<bool> IBlobRepo.DeleteImage(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        Uri IBlobRepo.GetImageSASLink(string name)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<Uri> IBlobRepo.SaveImage(string name, BinaryData data, Dictionary<string, string> mdata)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

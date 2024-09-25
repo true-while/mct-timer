@@ -19,6 +19,8 @@ using NuGet.DependencyResolver;
         {
             builder.HasDefaultContainer("Users");
             builder.Entity<User>().ToContainer("Users");
+
+           
         }
 
 }

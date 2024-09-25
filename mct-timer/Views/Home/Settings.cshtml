@@ -17,7 +17,6 @@
     </div>
 
 
-    <form asp-action="UploadBG">
         <div class="form">
             <h1>@ViewData["Title"]</h1>
             <span class="info">
@@ -25,11 +24,11 @@
             </span>
 
             <div class="error">@TempData["Error"]</div>
-            <div class="bglist-bg">
-                @await Html.PartialAsync("PartialBGs", Model.Backgrounds)
+            @await Html.PartialAsync("PartialUploadBG", new Background())
+            @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
             </div>
         </div>
-    </form>
+
 
 </div>
 
@@ -44,7 +43,30 @@
             , "settings"
         )
 
+        async function AJAXSubmit(oFormElement) {
+            const formData = new FormData(oFormElement);
 
+            //try {
+                const response = await fetch(oFormElement.action, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': getCookie('RequestVerificationToken')
+                    },
+                    body: formData
+                });
+
+                oFormElement.elements.namedItem("result").value =
+                    'Result: ' + response.status + ' ' + response.statusText;
+            // } catch (error) {
+            //     console.error('Error:', error);
+            // }
+        }
+
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
 
 
 

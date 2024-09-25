@@ -1,0 +1,48 @@
+﻿@model mct_timer.Models.Background
+
+
+<div>
+    <h1>Upload file</h1>
+    <form id="uploadForm" action="Home/UploadPhysical" method="post"
+          enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
+
+        <input id="file" type="file" name="file" />
+        <input class="btn" type="submit" value="Upload" />
+
+        <div style="margin-top:15px">
+            <output form="uploadForm" name="result"></output>
+        </div>
+
+    </form>
+</div>
+<div>
+    <form asp-action="UploadBG">
+        <table>
+            <tr>
+                <td>Image</td>
+                <td>
+                    <div>
+                        <label asp-for="Location" class="control-label"></label>
+                        <input type="text" asp-for="Location" class="form-control" />
+                        <span asp-validation-for="Location" class="text-danger"></span>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                    <select id="BgType" name="BgType">
+                        @foreach (var val in Enum.GetValues(typeof(PresetType)))
+                        {
+                            <option value="@val">@val</option>
+                        }
+                    </select>
+                    </div>
+                    <div>
+                        <input type="submit" value="Create" />
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+

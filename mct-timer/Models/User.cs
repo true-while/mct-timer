@@ -28,22 +28,12 @@ namespace mct_timer.Models
         public List<Background> Backgrounds { get; set; }
 
 
-        //public static User Default
-        //{
-        //    get
-        //    {
-        //        return new User() { 
-        //            Ampm = true,
-        //            DefTZ = TimeZone.CurrentTimeZone.StandardName
-        //        };
-        //    }
-        //}
     }
 
     public class Background
     {
-        public string id { get; set; }
-        public Byte[] File { get; set; }
+        [Key]
+        public string id { get; set; }     
         public string Author { get; set; }
         public string Url { get; set; }
         public string Location { get; set; }

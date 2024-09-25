@@ -48,16 +48,21 @@ For local exaction the configuration file should be provided with following temp
     "Container": "<cosmos db container name for images>",
     "JWT": "<generated token to encrypt jwt>",
     "KeyVault": "<keyvault address>",
-    "PssKey": "<key name>"
+    "PssKey": "<key name>",
+    "FileSizeLimit": "max file size in bite (int)",
+    "WebCDN": "url of static website created for storage account",
+    "CosmosDBEndpoint": "https://<your cosmos acc name>.documents.azure.com:443/",
+    "TenantID": "<your tenant guid>"
   },
   "ApplicationInsights": "<cs copy from AI page>",  
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "WebSettingsContext": "<connection string to cosmos db>",
-    "UsersContext": "<connection string to cosmos db>"
-
-  }
+  "AllowedHosts": "*"
 }
 ````
+## Security Config
 
-If you tend to use Managed Identity you need provide Role 'Key Vault Crypto User' for the web site account. 
+The project configured to use *System assigned Managed Identity* with *DefaultAzureCredentialOptions*. 
+Local runs should be implemented behalf of the VS login user. Alternatively you can use App registration and configure local environment variables described in the following [link](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/local-development-service-principal?tabs=azure-cli%2Cwindows%2Ccommand-line#4---set-application-environment-variables)
+
+For Keyvault connection you have to configure role 'Key Vault Crypto User' for the web site account and test account. 
+For cosmos DB we recommend use RBAC assignment as explained in the following doc. By now custom role need to be manualy assigned as explained in following [link](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-rbac#metadata-requests)
+

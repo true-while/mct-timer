@@ -10,5 +10,9 @@
         public string JWT { get; set; }                    // jwt encryption string
         public string KeyVault { get; set; }               // keyvault url
         public string PssKey { get; set; }                 // name of the key for pwd encryption
+        public int FileSizeLimit { get; set; }             // max upload file size
+        public string WebCDN { get; set; }                 // address of the storage account (web static site)
+        public string CosmosDBEndpoint { get; set; }       // cosmos db 
+        public string TenantID { get; set; }               // tenant Id required for managed identity and tests 
     }
 }

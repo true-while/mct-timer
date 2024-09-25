@@ -5,6 +5,8 @@ VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "mct-timer", "mct-timer\mct-timer.csproj", "{09B61EAD-FBF7-42BD-A8E9-55F787460E38}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImgSrv", "ImgSrv\ImgSrv.csproj", "{7BD0A785-F04A-496F-A7AE-C0F3F340007D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{09B61EAD-FBF7-42BD-A8E9-55F787460E38}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09B61EAD-FBF7-42BD-A8E9-55F787460E38}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09B61EAD-FBF7-42BD-A8E9-55F787460E38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BD0A785-F04A-496F-A7AE-C0F3F340007D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BD0A785-F04A-496F-A7AE-C0F3F340007D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BD0A785-F04A-496F-A7AE-C0F3F340007D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BD0A785-F04A-496F-A7AE-C0F3F340007D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

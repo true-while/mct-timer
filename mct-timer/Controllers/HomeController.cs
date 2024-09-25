@@ -11,9 +11,8 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
-using System.Globalization;
-using System.IO.Compression;
 using System.Net;
+using Microsoft.IdentityModel.Tokens;
 
 namespace mct_timer.Controllers
 {
@@ -24,6 +23,8 @@ namespace mct_timer.Controllers
         private readonly IHttpContextAccessor _context;
         private readonly UsersContext _ac_context;
         private readonly IBlobRepo _blobRepo;
+        private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
+        private readonly string _tempFilePath = @"c:\tmp\";
 
         public HomeController(
             TelemetryClient logger,
@@ -46,7 +47,7 @@ namespace mct_timer.Controllers
 
         [JwtAuthentication]
         [HttpGet]
-        public async Task<IActionResult> DelteBG(string bgId)
+        public async Task<IActionResult> DeleteBG(string bgid)
         {
             var token = _context.HttpContext.Request.Cookies["jwt"];
 
@@ -60,21 +61,26 @@ namespace mct_timer.Controllers
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
                     var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
 
-                    if (user != null)
+                    if (user != null && bgid!=null)
                     {
-                        user.Backgrounds = user.Backgrounds.Where(x => x.id == bgId).ToList();
-                        await _blobRepo.DeleteImage(bgId);
+
+                        if (user.Backgrounds.Any(x=>x.id == bgid)) 
+                            await _blobRepo.DeleteImageAsync(bgid);
+                        user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
                         _ac_context.Update(user);
                         _ac_context.SaveChanges();
+
+                        return View("Settings", BgLinkPrep(user));
                     }
 
-                    return View(user);
+                    return View("Index");
+
                 }
             }
             return new UnauthorizedResult();
         }
 
-        /*
+       
         [JwtAuthentication]
         [HttpPost]
         [DisableFormValueModelBinding]
@@ -92,7 +98,7 @@ namespace mct_timer.Controllers
 
             var boundary = MultipartRequestHelper.GetBoundary(
                 MediaTypeHeaderValue.Parse(Request.ContentType),
-                3000000); //3MB
+                128); //3MB
             var reader = new MultipartReader(boundary, HttpContext.Request.Body);
             var section = await reader.ReadNextSectionAsync();
 
@@ -136,7 +142,7 @@ namespace mct_timer.Controllers
 
                         var streamedFileContent = await FileHelpers.ProcessStreamedFile(
                             section, contentDisposition, ModelState,
-                            _permittedExtensions, _fileSizeLimit);
+                            _permitedext, _config.Value.FileSizeLimit);
 
                         if (!ModelState.IsValid)
                         {
@@ -144,15 +150,16 @@ namespace mct_timer.Controllers
                         }
 
                         using (var targetStream = System.IO.File.Create(
-                            Path.Combine(_targetFilePath, trustedFileNameForFileStorage)))
+                            Path.Combine(_tempFilePath, trustedFileNameForFileStorage)))
                         {
                             await targetStream.WriteAsync(streamedFileContent);
-
-                            _logger.LogInformation(
-                                "Uploaded file '{TrustedFileNameForDisplay}' saved to " +
-                                "'{TargetFilePath}' as {TrustedFileNameForFileStorage}",
-                                trustedFileNameForDisplay, _targetFilePath,
-                                trustedFileNameForFileStorage);
+                            
+                            TempData["UploadeFile"] = trustedFileNameForFileStorage;
+                            TempData["UploadeName"] = trustedFileNameForDisplay;
+                            _logger.TrackTrace( 
+                                string.Format("Uploaded file '{0}' saved to '{1}' as {2}",
+                                trustedFileNameForDisplay, _tempFilePath,
+                                trustedFileNameForFileStorage));
                         }
                     }
                 }
@@ -161,15 +168,17 @@ namespace mct_timer.Controllers
                 // read the headers for the next section.
                 section = await reader.ReadNextSectionAsync();
             }
-
-            return Created(nameof(StreamingController), null);
+            
+            return new StatusCodeResult(StatusCodes.Status201Created);
         }
-        */
+        
 
         [JwtAuthentication]
         [HttpPost]
-        public IActionResult Upload_BG([Bind("File", "Location", "BgType")] Background bg)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UploadBG([Bind("File", "Location", "BgType")] Background bg)
         {
+            
             var token = _context.HttpContext.Request.Cookies["jwt"];
 
             if (token != null)
@@ -182,15 +191,40 @@ namespace mct_timer.Controllers
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
                     var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
 
-                    if (user != null)
+                    if (user != null && TempData.ContainsKey("UploadeFile") && TempData.ContainsKey("UploadeName"))
                     {
-                        user.Backgrounds.Add(bg);
-                        //_blobRepo.SaveImage()
-                        _ac_context.Update(user);
-                        _ac_context.SaveChanges();
+                        bg.id = Guid.NewGuid().ToString();
+                        bg.Author = user.Name;
+                        var file = Path.Combine(_tempFilePath, Path.GetFileName((string)TempData["UploadeFile"]));
+                        var ext = Path.GetExtension((string)TempData["UploadeName"]);
+                        if (System.IO.File.Exists(file))
+                        {
+                            var mdata = new Dictionary<string, string>();
+                            try
+                            {
+                                mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                            }
+                            catch
+                            {
+                                _logger.TrackTrace("Cannot detect IP");
+                            }
+                            mdata["user"] = user.Email;
+                            mdata["author"] = user.Name;
+                            mdata["when"] = DateTime.Now.ToString();
+
+                            var content = new BinaryData(System.IO.File.ReadAllBytes(file));
+                            var uri = await _blobRepo.SaveImageAsync("/l/" + bg.id + ext, content, mdata);
+
+                            System.IO.File.Delete(file);
+                            bg.Url = uri.ToString();
+                            user.Backgrounds.Add(bg);
+
+                            _ac_context.Update(user);
+                            _ac_context.SaveChanges();
+                        }
                     }
 
-                    return View(user);
+                    return View("Settings", BgLinkPrep(user));
                 }
             }
             return new UnauthorizedResult();
@@ -217,13 +251,17 @@ namespace mct_timer.Controllers
             return null;
         }
 
+        [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
         public IActionResult Settings()
         {
             var user = GetUserInfo();
 
             if (user != null)
-                return View(user);
+            {
+                //update bg images                
+                return View(BgLinkPrep(user));
+            }
             
             return new UnauthorizedResult();
         }
@@ -272,6 +310,14 @@ namespace mct_timer.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+
+        private User BgLinkPrep(User usr)
+        {
+            foreach (var bg in usr.Backgrounds)
+                bg.Url = Path.Combine(_config.Value.WebCDN, "s", Path.GetFileNameWithoutExtension(bg.Url) + ".png");
+            return usr;
         }
     }
 }

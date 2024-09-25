@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
+    <UserSecretsId>6b574173-fcc2-4545-a61f-3310ce572a89</UserSecretsId>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.20.0" />
+    <PackageReference Include="Azure.Storage.Files.Shares" Version="12.18.0" />
+    <PackageReference Include="Azure.Storage.Queues" Version="12.18.0" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.Dapr" Version="1.0.1" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Storage" Version="4.0.5" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.1" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>
