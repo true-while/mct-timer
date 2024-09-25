@@ -23,7 +23,9 @@
 @foreach (var item in Model) {
         <tr class="bglist-record">
             <td>
-               <img src="@Html.DisplayFor(modelItem => item.Url)" />
+               <img class="icons" src="@Html.DisplayFor(modelItem => item.Url)"
+                             
+               />
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Location)

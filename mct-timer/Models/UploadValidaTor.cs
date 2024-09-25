@@ -6,21 +6,22 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 
 namespace mct_timer.Models
-{
-    public static class FileHelpers
+{ 
+    public class UploadValidaTor
     {
         // If you require a check on specific characters in the IsValidFileExtensionAndSignature
         // method, supply the characters in the _allowedChars field.
-        private static readonly byte[] _allowedChars = { };
+        private readonly byte[] _allowedChars = { };
         // For more file signatures, see the File Signatures Database (https://www.filesignatures.net/)
         // and the official specifications for the file types you wish to add.
-        private static readonly Dictionary<string, List<byte[]>> _fileSignature = new Dictionary<string, List<byte[]>>
+        private readonly Dictionary<string, List<byte[]>> _fileSignature = new Dictionary<string, List<byte[]>>
         {
             { ".gif", new List<byte[]> { new byte[] { 0x47, 0x49, 0x46, 0x38 } } },
             { ".png", new List<byte[]> { new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A } } },
@@ -49,6 +50,12 @@ namespace mct_timer.Models
                 }
             },
         };
+        private TelemetryClient ai;
+
+        public UploadValidaTor(TelemetryClient ai)
+        {
+            this.ai = ai;
+        }
 
         // **WARNING!**
         // In the following file processing methods, the file's content isn't scanned.
@@ -57,7 +64,7 @@ namespace mct_timer.Models
         // systems. For more information, see the topic that accompanies this sample
         // app.
 
-        public static async Task<byte[]> ProcessFormFile<T>(IFormFile formFile,
+        public async Task<byte[]> ProcessFormFile<T>(IFormFile formFile,
             ModelStateDictionary modelState, string[] permittedExtensions,
             long sizeLimit)
         {
@@ -140,13 +147,14 @@ namespace mct_timer.Models
                 modelState.AddModelError(formFile.Name,
                     $"{fieldDisplayName}({trustedFileNameForDisplay}) upload failed. " +
                     $"Please contact the Help Desk for support. Error: {ex.HResult}");
-                // Log the exception
+                
+                ai.TrackException(ex);
             }
 
             return Array.Empty<byte>();
         }
 
-        public static async Task<byte[]> ProcessStreamedFile(
+        public  async Task<byte[]> ProcessStreamedFile(
             MultipartSection section, ContentDispositionHeaderValue contentDisposition,
             ModelStateDictionary modelState, string[] permittedExtensions, long sizeLimit)
         {
@@ -184,15 +192,15 @@ namespace mct_timer.Models
             catch (Exception ex)
             {
                 modelState.AddModelError("File",
-                    "The upload failed. Please contact the Help Desk " +
+                    "The upload failed. " +
                     $" for support. Error: {ex.HResult}");
-                // Log the exception
+                ai.TrackException(ex);
             }
 
             return Array.Empty<byte>();
         }
 
-        private static bool IsValidFileExtensionAndSignature(string fileName, Stream data, string[] permittedExtensions)
+        private  bool IsValidFileExtensionAndSignature(string fileName, Stream data, string[] permittedExtensions)
         {
             if (string.IsNullOrEmpty(fileName) || data == null || data.Length == 0)
             {

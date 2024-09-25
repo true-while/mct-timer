@@ -57,7 +57,8 @@ builder.Services.AddSingleton<AuthService>();
 TelemetryClient ai = new TelemetryClient();
 builder.Services.AddSingleton<TelemetryClient>(ai);
 
-
+UploadValidaTor upValid = new UploadValidaTor(ai);
+builder.Services.AddSingleton<UploadValidaTor>(upValid);
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
         options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
@@ -192,6 +193,12 @@ app.MapControllerRoute(
     name: "Logout",
     pattern: "/logout",
     defaults: new { controller = "Account", action = "Logout" });
+
+app.MapControllerRoute(
+    name: "UploadPhysical",
+    pattern: "/UploadPhysical",
+    defaults: new { controller = "Home", action = "UploadPhysical" });
+
 
 
 app.MapGet("/test", () => "OK!")

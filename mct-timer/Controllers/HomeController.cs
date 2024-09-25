@@ -25,12 +25,14 @@ namespace mct_timer.Controllers
         private readonly IBlobRepo _blobRepo;
         private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
         private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
+        private readonly UploadValidaTor _validator;
 
         public HomeController(
             TelemetryClient logger,
             IOptions<ConfigMng> config,
             IHttpContextAccessor context,
             UsersContext ac_context,
+            UploadValidaTor validator,
             IBlobRepo blobRepo)
         {
             _logger = logger;
@@ -38,6 +40,7 @@ namespace mct_timer.Controllers
             _context = context;
             _ac_context = ac_context;
             _blobRepo = blobRepo;
+            _validator = validator;
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -98,7 +101,7 @@ namespace mct_timer.Controllers
 
             var boundary = MultipartRequestHelper.GetBoundary(
                 MediaTypeHeaderValue.Parse(Request.ContentType),
-                128); //3MB
+                128); 
             var reader = new MultipartReader(boundary, HttpContext.Request.Body);
             var section = await reader.ReadNextSectionAsync();
 
@@ -118,7 +121,7 @@ namespace mct_timer.Controllers
                         .HasFileContentDisposition(contentDisposition))
                     {
                         ModelState.AddModelError("File",
-                            $"The request couldn't be processed (Error 2).");
+                            $"Did you select file for uploading?");
                         // Log error
 
                         return BadRequest(ModelState);
@@ -140,7 +143,7 @@ namespace mct_timer.Controllers
                         // For more information, see the topic that accompanies 
                         // this sample.
 
-                        var streamedFileContent = await FileHelpers.ProcessStreamedFile(
+                        var streamedFileContent = await _validator.ProcessStreamedFile(
                             section, contentDisposition, ModelState,
                             _permitedext, _config.Value.FileSizeLimit);
 
@@ -169,8 +172,8 @@ namespace mct_timer.Controllers
                 // read the headers for the next section.
                 section = await reader.ReadNextSectionAsync();
             }
-            
-            return new StatusCodeResult(StatusCodes.Status201Created);
+
+            return new OkObjectResult(Json("{'File':[{'Successfully uploaded'}]}"));
         }
         
 

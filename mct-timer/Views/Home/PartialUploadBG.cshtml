@@ -3,19 +3,19 @@
 
 <div>
     <h1>Upload file</h1>
-    <form id="uploadForm" action="Home/UploadPhysical" method="post"
+    <form id="uploadForm" action="UploadPhysical" method="post"
           enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
 
         <input id="file" type="file" name="file" />
         <input class="btn" type="submit" value="Upload" />
-
-        <div style="margin-top:15px">
+        <div>
             <output form="uploadForm" name="result"></output>
         </div>
-
     </form>
 </div>
 <div>
+
+
     <form asp-action="UploadBG">
         <table>
             <tr>
