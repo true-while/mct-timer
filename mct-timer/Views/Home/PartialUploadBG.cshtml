@@ -1,48 +1,59 @@
 ﻿@model mct_timer.Models.Background
 
 
-<div>
-    <h1>Upload file</h1>
+<div style="padding-bottom:10px">
+    <div calss="info"><b>
+        Upload your new background.</b></div>
+    <div calss="info">JPEG and PNG files accepted with size limit 3 MB</div>
+    <div id="file">
     <form id="uploadForm" action="UploadPhysical" method="post"
           enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
 
-        <input id="file" type="file" name="file" />
-        <input class="btn" type="submit" value="Upload" />
-        <div>
-            <output form="uploadForm" name="result"></output>
+        <div id="upload">
+            <input id="file" type="file" name="file" class="form-control-text" />
+            <input type="submit" value="Upload" class="submit" />
         </div>
-    </form>
-</div>
-<div>
+            <div id="progress" class="progress" style="visibility:hidden;padding-top:10px">
+                <span style="width:100%;"><span id="progress-bar" class="progress-bar"></span></span>
+            </div>
+            <div>
+                <output class="error" form="uploadForm" name="result"></output>
+            </div>
 
-
-    <form asp-action="UploadBG">
-        <table>
-            <tr>
-                <td>Image</td>
-                <td>
-                    <div>
-                        <label asp-for="Location" class="control-label"></label>
-                        <input type="text" asp-for="Location" class="form-control" />
-                        <span asp-validation-for="Location" class="text-danger"></span>
-                    </div>
-                </td>
-                <td>
-                    <div>
-                    <select id="BgType" name="BgType">
-                        @foreach (var val in Enum.GetValues(typeof(PresetType)))
-                        {
-                            <option value="@val">@val</option>
-                        }
-                    </select>
-                    </div>
-                    <div>
-                        <input type="submit" value="Create" />
-                    </div>
-                </td>
-            </tr>
-        </table>
     </form>
+    </div>
+    <div id="details" style="display: none;">
+        <form asp-action="UploadBG">
+            <table style="width:100%">
+                <tr>
+                    <td rowspan="2">
+                        <div>
+                            <label asp-for="Location" class="control-label"></label><br />
+                            <textarea cols="25" rows="2" type="text" asp-for="Location" class="form-control-text"></textarea>
+                            <span asp-validation-for="Location" class="text-danger"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <label class="control-label">Type:</label>
+                            <select id="BgType" name="BgType" style="padding:5px">
+                                @foreach (var val in Enum.GetValues(typeof(PresetType)))
+                                {
+                                    <option value="@val">@val</option>
+                                }
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <input style="width:180px" type="submit" value="Create" class="submit" onclick="javascript:updateIcons(0);" />
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
 </div>
+
 
 

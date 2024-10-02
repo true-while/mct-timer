@@ -5,6 +5,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Mono.TextTemplating;
+using Azure.Identity;
 
 namespace mct_timer.Models
 {
@@ -20,18 +21,39 @@ namespace mct_timer.Models
     {
         BlobContainerClient _client;
         string _container;
+        string _accountname;
+        string _tenantid;
 
-        public BlobRepo(string conString, string container)
+        public BlobRepo(string accountname, string container, string tenantid)
         {
-
-            var client = new BlobServiceClient(conString);
-            _client = client.GetBlobContainerClient(container);
-            _client.CreateIfNotExists();
+            _accountname = accountname;
             _container = container;
+            _tenantid = tenantid;
+
+        }
+
+        private void CreateContainer()
+        {
+            if (_client == null)
+            {
+                string containerEndpoint = Path.Combine(_accountname,
+                                                    _container);
+                var cred = new DefaultAzureCredential(
+                    new DefaultAzureCredentialOptions()
+                    {
+                        TenantId = _tenantid,
+                        AdditionallyAllowedTenants = { "*" },
+                    });
+                _client = new BlobContainerClient(new Uri(containerEndpoint), cred);
+
+                _client.CreateIfNotExists();
+            }
         }
 
         public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
         {
+            CreateContainer();
+
             await _client.UploadBlobAsync(name, data);
             BlobClient file = _client.GetBlobClient(name);
             BlobInfo info = await file.SetMetadataAsync(mdata);
@@ -42,6 +64,7 @@ namespace mct_timer.Models
 
         public async Task<bool> DeleteImageAsync(String name)
         {
+            CreateContainer();
 
             var blobs = _client.GetBlobs(BlobTraits.None, BlobStates.None, "l/" + name).ToList();
             blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "s/" + name));
@@ -59,6 +82,8 @@ namespace mct_timer.Models
 
         public Uri GetImageSASLink(String name)
         {
+            CreateContainer();
+
             BlobClient client = _client.GetBlobClient(name);
 
             // Check if BlobContainerClient object has been authorized with Shared Key

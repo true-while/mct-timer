@@ -64,7 +64,7 @@ builder.Services.AddDbContext<WebSettingsContext>(options =>
         options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
 
 // Blob generator
-BlobRepo blob = new BlobRepo(config["StorageAccountString"], config["Container"]);
+BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName"], config["TenantID"]);
 builder.Services.AddSingleton<IBlobRepo>(blob);
 
 // Dalle generator

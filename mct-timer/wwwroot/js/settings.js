@@ -1,4 +1,30 @@
-﻿async function AJAXSubmit(oFormElement) {
+﻿function OnBGCreate() { 
+    
+    var file = document.getElementById('file');
+    file.style.display = '' 
+    var details = document.getElementById('details');
+    details.style.display = 'none'; 
+    
+    updateIcons(0);
+}
+function OnFileUploaded() {
+
+    var file = document.getElementById('file');
+    file.style.display = 'none'
+    var details = document.getElementById('details');
+    details.style.display = '';
+}
+
+
+async function AJAXSubmit(oFormElement) {
+    var progerss = document.getElementById('progress');
+    progerss.style.visibility = 'visible'; 
+    var bar = document.getElementById('progress-bar');
+    //bar.removeClass("progress-bar").addClass("progress-bar");
+    bar.style.animation = 'none';
+    bar.offsetHeight;
+    bar.style.animation = null;        
+
     const formData = new FormData(oFormElement);
     var status;
     const response = await fetch(oFormElement.action, {
@@ -16,11 +42,9 @@
          switch (status) {
                 case 201:
                 case 200:
-                 oFormElement.elements.namedItem("result").value = "File upload successfully";
-
-                 //hide upload show the create.
-                 updateIcons(0);
-                    break;
+                 oFormElement.elements.namedItem("result").value = "";
+                 OnFileUploaded()
+                 break;
              case 400:
                  //file validation errors:
                  oFormElement.elements.namedItem("result").value = errors.File[0];
@@ -31,8 +55,9 @@
                     break;
             }
         });
-    
 
+
+    progress.style.visibility = 'hidden';
 }
 
 function getCookie(name) {

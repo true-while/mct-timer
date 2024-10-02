@@ -1,6 +1,7 @@
 body {
     padding: 0px;
     margin: 0px;
+  
 }
 
 #gbmainbg {
@@ -36,11 +37,12 @@ body {
     background-color: rgba(0,0,0,0.3);
     border-radius: 10px;
 }
+
     .location .option {
         width: 35px;
         padding: 05px;
-        
     }
+
     .location:hover + #location-info {
         cursor: pointer;
         display: block;
@@ -53,10 +55,42 @@ body {
     background-color: rgba(0,0,0,0.5);
     border-radius: 10px;
 }
-.menu .option {
-    width: 35px;
-    padding: 05px;
-    cursor: pointer;
+
+    .menu .option {
+        width: 35px;
+        padding: 05px;
+        cursor: pointer;
+    }
+
+
+.progress {
+    height: 10px;
+    overflow: hidden;
+}
+
+    .progress span {
+        display: block;
+        height: 100%;
+    }
+
+
+.progress-bar {
+    background-color: coral;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: both;
+    animation: progressBar;
+}
+
+@keyframes progressBar {
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
 }
 
 .form {
@@ -70,6 +104,9 @@ body {
     border: 3px solid darkgray;
     font: 600 24px Segoe UI;
 }
+
+
+
 
     .form .submit {
         color: white;
@@ -85,12 +122,14 @@ body {
     }
 
     .form table {
-        margin: 20px 0px 20px 0px;        
+        margin: 20px 0px 20px 0px;
     }
+
     .form .info {
         font: 400 18px Segoe UI;
         color: darkblue;
     }
+
     .form .back {
         color: white;
         background: purple;
@@ -115,16 +154,18 @@ body {
         padding: 7px 7px 6px 7px;
         margin-left: 5px;
         border-radius: 7px;
-        text-align: center;
+        text-align: left;
         border: 2px solid black;
         background-color: whitesmoke;
     }
+
     .form .text-danger {
         color: darkred;
         font-style: italic;
         font: 500 16px Segoe UI;
     }
- .form .form-control-text {
+
+    .form .form-control-text {
         padding: 7px 7px 7px 7px;
         margin: 0px;
         border-radius: 7px;
@@ -136,19 +177,22 @@ body {
 
 .bglist-bg {
     background-color: darkgreen;
-    padding:1px;
-    width:stretch;
+    padding: 1px;
+    width: stretch;
     border-radius: 7px;
 }
+
 .bglist {
     text-align: left;
     border: 2px solid darkgreen;
     width: 100px;
     background-color: white;
 }
-.bglist td{
-    border: 2px solid darkgreen;
-}
+
+    .bglist td {
+        border: 2px solid darkgreen;
+    }
+
 .bglist-title {
     background-color: darkgreen;
     color: white;
