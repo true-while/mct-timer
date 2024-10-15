@@ -28,6 +28,8 @@ namespace mct_timer.Controllers
             _config = config;
             _gen = gen;
             _repo = repo;
+
+            ViewData["CDNUrl"] = _config.Value.WebCDN;
         }
 
         // GET: WebSettings

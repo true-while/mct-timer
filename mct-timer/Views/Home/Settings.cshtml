@@ -38,10 +38,9 @@
     <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
 
     <script>
-        var bgselector = new BGSelector(
-            document.querySelector("#gbmainbg")
-            , "settings"
-        )
+
+
+     document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/settings.jpg)";
 
         //refresh icons
         updateIcons(0);

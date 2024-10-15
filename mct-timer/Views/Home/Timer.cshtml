@@ -62,7 +62,9 @@
     <script type="text/javascript" src="~/js/timer.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/editor.js" asp-append-version="true"></script>
     <script>
+        
    
+
         const breakLength = Number('@Model.Length');
         const timezoneNameUrlEncoded = '@Model.Timezone';
         var timezone = timezoneNameUrlEncoded.replaceAll('@@', '/');
@@ -83,11 +85,8 @@
         mtimer.originalEnd = moment.tz(timezoneName).add(breakLength, 'minutes');
         mtimer.start();
 
-        const breakType = '@Model.BreakType';
+        document.querySelector("#gbmainbg").style.backgroundImage = "url('@Model.BGUrl')";
 
-        var bgselector = new BGSelector(
-            document.querySelector("#gbmainbg"),
-            breakType
-        )
+   
     </script>
 }

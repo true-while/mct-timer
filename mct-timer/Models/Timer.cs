@@ -6,6 +6,7 @@
         public string Timezone;
         public bool Ampm;
         public PresetType BreakType;
+        public string BGUrl;
 
     }
 }

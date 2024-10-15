@@ -27,6 +27,9 @@ namespace mct_timer.Controllers
         private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
         private readonly UploadValidator _validator;
 
+
+        public string CDNUrl() { return _config.Value.WebCDN; }
+
         public HomeController(
             TelemetryClient logger,
             IOptions<ConfigMng> config,
@@ -40,7 +43,7 @@ namespace mct_timer.Controllers
             _context = context;
             _ac_context = ac_context;
             _blobRepo = blobRepo;
-            _validator = validator;
+            _validator = validator;            
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -260,6 +263,8 @@ namespace mct_timer.Controllers
         [JwtAuthentication]
         public IActionResult Settings()
         {
+            
+
             var user = GetUserInfo();
 
             if (user != null)
@@ -282,6 +287,7 @@ namespace mct_timer.Controllers
             //default preset
 
             Personalization info = new Personalization();
+            info.CDNUrl = _config.Value.WebCDN;
             info.Ampm = true;
             info.TimeZone = "EST";
             info.Language = "en";
@@ -299,15 +305,20 @@ namespace mct_timer.Controllers
         public IActionResult Timer(string m = "15", string z = "America/New_York", string t = "coffee")
         {
             var user = GetUserInfo();
+            Random rn = new Random(DateTime.Now.Second);
 
             var model = new mct_timer.Models.Timer()
             {
                Length = int.Parse(m),
                Timezone = z,
                BreakType = (PresetType)Enum.Parse(typeof(PresetType), t, true),
-               Ampm = user?.Ampm ?? true
+               Ampm = user?.Ampm ?? true,
+               BGUrl = new Uri(new Uri(_config.Value.WebCDN),(@"/l/" + t + rn.Next(string.Compare(t, "coffee", true)==0 ? 5 : 0).ToString() + ".jpg").ToLower()).ToString(),
             };
             
+
+
+
             return View(model);
         }
 

@@ -27,6 +27,8 @@ namespace mct_timer.Controllers
           _tmClient = tmClient;
             _blRepo = blRepo;
             _config = config;
+
+            ViewData["CDNUrl"] = _config.Value.WebCDN;
         }
 
         [HttpPost]

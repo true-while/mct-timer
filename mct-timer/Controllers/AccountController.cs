@@ -44,6 +44,8 @@ namespace mct_timer.Controllers
             _ac_context = ac_context;
             _keyvault = keyvault;
 
+            ViewData["CDNUrl"] = _config.Value.WebCDN;
+
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
         }
@@ -58,6 +60,7 @@ namespace mct_timer.Controllers
             {
                 TempData["Error"] = "Not empty password and email required for login in";
                 return View();
+                
             }
 
             

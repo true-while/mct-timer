@@ -31,5 +31,6 @@
         public List<PresetGroup> Groups { get; set; }
         public string Language { get; set; }
         public bool Ampm { get; set; }
+        public string CDNUrl { get; set; }
     }
 }
