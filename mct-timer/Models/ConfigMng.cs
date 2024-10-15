@@ -14,5 +14,6 @@
         public string WebCDN { get; set; }                 // address of the storage account (web static site)
         public string CosmosDBEndpoint { get; set; }       // cosmos db 
         public string TenantID { get; set; }               // tenant Id required for managed identity and tests 
+        public string SubscriptionID { get; set; }          // subscription id
     }
 }

@@ -25,14 +25,14 @@ namespace mct_timer.Controllers
         private readonly IBlobRepo _blobRepo;
         private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
         private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
-        private readonly UploadValidaTor _validator;
+        private readonly UploadValidator _validator;
 
         public HomeController(
             TelemetryClient logger,
             IOptions<ConfigMng> config,
             IHttpContextAccessor context,
             UsersContext ac_context,
-            UploadValidaTor validator,
+            UploadValidator validator,
             IBlobRepo blobRepo)
         {
             _logger = logger;
@@ -217,7 +217,7 @@ namespace mct_timer.Controllers
                             mdata["when"] = DateTime.Now.ToString();
 
                             var content = new BinaryData(System.IO.File.ReadAllBytes(file));
-                            var uri = await _blobRepo.SaveImageAsync("/l/" + bg.id + ext, content, mdata);
+                            var uri = await _blobRepo.SaveImageAsync(BlobRepo.LaregeImgfolder + bg.id + ext, content, mdata);
 
                             System.IO.File.Delete(file);
                             bg.Url = uri.ToString();
@@ -324,7 +324,11 @@ namespace mct_timer.Controllers
                 usr.Backgrounds = new List<Background>();
 
             foreach (var bg in usr.Backgrounds)
-                    bg.Url = Path.Combine(_config.Value.WebCDN, "s", Path.GetFileNameWithoutExtension(bg.Url) + ".png");
+            {
+                bg.Url = new Uri( new Uri(_config.Value.WebCDN), 
+                    Path.Combine(BlobRepo.SmallImgfolder, Path.GetFileNameWithoutExtension(bg.Url) + ".png"))
+                    .ToString();         
+            }
             return usr;
         }
     }

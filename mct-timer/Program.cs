@@ -54,11 +54,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<ConfigMng>(config);
 builder.Services.AddSingleton<AuthService>();
 
-TelemetryClient ai = new TelemetryClient();
+TelemetryClient ai = new TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration() { ConnectionString = builder.Configuration["ApplicationInsights"] });
 builder.Services.AddSingleton<TelemetryClient>(ai);
 
-UploadValidaTor upValid = new UploadValidaTor(ai);
-builder.Services.AddSingleton<UploadValidaTor>(upValid);
+UploadValidator upValid = new UploadValidator(ai);
+builder.Services.AddSingleton<UploadValidator>(upValid);
 
 builder.Services.AddDbContext<WebSettingsContext>(options =>
         options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));

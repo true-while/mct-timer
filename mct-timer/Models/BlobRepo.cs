@@ -6,15 +6,23 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Mono.TextTemplating;
 using Azure.Identity;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 
 namespace mct_timer.Models
 {
 
     public interface IBlobRepo
     {
+        //string LaregeImgfolder { get; }
+        //string SmallImgfolder { get; }
+        //string MediumImgfolder { get; }
+
         public Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata);
         public Uri GetImageSASLink(String name);
         public Task<bool> DeleteImageAsync(String name);
+        public Task<bool> TransformMediumFileAsync(string fileName);
+        public Task<bool> TransformSmallFileAsync(string fileName);
     }
 
     public class BlobRepo : IBlobRepo
@@ -24,12 +32,19 @@ namespace mct_timer.Models
         string _accountname;
         string _tenantid;
 
+        static string _laregeImgfolder = "/l/";
+        static string _smallImgfolder = "/s/";
+        static string _mediumImgfolder = "/m/";
+
+        static public string LaregeImgfolder { get => _laregeImgfolder; }
+        static public string SmallImgfolder { get => _smallImgfolder; }
+        static public string MediumImgfolder { get => _mediumImgfolder; }
+
         public BlobRepo(string accountname, string container, string tenantid)
         {
             _accountname = accountname;
             _container = container;
             _tenantid = tenantid;
-
         }
 
         private void CreateContainer()
@@ -114,7 +129,54 @@ namespace mct_timer.Models
 
         }
 
+        public async Task<bool> TransformMediumFileAsync(string fileName)
+        {
+            CreateContainer();
 
+            BlobClient largeFile = _client.GetBlobClient(Path.Combine(_laregeImgfolder, fileName));
+
+            if (!largeFile.Exists()) return false;
+
+            var largeResult = largeFile.DownloadStreaming();
+
+            BlobClient mediumFile = _client.GetBlobClient(Path.Combine(_mediumImgfolder, Path.GetFileNameWithoutExtension(fileName) + ".png"));
+
+            using (Stream lFile = largeResult.Value.Content)
+            {
+                using (Stream mFile = mediumFile.OpenWrite(true))
+                using (Image<Rgba32> input = Image.Load<Rgba32>(lFile))
+                {
+                    await ImgSrvHelper.ResizeImageAsync(input, mFile, ImgSrvHelper.ImageSize.Medium);
+                }
+            }
+
+            return true;
+
+        }
+
+        public async Task<bool> TransformSmallFileAsync(string fileName)
+        {
+            CreateContainer();
+
+            BlobClient largeFile = _client.GetBlobClient(Path.Combine(_laregeImgfolder, fileName));
+
+            if (!largeFile.Exists()) return false;
+
+            var largeResult = await largeFile.DownloadStreamingAsync();
+
+            BlobClient smallFile = _client.GetBlobClient(Path.Combine(_smallImgfolder, Path.GetFileNameWithoutExtension(fileName) + ".png"));
+
+            using (Stream lFile = largeResult.Value.Content)
+            {
+                using (Stream sFile = smallFile.OpenWrite(true))
+                using (Image<Rgba32> input = Image.Load<Rgba32>(lFile))
+                {
+                    await ImgSrvHelper.ResizeImageAsync(input, sFile, ImgSrvHelper.ImageSize.Small);
+                }
+            }
+
+            return true;
+        }
     }
 
 

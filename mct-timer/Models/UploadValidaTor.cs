@@ -14,7 +14,7 @@ using Microsoft.Net.Http.Headers;
 
 namespace mct_timer.Models
 { 
-    public class UploadValidaTor
+    public class UploadValidator
     {
         // If you require a check on specific characters in the IsValidFileExtensionAndSignature
         // method, supply the characters in the _allowedChars field.
@@ -52,7 +52,7 @@ namespace mct_timer.Models
         };
         private TelemetryClient ai;
 
-        public UploadValidaTor(TelemetryClient ai)
+        public UploadValidator(TelemetryClient ai)
         {
             this.ai = ai;
         }
