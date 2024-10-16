@@ -34,8 +34,8 @@
                 @Html.DisplayFor(modelItem => item.BgType)
             </td>
             <td>
-                <a href="@Url.Action("deletebg", "Home", new {  bgid=item.id })" title="Delete Background">
-                    <img alt="Delete" src="~/icons/del.png" width="75px"> 
+                <a href="@Url.Action("deletebg", "Settings", new {  bgid=item.id })" title="Delete Background">
+                    <img alt="Delete" src="~/icons/del.png" style="width:25px"> 
                 </a>
             </td>
         </tr>

@@ -168,6 +168,14 @@ app.MapControllerRoute(
     name: "Settings",
     pattern: "/sets/",
     defaults: new { controller = "Settings", action = "Index" });
+app.MapControllerRoute(
+    name: "DefBackground",
+    pattern: "/dbg/",
+    defaults: new { controller = "Settings", action = "Default" });
+app.MapControllerRoute(
+    name: "CustBackground",
+    pattern: "/cbg/",
+    defaults: new { controller = "Settings", action = "Custom" });
 
 app.MapControllerRoute(
     name: "Info",

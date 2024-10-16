@@ -1,0 +1,100 @@
+﻿@model mct_timer.Models.User
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div id="gbmainbg">
+    <div class="menu">
+        <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
+        <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
+    </div>
+    <div class="location">
+        <img class="option" src="~/icons/location-w.png" alt="image info" />
+    </div>
+    <div id="location-info">
+        Turkey, Caldam 
+    </div>
+
+
+        <div class="form" id="defaultbg">
+            <h1>@ViewData["Title"]</h1>
+            <span class="info">
+               You can customize your background by loading your favorite images:
+            </span>
+
+            <div class="error">@TempData["Error"]</div>
+            @await Html.PartialAsync("PartialUploadBG", new Background())
+            @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
+            
+        </div>
+</div>
+
+
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
+
+    <script>
+        var upld = new CustomBg(
+            document.querySelector("#defaultbg")
+        );
+        
+
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+
+        async function AJAXSubmit(oFormElement) {
+
+            upld.StartProgressBar();
+
+            const formData = new FormData(oFormElement);
+            var status;
+            const response = await fetch(oFormElement.action, {
+                method: 'POST',
+                headers: {
+                    'RequestVerificationToken': getCookie('RequestVerificationToken')
+                },
+                body: formData
+            }).then(
+                response => {
+                    status = response.status;
+                    return response.json();
+                }).then(errors => {
+
+                    switch (status) {
+                        case 201:
+                        case 200:
+                            upld.OnFileUploaded();
+                            break;
+                        case 400:
+                            upld.ShowValidationErrors(errors.File[0]);
+                            break;
+                        default:
+                            upld.ShowValidaitonError("There is a problem with your file:" + errors.File[0]);
+                            break;
+                    }
+                });
+
+            upld.StopProgressBar();
+        }
+
+
+
+        $(document).ready(function () {
+
+            document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/settings.jpg)";
+            upld.refreshIcons(0);
+
+        });
+
+  
+
+
+    </script>
+}

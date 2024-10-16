@@ -6,18 +6,20 @@
         Upload your new background.</b></div>
     <div calss="info">JPEG and PNG files accepted with size limit 3 MB</div>
     <div id="file">
-    <form id="uploadForm" action="UploadPhysical" method="post"
-          enctype="multipart/form-data" onsubmit="AJAXSubmit(this);return false;">
+
+        <form id="uploadForm" method="post" action="~/settings/UploadPhysical"
+              enctype="multipart/form-data" 
+              onsubmit="javascript:AJAXSubmit(this);return false">
 
         <div id="upload">
             <input id="file" type="file" name="file" class="form-control-text" />
-            <input type="submit" value="Upload" class="submit" />
+            <input value="Upload" id="btnUpload" type="submit" class="submit" />
         </div>
             <div id="progress" class="progress" style="visibility:hidden;padding-top:10px">
                 <span style="width:100%;"><span id="progress-bar" class="progress-bar"></span></span>
             </div>
             <div>
-                <output class="error" form="uploadForm" name="result"></output>
+                <output class="error" form="uploadForm" id="result" name="result"></output>
             </div>
 
     </form>
@@ -47,7 +49,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <input style="width:180px" type="submit" value="Create" class="submit" onclick="javascript:updateIcons(0);" />
+                        <input id="create" style="width:180px" type="submit" value="Create" class="submit" />
                     </td>
                 </tr>
             </table>

@@ -76,7 +76,7 @@ namespace mct_timer.Controllers
                         _ac_context.Update(user);
                         _ac_context.SaveChanges();
 
-                        return View("Settings", BgLinkPrep(user));
+                        return View("Custom", BgLinkPrep(user));
                     }
 
                     return View("Index");
@@ -108,7 +108,7 @@ namespace mct_timer.Controllers
             var reader = new MultipartReader(boundary, HttpContext.Request.Body);
             var section = await reader.ReadNextSectionAsync();
 
-            while (section != null)
+            if (section != null)
             {
                 var hasContentDispositionHeader =
                     ContentDispositionHeaderValue.TryParse(
@@ -173,7 +173,7 @@ namespace mct_timer.Controllers
 
                 // Drain any remaining section body that hasn't been consumed and
                 // read the headers for the next section.
-                section = await reader.ReadNextSectionAsync();
+                //section = await reader.ReadNextSectionAsync();
             }
 
             return new OkObjectResult(Json("{'File':[{'Successfully uploaded'}]}"));
@@ -232,7 +232,7 @@ namespace mct_timer.Controllers
                         }
                     }
 
-                    return View("Settings", BgLinkPrep(user));
+                    return View("Custom", BgLinkPrep(user));
                 }
             }
             return new UnauthorizedResult();
@@ -257,6 +257,34 @@ namespace mct_timer.Controllers
             }
 
             return null;
+        }
+
+        [GenerateAntiforgeryTokenCookie]
+        [JwtAuthentication]
+        public IActionResult Default()
+        {
+            var user = GetUserInfo();
+
+            if (user != null)
+            {
+                return View(BgLinkPrep(user));
+            }
+
+            return new UnauthorizedResult();
+        }
+
+        [GenerateAntiforgeryTokenCookie]
+        [JwtAuthentication]
+        public IActionResult Custom()
+        {
+            var user = GetUserInfo();
+
+            if (user != null)
+            {
+                return View(BgLinkPrep(user));
+            }
+
+            return new UnauthorizedResult();
         }
 
         [GenerateAntiforgeryTokenCookie]
