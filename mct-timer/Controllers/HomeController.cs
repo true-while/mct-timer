@@ -22,11 +22,6 @@ namespace mct_timer.Controllers
         private readonly IOptions<ConfigMng> _config;
         private readonly IHttpContextAccessor _context;
         private readonly UsersContext _ac_context;
-        private readonly IBlobRepo _blobRepo;
-        private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
-        private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
-        private readonly UploadValidator _validator;
-
 
         public string CDNUrl() { return _config.Value.WebCDN; }
 
@@ -34,210 +29,17 @@ namespace mct_timer.Controllers
             TelemetryClient logger,
             IOptions<ConfigMng> config,
             IHttpContextAccessor context,
-            UsersContext ac_context,
-            UploadValidator validator,
-            IBlobRepo blobRepo)
+            UsersContext ac_context)
+
         {
             _logger = logger;
             _config = config;
             _context = context;
-            _ac_context = ac_context;
-            _blobRepo = blobRepo;
-            _validator = validator;            
+            _ac_context = ac_context;        
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
-            _blobRepo = blobRepo;
         }
-
-
-        [JwtAuthentication]
-        [HttpGet]
-        public async Task<IActionResult> DeleteBG(string bgid)
-        {
-            var token = _context.HttpContext.Request.Cookies["jwt"];
-
-            if (token != null)
-            {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
-
-                if (result)
-                {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
-
-                    if (user != null && bgid!=null)
-                    {
-
-                        if (user.Backgrounds.Any(x=>x.id == bgid)) 
-                            await _blobRepo.DeleteImageAsync(bgid);
-                        user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
-                        _ac_context.Update(user);
-                        _ac_context.SaveChanges();
-
-                        return View("Settings", BgLinkPrep(user));
-                    }
-
-                    return View("Index");
-
-                }
-            }
-            return new UnauthorizedResult();
-        }
-
-       
-        [JwtAuthentication]
-        [HttpPost]
-        [DisableFormValueModelBinding]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadPhysical()
-        {
-            if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
-            {
-                ModelState.AddModelError("File",
-                    $"The request couldn't be processed (Error 1).");
-                // Log error
-
-                return BadRequest(ModelState);
-            }
-
-            var boundary = MultipartRequestHelper.GetBoundary(
-                MediaTypeHeaderValue.Parse(Request.ContentType),
-                128); 
-            var reader = new MultipartReader(boundary, HttpContext.Request.Body);
-            var section = await reader.ReadNextSectionAsync();
-
-            while (section != null)
-            {
-                var hasContentDispositionHeader =
-                    ContentDispositionHeaderValue.TryParse(
-                        section.ContentDisposition, out var contentDisposition);
-
-                if (hasContentDispositionHeader)
-                {
-                    // This check assumes that there's a file
-                    // present without form data. If form data
-                    // is present, this method immediately fails
-                    // and returns the model error.
-                    if (!MultipartRequestHelper
-                        .HasFileContentDisposition(contentDisposition))
-                    {
-                        ModelState.AddModelError("File",
-                            $"Did you select file for uploading?");
-                        // Log error
-
-                        return BadRequest(ModelState);
-                    }
-                    else
-                    {
-                        // Don't trust the file name sent by the client. To display
-                        // the file name, HTML-encode the value.
-                        var trustedFileNameForDisplay = WebUtility.HtmlEncode(
-                                contentDisposition.FileName.Value);
-                        var trustedFileNameForFileStorage = Path.GetRandomFileName();
-
-                        // **WARNING!**
-                        // In the following example, the file is saved without
-                        // scanning the file's contents. In most production
-                        // scenarios, an anti-virus/anti-malware scanner API
-                        // is used on the file before making the file available
-                        // for download or for use by other systems. 
-                        // For more information, see the topic that accompanies 
-                        // this sample.
-
-                        var streamedFileContent = await _validator.ProcessStreamedFile(
-                            section, contentDisposition, ModelState,
-                            _permitedext, _config.Value.FileSizeLimit);
-
-                        if (!ModelState.IsValid)
-                        {
-                            return BadRequest(ModelState);
-                        }
-                        Directory.CreateDirectory(_tempFilePath);
-
-                        using (var targetStream = System.IO.File.Create(
-                            Path.Combine(_tempFilePath, trustedFileNameForFileStorage)))
-                        {
-                            await targetStream.WriteAsync(streamedFileContent);
-                            
-                            TempData["UploadeFile"] = trustedFileNameForFileStorage;
-                            TempData["UploadeName"] = trustedFileNameForDisplay;
-                            _logger.TrackTrace( 
-                                string.Format("Uploaded file '{0}' saved to '{1}' as {2}",
-                                trustedFileNameForDisplay, _tempFilePath,
-                                trustedFileNameForFileStorage));
-                        }
-                    }
-                }
-
-                // Drain any remaining section body that hasn't been consumed and
-                // read the headers for the next section.
-                section = await reader.ReadNextSectionAsync();
-            }
-
-            return new OkObjectResult(Json("{'File':[{'Successfully uploaded'}]}"));
-        }
-        
-
-        [JwtAuthentication]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadBG([Bind("File", "Location", "BgType")] Background bg)
-        {
-            
-            var token = _context.HttpContext.Request.Cookies["jwt"];
-
-            if (token != null)
-            {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
-
-                if (result)
-                {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
-
-                    if (user != null && TempData.ContainsKey("UploadeFile") && TempData.ContainsKey("UploadeName"))
-                    {
-                        bg.id = Guid.NewGuid().ToString();
-                        bg.Author = user.Name;
-                        var file = Path.Combine(_tempFilePath, Path.GetFileName((string)TempData["UploadeFile"]));
-                        var ext = Path.GetExtension((string)TempData["UploadeName"]);
-                        if (System.IO.File.Exists(file))
-                        {
-                            var mdata = new Dictionary<string, string>();
-                            try
-                            {
-                                mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
-                            }
-                            catch
-                            {
-                                _logger.TrackTrace("Cannot detect IP");
-                            }
-                            mdata["user"] = user.Email;
-                            mdata["author"] = user.Name;
-                            mdata["when"] = DateTime.Now.ToString();
-
-                            var content = new BinaryData(System.IO.File.ReadAllBytes(file));
-                            var uri = await _blobRepo.SaveImageAsync(BlobRepo.LaregeImgfolder + bg.id + ext, content, mdata);
-
-                            System.IO.File.Delete(file);
-                            bg.Url = uri.ToString();
-                            if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
-                            user.Backgrounds.Add(bg);
-
-                            _ac_context.Update(user);
-                            _ac_context.SaveChanges();
-                        }
-                    }
-
-                    return View("Settings", BgLinkPrep(user));
-                }
-            }
-            return new UnauthorizedResult();
-        }
-
 
         private User? GetUserInfo()
         {
@@ -257,23 +59,6 @@ namespace mct_timer.Controllers
             }
 
             return null;
-        }
-
-        [GenerateAntiforgeryTokenCookie]
-        [JwtAuthentication]
-        public IActionResult Settings()
-        {
-            
-
-            var user = GetUserInfo();
-
-            if (user != null)
-            {
-                //update bg images                
-                return View(BgLinkPrep(user));
-            }
-            
-            return new UnauthorizedResult();
         }
 
         public IActionResult Info()
@@ -301,23 +86,32 @@ namespace mct_timer.Controllers
             return View(info);
         }
 
-
         public IActionResult Timer(string m = "15", string z = "America/New_York", string t = "coffee")
         {
-            var user = GetUserInfo();
-            Random rn = new Random(DateTime.Now.Second);
+            var bType = (PresetType)Enum.Parse(typeof(PresetType), t, true);
 
-            var model = new mct_timer.Models.Timer()
+            User user = null;// GetUserInfo();
+
+            if (user==null)
+            {
+                user = new User();
+                user.Ampm = true;
+                user.LoadDefaultBG();
+            }
+
+            var bgList = user.Backgrounds.Where(x => x.Visible && x.BgType == bType).ToList();
+
+            Random rn = new Random(DateTime.Now.Second);
+            var curBg = bgList[rn.Next(bgList.Count())].Url;
+
+            var model = new Models.Timer()
             {
                Length = int.Parse(m),
                Timezone = z,
-               BreakType = (PresetType)Enum.Parse(typeof(PresetType), t, true),
-               Ampm = user?.Ampm ?? true,
-               BGUrl = new Uri(new Uri(_config.Value.WebCDN),(@"/l/" + t + rn.Next(string.Compare(t, "coffee", true)==0 ? 5 : 0).ToString() + ".jpg").ToLower()).ToString(),
-            };
-            
-
-
+               BreakType = bType,
+               Ampm = user.Ampm,
+               BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + curBg).ToString(),
+            }; 
 
             return View(model);
         }
@@ -328,19 +122,5 @@ namespace mct_timer.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-
-        private User BgLinkPrep(User usr)
-        {
-            if (usr.Backgrounds == null)
-                usr.Backgrounds = new List<Background>();
-
-            foreach (var bg in usr.Backgrounds)
-            {
-                bg.Url = new Uri( new Uri(_config.Value.WebCDN), 
-                    Path.Combine(BlobRepo.SmallImgfolder, Path.GetFileNameWithoutExtension(bg.Url) + ".png"))
-                    .ToString();         
-            }
-            return usr;
-        }
     }
 }

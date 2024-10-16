@@ -1,10 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 
 namespace mct_timer.Models
 {
     public class User
     {
+
+        public enum Languages
+        {
+            English =1
+        }
+
 
         [Display(Name = "Name")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Your name is required")]
@@ -22,12 +29,117 @@ namespace mct_timer.Models
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-
+        [DefaultValue(null)]
         public string DefTZ { get; set; }
-        public bool? Ampm { get; set; }
+
+        [DefaultValue(true)]
+        public bool Ampm { get; set; }
+
+        [DefaultValue(Languages.English)]
+        public Languages Language { get; set; }
+
         public List<Background> Backgrounds { get; set; }
 
+        public User() {
+            Backgrounds = new List<Background>();
+        }
 
+        public void LoadDefaultBG()
+        {
+            var bg1 = new Background()
+            {
+                id = "L0",
+                Author = "system",
+                Url = "lab0.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lab,
+                Locked = true,
+                Visible = true,
+                
+            };
+
+            var bg2 = new Background()
+            {
+                id = "W0",
+                Author = "system",
+                Url = "wait0.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+            };
+            var bg3 = new Background()
+            {
+                id = "W0",
+                Author = "system",
+                Url = "lunch0.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lunch,
+                Locked = true,
+                Visible = true,
+
+            };
+            var bg4 = new Background()
+            {
+                id = "C0",
+                Author = "system",
+                Url = "coffee0.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+            };
+            var bg5 = new Background()
+            {
+                id = "C1",
+                Author = "system",
+                Url = "coffee1.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+            };
+            var bg6 = new Background()
+            {
+                id = "C2",
+                Author = "system",
+                Url = "coffee2.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+            };
+            var bg7 = new Background()
+            {
+                id = "C3",
+                Author = "system",
+                Url = "coffee3.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+            };
+            var bg8 = new Background()
+            {
+                id = "C4",
+                Author = "system",
+                Url = "coffee4.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+            };
+
+            this.Backgrounds.AddRange(new []{ bg1,bg2,bg3,bg4,bg5,bg6,bg7,bg8});
+        }
     }
 
     public class Background
@@ -39,6 +151,10 @@ namespace mct_timer.Models
         public string Location { get; set; }
         public string LocationLink { get; set; }
         public PresetType BgType  {get;set;}
+        [DefaultValue(false)]
+        public bool Locked { get; set; }
+        [DefaultValue(true)]
+        public bool Visible { get; set; }
     }
 
         public class Login

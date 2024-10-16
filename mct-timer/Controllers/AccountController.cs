@@ -112,8 +112,10 @@ namespace mct_timer.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Name", "Email","Password")] User user)
+        public IActionResult Create([Bind("Name", "Email","Password", "DefTZ")] User user)
         {
+            //user.DefTZ = null; //TODO: could be detected from the current time zone from browser
+
             if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email))
             {
                 TempData["Error"] = "Your name, email and password required.";

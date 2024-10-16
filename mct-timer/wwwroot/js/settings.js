@@ -146,3 +146,76 @@ function updateIcons(counter) {
 
     });
 }
+
+class Settings {
+    constructor(root, defUserTZ) {
+
+        this.el = {
+            timezone: root.querySelector("#DefTZ"),
+            ampm: root.querySelector("#Ampm"),
+            lang: root.querySelector("#Language"),
+            form: root.querySelector('#form-settings')
+        };
+
+        
+            this.tz = moment.tz.guess();
+            if (!this.tz) {
+                this.tz = "America/New_York";
+            }
+
+        if (defUserTZ) this.tz = defUserTZ;
+
+    var timezonesames = [{ text: moment.tz.guess(), value: moment.tz.guess() }];
+
+    try {
+
+        timezonesames = Object.values(moment.tz._zones)
+            .filter(function (k) {
+                var name = k.name;
+                if (!name) name = k;
+                return name.indexOf('/') >= 0 && name.indexOf('Etc') != 0;
+            })
+            .map(function (k) {
+                var name = k.name;
+                if (!name) name = k;
+                var tz = name.split('|')[0];
+                var utc = moment.tz(tz).format('Z');
+                return { offset: utc, text: utc + " | " + tz, value: tz, order: parseFloat(utc.replace(':', '.')) };
+            })
+            .sort(function (a, b) {
+                return a.order - b.order;
+            });
+
+    } catch (e) {
+        appInsights.TrackException(e);
+        timezonesames = [{ text: moment.tz.guess(), value: moment.tz.guess() }];
+    }
+
+
+    for (const tz of timezonesames) {
+        const option = document.createElement("option");
+        option.text = tz.text;
+        option.value = tz.value;
+
+        if (tz.value === this.tz) {
+            option.selected = true;
+        }
+
+        this.el.timezone.add(option);
+        }
+
+
+        this.el.timezone.addEventListener("change", () => {
+            this.el.form.submit();
+        });
+
+        this.el.ampm.addEventListener("change", () => {
+            this.el.form.submit();
+        });
+
+        this.el.lang.addEventListener("change", () => {
+            this.el.form.submit();
+        });
+
+}
+}

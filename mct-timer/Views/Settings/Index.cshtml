@@ -1,0 +1,113 @@
+﻿@model mct_timer.Models.User
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div id="gbmainbg">
+    <div class="menu">
+        <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
+        <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
+    </div>
+    <div class="location">
+        <img class="option" src="~/icons/location-w.png" alt="image info" />
+    </div>
+    <div id="location-info">
+        Turkey, Caldam
+    </div>
+
+
+    <div class="form" style="width:600px" id="settings">
+        <h1>@ViewData["Title"]</h1>
+        <span class="info" style="font-size:18pt">
+            You can configure following defaults for your timer profile:
+        </span>
+        <form asp-action="Index" asp-controller="Settings" id="form-settings" name="form-settings">
+            <table>
+                <tr>
+                    <td style="text-align:right"><span class="control-label">Default TZ:</span></td>
+                    <td>
+                        <select name="DefTZ" id="DefTZ" style="padding:3px;margin:11pt;font-size:12pt">
+
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right"><span class="control-label">12 or 24 hours:</span></td>
+                    <td>
+                        <select name="Ampm" id="Ampm"
+                                style="padding:3px;margin:10px">
+                            @if (Model.Ampm)
+                            {
+                                <option selected="selected" value="true">12h</option>
+                                <option value="false">24h</option>
+
+                            }
+                            else
+                            {
+                                <option value="true">12h</option>
+                                <option value="false" selected="selected">24h</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:right"><span class="control-label">Language:</span></td>
+                    <td>
+                        <select name="Language" id="Language" style="padding:3px;margin:10px">
+                        @foreach (int lng in typeof(User.Languages).GetEnumValues())
+                        {
+                                      <option selected=""
+                                      value="@lng">@typeof(User.Languages).GetEnumName(lng)</option>
+                        }
+                    </select>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <br />
+
+        <span class="info" style="font-size:18pt">
+            You also can customize backgrounds by loading your favorite images.
+        </span>
+
+        <div>
+            <button type="button" class="submit" style="width:unset;margin:10px;padding:20px; height:unset">Custom<br />Backgrounds</button>
+            <button type="button" class="submit" style="width:unset;margin:10px;padding:20px; height:unset">Default<br />Backgrounds</button>
+        </div>
+
+        <br />
+        <span class="info" style="font-size:18pt">
+            You also can customize set of timers.
+        </span>
+
+        <div>
+            <button type="button" class="submit" style="width:unset;margin:10px;padding:20px; height:unset">Custom<br />Timers</button>
+            <button type="button" class="submit" style="width:unset;margin:10px;padding:20px; height:unset">Default<br />Timers</button>
+        </div>
+    </div>
+
+
+</div>
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
+
+    <script>
+
+        document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/settings.jpg)";
+
+        $( document ).ready(function() {
+
+               const sets = new Settings(
+                        document.querySelector("#settings"),
+                        '@Model.DefTZ'
+                   );         
+
+        });
+
+
+    </script>
+}

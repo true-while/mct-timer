@@ -167,7 +167,7 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "Settings",
     pattern: "/sets/",
-    defaults: new { controller = "Home", action = "Settings" });
+    defaults: new { controller = "Settings", action = "Index" });
 
 app.MapControllerRoute(
     name: "Info",

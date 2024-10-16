@@ -1,14 +1,11 @@
-﻿using Azure.Storage.Blobs;
+﻿
 using mct_timer.Models;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Azure.Messaging.EventGrid;
-using Microsoft.AspNetCore.Http.HttpResults;
+
 
 namespace mct_timer.Controllers
 {
