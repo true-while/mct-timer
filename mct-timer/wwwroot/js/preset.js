@@ -34,7 +34,14 @@
             minus1: root.querySelector("#minus1"),
             plus5: root.querySelector("#plus5"),
             datevalue: root.querySelector("#datevalue"),
+            deftz: root.querySelector("#def-tz") 
         };
+
+
+        this.el.deftz.addEventListener("click", () => {
+            this.el.timezone.value = moment.tz.guess();
+            this.el.timezone.dispatchEvent(new Event('change'));
+        });   
 
         this.state = this.STATE_VALID;
         this.tz = this.getCookieByName("tz");  //get cookies timezone.
@@ -258,6 +265,9 @@
         }
         return null;
     }
+
+
+
 
 }
 

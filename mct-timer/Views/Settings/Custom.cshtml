@@ -5,11 +5,12 @@
 }
 
 <div id="gbmainbg">
-    <div class="menu">
+    <div id="menu" class="menu">
         <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
+        <img class="option" src="~/icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
         <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
     </div>
-    <div class="location">
+    <div id="loc" class="location">
         <img class="option" src="~/icons/location-w.png" alt="image info" />
     </div>
     <div id="location-info">
@@ -20,11 +21,13 @@
         <div class="form" id="defaultbg">
             <h1>@ViewData["Title"]</h1>
             <span class="info">
-               You can customize your background by loading your favorite images:
+               You can provide up to 5 customized backgrounds in each category.               
             </span>
 
             <div class="error">@TempData["Error"]</div>
+        @if (ViewData["isUplodaQuote"] != null && (bool)ViewData["isUplodaQuote"])
             @await Html.PartialAsync("PartialUploadBG", new Background())
+
             @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
             
         </div>
@@ -38,10 +41,12 @@
     <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
 
     <script>
-        var upld = new CustomBg(
-            document.querySelector("#defaultbg")
-        );
-        
+
+        if (@ViewData["isUplodaQuote"].ToString().ToLower()) {
+            var upld = new CustomBg(
+                document.querySelector("#defaultbg")
+            );
+        }
 
         function getCookie(name) {
             var value = "; " + document.cookie;
@@ -73,7 +78,7 @@
                             upld.OnFileUploaded();
                             break;
                         case 400:
-                            upld.ShowValidationErrors(errors.File[0]);
+                            upld.ShowValidaitonError(errors.File[0]);
                             break;
                         default:
                             upld.ShowValidaitonError("There is a problem with your file:" + errors.File[0]);
@@ -84,16 +89,25 @@
             upld.StopProgressBar();
         }
 
-
+        function menuUpdate() {
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+        }
 
         $(document).ready(function () {
-
             document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/settings.jpg)";
-            upld.refreshIcons(0);
 
-        });
+            menuUpdate();
 
-  
+            if (upld)
+                upld.refreshIcons(0);
+
+            const bglist = new BgList(
+                document.querySelector("#bgList")
+            );
+        })
+
+        $(window).resize(() => menuUpdate());
 
 
     </script>

@@ -12,7 +12,8 @@
             whendiv: resumeroot.querySelector("#when__devider"),
             zone: resumeroot.querySelector("#zone"),
             zoneFull: resumeroot.querySelector("#zone-full"),
-            am: resumeroot.querySelector("#am") 
+            am: resumeroot.querySelector("#am"), 
+            
         };
 
         this.ampm = true;
@@ -28,6 +29,7 @@
             this.stop();            
             location.href = '/';
         });
+     
 
         //restart interval: add to the current time the timer length
         this.el.reset.addEventListener("click", () => {

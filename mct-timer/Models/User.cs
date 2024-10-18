@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using System.Collections;
 
 namespace mct_timer.Models
 {
@@ -140,6 +142,18 @@ namespace mct_timer.Models
 
             this.Backgrounds.AddRange(new []{ bg1,bg2,bg3,bg4,bg5,bg6,bg7,bg8});
         }
+
+
+        public Dictionary<PresetType, int> GetQuote()
+        {
+            var dic = new Dictionary<PresetType, int>();
+
+            foreach (PresetType tp in Enum.GetValues(typeof(PresetType))) {
+                dic[tp] = Backgrounds.Count(x => x.BgType == tp && x.Locked != true);
+            }
+            
+            return dic;
+        }
     }
 
     public class Background
@@ -148,6 +162,7 @@ namespace mct_timer.Models
         public string id { get; set; }     
         public string Author { get; set; }
         public string Url { get; set; }
+        public string Info { get; set; }
         public string Location { get; set; }
         public string LocationLink { get; set; }
         public PresetType BgType  {get;set;}

@@ -69,24 +69,67 @@ namespace mct_timer.Controllers
 
                     if (user != null && bgid!=null)
                     {
-
-                        if (user.Backgrounds.Any(x=>x.id == bgid)) 
+                        if (user.Backgrounds.Any(x => x.id == bgid && x.Locked != true))
+                        {
                             await _blobRepo.DeleteImageAsync(bgid);
-                        user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
-                        _ac_context.Update(user);
-                        _ac_context.SaveChanges();
+                            user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
+                            _ac_context.Update(user);
+                            _ac_context.SaveChanges();
+                        }
+
+                        var quote = user.GetQuote();
+                        ViewData["UplodaQuote"] = quote;
+                        ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
 
                         return View("Custom", BgLinkPrep(user));
                     }
 
-                    return View("Index");
+                    return RedirectToAction("Index", "Home");
 
                 }
             }
             return new UnauthorizedResult();
         }
 
-       
+        [JwtAuthentication]
+        [HttpGet]
+        public async Task<IActionResult> HideBG(string bgid, bool visible= false)
+        {
+            var token = _context.HttpContext.Request.Cookies["jwt"];
+
+            if (token != null)
+            {
+                JwtSecurityToken jwt;
+                var result = AuthService.GetInstance.Validate(token, out jwt);
+
+                if (result)
+                {
+                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+
+                    if (user != null && bgid != null)
+                    {
+                        var theBg = user.Backgrounds.FirstOrDefault(x => x.id == bgid);
+                        if (theBg != null)
+                        {
+                            theBg.Visible = visible;
+                            _ac_context.Update(user);
+                            _ac_context.SaveChanges();
+                        }
+                        var quote = user.GetQuote();
+                        ViewData["UplodaQuote"] = quote;
+                        ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+
+                        return View("Custom", BgLinkPrep(user));
+                    }
+
+                    return RedirectToAction("Index", "Home");
+
+                }
+            }
+            return new UnauthorizedResult();
+        }
+
         [JwtAuthentication]
         [HttpPost]
         [DisableFormValueModelBinding]
@@ -183,7 +226,7 @@ namespace mct_timer.Controllers
         [JwtAuthentication]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UploadBG([Bind("File", "Location", "BgType")] Background bg)
+        public async Task<IActionResult> UploadBG([Bind("File", "Info", "BgType")] Background bg)
         {
             
             var token = _context.HttpContext.Request.Cookies["jwt"];
@@ -230,9 +273,12 @@ namespace mct_timer.Controllers
                             _ac_context.Update(user);
                             _ac_context.SaveChanges();
                         }
-                    }
 
-                    return View("Custom", BgLinkPrep(user));
+                        var quote = user.GetQuote();
+                        ViewData["UplodaQuote"] = quote;
+                        ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                        return View("Custom", BgLinkPrep(user));
+                    }
                 }
             }
             return new UnauthorizedResult();
@@ -267,6 +313,9 @@ namespace mct_timer.Controllers
 
             if (user != null)
             {
+                var quote = user.GetQuote();
+                ViewData["UplodaQuote"] = quote;
+                ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
                 return View(BgLinkPrep(user));
             }
 
@@ -278,9 +327,13 @@ namespace mct_timer.Controllers
         public IActionResult Custom()
         {
             var user = GetUserInfo();
+           
 
             if (user != null)
-            {
+            { 
+                var quote = user.GetQuote();
+                ViewData["UplodaQuote"] = quote;
+                ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
                 return View(BgLinkPrep(user));
             }
 
@@ -294,7 +347,8 @@ namespace mct_timer.Controllers
             var user = GetUserInfo();
 
             if (user != null)
-            {            
+            {
+
                 return View(user);
             }
             

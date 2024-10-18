@@ -1,61 +1,133 @@
 ﻿@model mct_timer.Models.Background
 
+<div id="optChoise">
+    <table>
+        <tr>
+            <td>
+                <div class="submit" id="toUpload" style="cursor:pointer;padding:10px">
+                    <div><img src="~/icons/upload.png" /></div>
+                    <div>Upload</div>
+                </div>
+            </td>
+            <td>
+                <div  class="submit" id="toGenerate" style="cursor:pointer;visibility: hidden;">
+                    <div><img src="~/icons/ai.png" style="width:50px"  /></div>
+                    <div>AI Generate</div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
 
-<div style="padding-bottom:10px">
-    <div calss="info"><b>
-        Upload your new background.</b></div>
-    <div calss="info">JPEG and PNG files accepted with size limit 3 MB</div>
-    <div id="file">
+<div id="optUpload" style="display:none">
+    <form id="uploadForm" method="post" action="~/settings/UploadPhysical"
+          enctype="multipart/form-data"
+          onsubmit="javascript:AJAXSubmit(this);return false">
 
-        <form id="uploadForm" method="post" action="~/settings/UploadPhysical"
-              enctype="multipart/form-data" 
-              onsubmit="javascript:AJAXSubmit(this);return false">
-
-        <div id="upload">
-            <input id="file" type="file" name="file" class="form-control-text" />
-            <input value="Upload" id="btnUpload" type="submit" class="submit" />
+        <div calss="info">
+            <b>
+                Upload your new background.
+            </b>
         </div>
-            <div id="progress" class="progress" style="visibility:hidden;padding-top:10px">
-                <span style="width:100%;"><span id="progress-bar" class="progress-bar"></span></span>
+        <div calss="info">JPEG and PNG files accepted with size limit 3 MB</div>
+        <div>
+            <div id="upload">
+                <input id="file" type="file" name="file" class="form-control-text" />
+                <input value="Upload" id="btnUpload" type="submit" class="submit" />
+                <input type="button" value="Cancel" class="back" />
+            </div>
+            <div id="progress" class="the-progress" style="visibility:hidden">
+                <progress max="100" value="100">
+                </progress>
             </div>
             <div>
-                <output class="error" form="uploadForm" id="result" name="result"></output>
+                <output class="error" form="uploadForm" id="result" name="result"></output>                
             </div>
-
+        </div>
     </form>
-    </div>
-    <div id="details" style="display: none;">
-        <form asp-action="UploadBG">
-            <table style="width:100%">
+</div>
+
+<div id="optSubmit" style="display:none">
+    <form asp-action="UploadBG">
+        <table cellpadding="5" style="max-width:775px;">
                 <tr>
-                    <td rowspan="2">
-                        <div>
-                            <label asp-for="Location" class="control-label"></label><br />
-                            <textarea cols="25" rows="2" type="text" asp-for="Location" class="form-control-text"></textarea>
-                            <span asp-validation-for="Location" class="text-danger"></span>
-                        </div>
+                    <td >
+                        <div class="control-label-nowrap">Tell us more about your image you uploading:</div>
                     </td>
-                    <td>
-                        <div>
-                            <label class="control-label">Type:</label>
-                            <select id="BgType" name="BgType" style="padding:5px">
-                                @foreach (var val in Enum.GetValues(typeof(PresetType)))
+                    <td align="right" style="width:100%;">
+                            <label class="control-label">Break Type:</label>
+                            <select id="BgType" name="BgType" style="padding:1px;margin:10px;font-size:13pt">
+                                @foreach (PresetType val in Enum.GetValues(typeof(PresetType)))
                                 {
-                                    <option value="@val">@val</option>
+                                    var dic = (Dictionary<PresetType, int>)ViewData["UplodaQuote"];
+
+                                    if (!dic.ContainsKey(val) || (dic.ContainsKey(val) && dic[val] < 5))
+                                    {
+                                        <option value="@val">@val</option>
+                                    }
                                 }
-                            </select>
-                        </div>
+                            </select> 
                     </td>
                 </tr>
-                <tr>
-                    <td>
-                        <input id="create" style="width:180px" type="submit" value="Create" class="submit" />
-                    </td>
+            <tr>
+                <td colspan="2">
+                    <textarea id="uplInfo" style="width:100%" rows="2" type="text" asp-for="Info" class="form-control-text"></textarea>
+                    <span asp-validation-for="Info" class="text-danger"></span>
+                </td>
+            </tr>
+                <tr><td colspan="2">
+                <input style="width:180px" 
+                type="submit" value="Create" class="submit" />
+                    <input style="width:180px"
+                           type="button" value="Cancel" class="back" />
+                </td>
                 </tr>
             </table>
-        </form>
-    </div>
+    </form>
 </div>
+
+<div id="optGenerate" style="display:none">
+    <form asp-action="GenerateBG">
+        <table cellpadding="5" style="max-width:775px;">
+            <tr>
+                <td>
+                    <div class="control-label-nowrap">Explain to AI what kind of picture need to be generated:</div>
+                </td>
+                <td align="right" style="width:100%;">
+                    <label class="control-label">Break Type:</label>
+                    <select id="BgType" name="BgType" style="padding:1px;margin:10px;font-size:13pt">
+                        @foreach (PresetType val in Enum.GetValues(typeof(PresetType)))
+                        {
+                            var dic = (Dictionary<PresetType, int>)ViewData["UplodaQuote"];
+
+                            if (!dic.ContainsKey(val) || (dic.ContainsKey(val) && dic[val] < 5))
+                            {
+                                <option value="@val">@val</option>
+                            }
+                        }
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <textarea id="genInfo" style="width:100%" rows="2" type="text" asp-for="Info" class="form-control-text"></textarea>
+                    <span asp-validation-for="Info" class="text-danger"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input id="create" style="width:180px"
+                    type="submit" value="Generate" class="submit" />
+                     <input style="width:180px"
+                           type="button" value="Cancel" class="back" />
+                       </td>
+            </tr>
+        </table>
+    </form>
+
+
+</div>
+
 
 
 

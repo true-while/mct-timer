@@ -5,12 +5,12 @@
 }
 
 <div id="gbmainbg" style="overflow: auto">
-    <div class="menu">
+    <div id="menu" class="menu">
         <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
         <img class="option" src="~/icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
         <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
     </div>
-    <div class="location">
+    <div id="loc" class="location">
         <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank">
             <img class="option" src="~/icons/location-w.png" alt="image info" />
         </a>
@@ -26,11 +26,18 @@
 
     
         <div class="timer-defaults">
-                <div class="title">time zone</div>
-                <div>
-                    <select id="timezone">
-                    </select>
-                </div>
+                <table  cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="title" style="flex-wrap:nowrap">time zone</td>
+                        <td align="right"><img id="def-tz" src="~/icons/def-tz.png" height="20px" /></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <select id="timezone">
+                            </select>
+                        </td>
+                    </tr>
+                </table>
         </div>
      
 
@@ -94,7 +101,18 @@
             document.querySelector("#timer-go")
         )
 
-        document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/index.jpg)";
+       function menuUpdate()
+       {
+                outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+                outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+       }
+
+       $(document).ready(function () {
+                document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/index.jpg)";
+           menuUpdate();
+        })
+
+        $(window).resize(() => menuUpdate());
 
     </script>
 }

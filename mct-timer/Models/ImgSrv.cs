@@ -47,7 +47,7 @@ namespace mct_timer.Models
         public enum ImageSize { Small, Medium }
 
         private static Dictionary<ImageSize, (int, int)> imageDimensionsTable = new Dictionary<ImageSize, (int, int)>() {
-        { ImageSize.Small,      (80, 80) },
+        { ImageSize.Small,      (100, 100) },
         { ImageSize.Medium,     (500, 500) }
     };
 

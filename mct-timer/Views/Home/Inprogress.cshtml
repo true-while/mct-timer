@@ -3,10 +3,10 @@
 }
 
 <div id="gbmainbg">
-    <div class="menu">
+    <div id="menu" class="menu">
         <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
     </div>
-    <div class="location">
+    <div id="loc" class="location">
         <a href="https://maps.app.goo.gl/JLcJZruMAiN5MqRA9" target="_blank"><img class="option" src="~/icons/location-w.png" alt="image info" /></a>
     </div>
     <div id="location-info">
@@ -33,7 +33,18 @@
     <script type="text/javascript" src="~/js/preset.js" asp-append-version="true"></script>
 
     <script>
-        document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/inprogress.jpg)";
+
+        function menuUpdate() {
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+        }
+
+        $(document).ready(function () {
+            document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/inprogress.jpg)";
+            menuUpdate();
+        })
+
+        $(window).resize(() => menuUpdate());
 
     </script>
 }

@@ -5,6 +5,7 @@ body {
 }
 
 #gbmainbg {
+    scroll-behavior:auto;
     padding: 0px;
     margin: 0px;
     width: 100%;
@@ -21,8 +22,8 @@ body {
     display: none;
     padding: 10px;
     position: absolute;
-    right: 35px;
-    bottom: 10px;
+    right: 30px;
+    bottom: 30px;
     background-color: rgba(0,0,0,0.8);
     border-radius: 15px;
     color: lightgray;
@@ -63,47 +64,56 @@ body {
     }
 
 
-.progress {
-    height: 10px;
-    overflow: hidden;
+.the-progress {
+    background: white;
+    display: inline-block;
+    width: 100%;
+    overflow-x: hidden;
+    animation: moveInRight 3s ease-in 1s;
+    padding: 0px;
 }
 
-    .progress span {
-        display: block;
-        height: 100%;
+.the-progress progress {
+    width: 100%;
+    display: inline-block;
+    height: 10px;
+    margin: 0px;
+}
+
+    .the-progress progress[value] {
+        vertical-align: middle;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        appearance: none;
+        border: none;
     }
 
+        .the-progress progress[value]::-webkit-progress-bar {
+            background-color: lightgray;
+        }
 
-.progress-bar {
-    background-color: coral;
-    animation-duration: 3s;
-    animation-iteration-count: infinite;
-    animation-timing-function: ease-in-out;
-    animation-fill-mode: both;
-    animation: progressBar;
-}
-
-@keyframes progressBar {
+@keyframes moveInRight {
     0% {
-        width: 0;
+        text-indent: -100%;
     }
 
     100% {
-        width: 100%;
+        text-indent: 0;
     }
 }
 
-.form {
-    background-color: white;
-    color: black;
-    display: inline-block;
-    margin: 30px 30px 30px 30px;
-    padding: 30px 30px 30px 30px;
-    border-radius: 10px;
-    text-align: left;
-    border: 3px solid darkgray;
-    font: 600 24px Segoe UI;
-}
+
+    .form {
+        background-color: white;
+        color: black;
+        display: inline-block;
+        margin: 30px 30px 30px 30px;
+        padding: 30px 30px 30px 30px;
+        border-radius: 10px;
+        text-align: left;
+        border: 3px solid darkgray;
+        font: 600 24px Segoe UI;
+    }
 
 
 
@@ -175,36 +185,38 @@ body {
         background-color: whitesmoke;
     }
 
-.bglist-bg {
-    background-color: darkgreen;
-    padding: 1px;
-    width: stretch;
-    border-radius: 7px;
-}
 
-.bglist {
-    text-align: left;
-    border: 2px solid darkgreen;
-    width: 100px;
-    background-color: white;
-}
+    .bglist {
+        text-align: left;
+        border: 2px solid darkgreen;
+        width: 100px;
+        background-color: white;
+    }
 
     .bglist td {
         border: 2px solid darkgreen;
     }
 
-.bglist-title {
-    background-color: darkgreen;
-    color: white;
-    font: 600 20px Segoe UI;
-}
+    .bglist-title {
+        background-color: darkgreen;
+        color: white;
+        font: 600 20px Segoe UI;
+    }
 
-.bglist-record {
-    font: 400 14px Segoe UI;
-    color: darkslategrey;
-    background-color: white;
-}
+    .bglist-record {
+        font: 400 14px Segoe UI;
+        color: darkslategrey;
+        background-color: white;
+    }
 
-.bglist-upload {
-    font: 400 16px Segoe UI;
-}
+    .bglist-upload {
+        font: 400 16px Segoe UI;
+    }
+
+
+    .control-label-nowrap {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: block;
+    }
