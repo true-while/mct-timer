@@ -152,7 +152,7 @@ class CustomBg {
 
         };
 
-        var interval = null;
+        this.interval = new Map();
 
         this.el.backbtn.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -244,42 +244,52 @@ class CustomBg {
         refreshIcons(0);
     }
 
+
+   
+    
+    refreshTheIcon(root, theurl, img, counter) {
+
+        if (this.interval.get(theurl)) {
+            clearInterval(this.interval.get(theurl));
+            this.interval.set(theurl, null);
+        }
+
+
+        $.ajax({
+            url: theurl,
+            cache: false,
+            method: "HEAD",
+            success: function (html) {
+                img.src = theurl;
+            },
+            error: function (html) {
+                if (counter && counter < 5 && html.status == 404) {
+
+                    root.interval.set(theurl, setInterval(() => {
+
+                        var orgLink = img.getAttribute("org-src");
+
+                        if (!orgLink.includes('?')) {
+                            img.setAttribute("org-src", `${orgLink}?${Date.now()}`);
+                        } else {
+                            img.setAttribute("org-src",
+                                orgLink.slice(0, orgLink.indexOf('?') + 1) +
+                                Date.now());
+                        }
+                        root.refreshTheIcon(root, orgLink, img, counter)
+
+                    }, 2000));
+                }
+
+            }
+        });
+    }
+
     refreshIcons(counter) {
-        counter++;
-        var self = this;
 
         this.el.icons.forEach(img => {           
 
-
-            $.ajax({
-                url: img.getAttribute("org-src"),
-                cache: false,
-                success: function (html) {
-                    img.src = img.getAttribute("org-src");
-                    console.log("working");
-                    if (img.interval) {
-                        clearInterval(img.interval);
-                        img.interval = null;
-                    } else {
-                        console.log("no interval");
-                    }
-                },
-                error: function (html) {
-                    img.interval = setInterval(() => {
-                        if (!img.src.includes('?')) {
-                            img.src = `${img.src}?${Date.now()}`;
-                        } else {
-                            img.src =
-                                img.src.slice(0, img.src.indexOf('?') + 1) +
-                                Date.now();
-                        }
-                    }, 2000);
-                    if (counter && counter < 10) {
-                        var c = new CustomBg(document.querySelector("#defaultbg"))
-                        c.refreshIcons(counter)
-                    }
-                }
-            });
+            this.refreshTheIcon(this, img.getAttribute("org-src"), img ,1)
 
         });
     }

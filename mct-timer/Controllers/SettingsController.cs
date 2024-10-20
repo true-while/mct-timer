@@ -273,13 +273,15 @@ namespace mct_timer.Controllers
                             _ac_context.Update(user);
                             _ac_context.SaveChanges();
                         }
-
-                        var quote = user.GetQuote();
-                        ViewData["UplodaQuote"] = quote;
-                        ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
-                        return View("Custom", BgLinkPrep(user));
                     }
+
+
+                    var quote = user.GetQuote();
+                    ViewData["UplodaQuote"] = quote;
+                    ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                    return View("Custom", BgLinkPrep(user));
                 }
+               
             }
             return new UnauthorizedResult();
         }
