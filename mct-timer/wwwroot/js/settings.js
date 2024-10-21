@@ -91,7 +91,7 @@ class BgList {
         this.el.bgs.forEach(bg => {
 
             var img = bg.querySelector(".bg-review");
-            var src = img.src.replace('/s/','/m/');
+            var src = img.getAttribute("org-src").replace('/s/','/m/');
             var title = "Background type: " + img.getAttribute("tp") ;
             img.addEventListener('click', () => {
                 $("<div title='" + title + "'><img src='" + src + "'></div>")
@@ -106,7 +106,7 @@ class BgList {
 
             var info = bg.querySelector(".icon-info");
             info.addEventListener('click', () => {
-                $("<div><table><tr><td><img src='" + img.src + "'></td><td><div>Type: " + img.getAttribute("tp") + "</div><div>Info: " + img.getAttribute("info") + "</div><div>Author: " + img.getAttribute("author") + "</div></td></tr></table>")
+                $("<div title='Uploaded background info'><table cellpadding=10px><tr><td><img src='" + img.src + "'></td><td><div>Type: " + img.getAttribute("tp") + "</div><div>Info: " + img.getAttribute("info") + "</div><div>Author: " + img.getAttribute("author") + "</div></td></tr></table>")
                     .dialog({
                         minWidth: 300,
                         modal: true

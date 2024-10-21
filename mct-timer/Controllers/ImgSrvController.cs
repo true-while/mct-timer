@@ -62,7 +62,7 @@ namespace mct_timer.Controllers
                     if (!eventGridEvent.Topic.Contains(requesterName) || !eventGridEvent.Topic.Contains(_config.Value.SubscriptionID))
                     {
                         _tmClient.TrackException(new FormatException("event not recognized " + requesterName));
-                        return new OkObjectResult("event not recognized " + requesterName); //validation does not looks good but do not retry trigger
+                        return new OkObjectResult("event not recognized "); //validation does not looks good but do not retry trigger
                     }
                     _tmClient.TrackTrace(data.url);
 
