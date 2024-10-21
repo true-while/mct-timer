@@ -68,7 +68,7 @@ BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName
 builder.Services.AddSingleton<IBlobRepo>(blob);
 
 // Dalle generator
-DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"]);
+DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"], ai);
 builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
 
 //KeyVault
@@ -207,7 +207,10 @@ app.MapControllerRoute(
     pattern: "/UploadPhysical",
     defaults: new { controller = "Home", action = "UploadPhysical" });
 
-
+app.MapControllerRoute(
+    name: "AvTest",
+    pattern: "/avtest",
+    defaults: new { controller = "Settings", action = "AvTest" });
 
 app.MapGet("/test", () => "OK!")
     .RequireAuthorization();

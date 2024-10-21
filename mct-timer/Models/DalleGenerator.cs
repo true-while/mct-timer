@@ -1,6 +1,8 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
 using Azure.AI.OpenAI.Images;
+using Azure.Core;
+using Microsoft.ApplicationInsights;
 using OpenAI.Images;
 using System.ClientModel;
 
@@ -11,7 +13,7 @@ namespace mct_timer.Models
     {
 
         public Task<GeneratedImage> GetImage(string promt);
-
+        public bool TestConnection();
 
     }
 
@@ -20,12 +22,31 @@ namespace mct_timer.Models
         string _endpoint;
         string _key;
         string _model;
+        TelemetryClient _ai;
 
-        public DalleGenerator(string endpoint, string key, string model) { 
+        public DalleGenerator(string endpoint, string key, string model, TelemetryClient ai) { 
             _endpoint = endpoint;
             _key = key;
             _model = model;
+            _ai = ai;
         }
+
+        public bool TestConnection()
+        {
+            try
+            {
+                AzureKeyCredential credential = new AzureKeyCredential(_key);
+                AzureOpenAIClient azureClient = new AzureOpenAIClient(new Uri(_endpoint), credential);
+                ImageClient client = azureClient.GetImageClient(_model);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _ai.TrackException(ex);
+                return false;
+            }
+         }
+
 
         public async Task<GeneratedImage> GetImage(string promt = "background image for my site")
         {    
@@ -46,11 +67,5 @@ namespace mct_timer.Models
         }
     }
 
-    public class DalleTest : IDalleGenerator
-    {
-        public Task<GeneratedImage> GetImage(string promt)
-        {
-            return new Task<GeneratedImage>(() => null);
-        }
-    }
+
 }

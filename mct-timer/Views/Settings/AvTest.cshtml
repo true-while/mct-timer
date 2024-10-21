@@ -1,0 +1,39 @@
+﻿@model mct_timer.Models.AvTest
+
+<div>
+    <h4>Availability Test</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            CDN Config
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GetConfigValue)
+        </dd>
+        <dt class = "col-sm-2">
+            Keys
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GetKeyvault);
+        </dd>
+        <dt class="col-sm-2">
+            Blobs
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.GetBlobRepo)
+        </dd>
+        <dt class = "col-sm-2">
+            Cosmos
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GetCosmosDB)
+        </dd>
+        <dt class = "col-sm-2">
+            Dalle
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.GetDalle )
+        </dd>
+    </dl>
+</div>
+

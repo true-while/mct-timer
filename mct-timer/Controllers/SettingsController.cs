@@ -26,7 +26,8 @@ namespace mct_timer.Controllers
         private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
         private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
         private readonly UploadValidator _validator;
-
+        private readonly IDalleGenerator _dalle;
+        private readonly IKeyVaultMng _keyVaultMng;
 
         public string CDNUrl() { return _config.Value.WebCDN; }
 
@@ -36,20 +37,36 @@ namespace mct_timer.Controllers
             IHttpContextAccessor context,
             UsersContext ac_context,
             UploadValidator validator,
-            IBlobRepo blobRepo)
+            IBlobRepo blobRepo,
+            IKeyVaultMng keyVault,
+            IDalleGenerator dalle)
         {
             _logger = logger;
             _config = config;
             _context = context;
             _ac_context = ac_context;
             _blobRepo = blobRepo;
-            _validator = validator;            
+            _validator = validator; 
+            _dalle = dalle;
+            _keyVaultMng = keyVault;
+            
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
             _blobRepo = blobRepo;
         }
 
+
+        public async Task<IActionResult> AvTest()
+        {
+            var avtest = new AvTest(_config, 
+                _blobRepo, 
+                _ac_context,
+                _keyVaultMng,
+                _dalle);
+
+            return View(avtest);
+        }
 
         [JwtAuthentication]
         [HttpGet]

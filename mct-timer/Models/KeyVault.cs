@@ -13,6 +13,7 @@ namespace mct_timer.Models
     {
         public string Decrypt(string txt);
         public string Encrypt(string txt);
+        public string GetKeyPublic();
     }
 
 
@@ -51,6 +52,14 @@ namespace mct_timer.Models
                 _appInsights.TrackException(ex);
             }
         }
+
+
+        public string GetKeyPublic()
+        {
+            if (_crypto == null) Init();
+            return  _crypto.KeyId;
+        }
+
 
         public string Encrypt(string txt)
         {

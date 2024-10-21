@@ -23,6 +23,7 @@ namespace mct_timer.Models
         public Task<bool> DeleteImageAsync(String name);
         public Task<bool> TransformMediumFileAsync(string fileName);
         public Task<bool> TransformSmallFileAsync(string fileName);
+        public Uri  TestConnection();
     }
 
     public class BlobRepo : IBlobRepo
@@ -63,6 +64,12 @@ namespace mct_timer.Models
 
                 _client.CreateIfNotExists();
             }
+        }
+
+        public Uri TestConnection()
+        {
+            CreateContainer();
+            return _client.Uri;
         }
 
         public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
