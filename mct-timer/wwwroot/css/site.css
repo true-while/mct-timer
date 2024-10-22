@@ -5,7 +5,6 @@ body {
 }
 
 #gbmainbg {
-
     padding: 0px;
     margin: 0px;
     width: 100%;
@@ -13,6 +12,7 @@ body {
     background: url(../bg-lib/default.jpg);
     background-repeat: no-repeat;
     background-size: cover;
+    background-position: center;
     border: none;
     overflow: hidden;
 }

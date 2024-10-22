@@ -102,7 +102,7 @@ namespace mct_timer.Controllers
             var bgList = user.Backgrounds.Where(x => x.Visible && x.BgType == bType).ToList();
 
             Random rn = new Random(DateTime.Now.Second);
-            var curBg = bgList[rn.Next(bgList.Count())].Url;
+            var curBg = bgList[rn.Next(0,bgList.Count())].Url;
 
             var model = new Models.Timer()
             {

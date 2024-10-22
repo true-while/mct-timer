@@ -48,7 +48,7 @@ namespace mct_timer.Models
 
         public void LoadDefaultBG()
         {
-            var bg1 = new Background()
+            var bgl0 = new Background()
             {
                 id = "L0",
                 Author = "system",
@@ -61,7 +61,46 @@ namespace mct_timer.Models
                 
             };
 
-            var bg2 = new Background()
+            var bgl1 = new Background()
+            {
+                id = "L1",
+                Author = "system",
+                Url = "lab1.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lab,
+                Locked = true,
+                Visible = true,
+
+            };
+
+
+            var bgl2 = new Background()
+            {
+                id = "L2",
+                Author = "system",
+                Url = "lab2.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lab,
+                Locked = true,
+                Visible = true,
+
+            };
+            var bgl3 = new Background()
+            {
+                id = "L3",
+                Author = "system",
+                Url = "lab3.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lab,
+                Locked = true,
+                Visible = true,
+
+            };
+
+            var bgw0 = new Background()
             {
                 id = "W0",
                 Author = "system",
@@ -72,9 +111,47 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
-            var bg3 = new Background()
+
+
+            var bgw1 = new Background()
             {
-                id = "W0",
+                id = "W1",
+                Author = "system",
+                Url = "wait1.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+            };
+
+            var bgw2 = new Background()
+            {
+                id = "W2",
+                Author = "system",
+                Url = "wait2.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+            };
+
+            var bgw3 = new Background()
+            {
+                id = "W3",
+                Author = "system",
+                Url = "wait3.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+            };
+
+            var bgln0 = new Background()
+            {
+                id = "LN0",
                 Author = "system",
                 Url = "lunch0.jpg",  //short url just name of the file
                 Location = "",
@@ -84,7 +161,46 @@ namespace mct_timer.Models
                 Visible = true,
 
             };
-            var bg4 = new Background()
+            var bgln1 = new Background()
+            {
+                id = "LN1",
+                Author = "system",
+                Url = "lunch1.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lunch,
+                Locked = true,
+                Visible = true,
+
+            };
+            
+            var bgln2 = new Background()
+            {
+                id = "LN2",
+                Author = "system",
+                Url = "lunch2.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lunch,
+                Locked = true,
+                Visible = true,
+
+            }; 
+            
+            var bgln3 = new Background()
+            {
+                id = "LN3",
+                Author = "system",
+                Url = "lunch3.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Lunch,
+                Locked = true,
+                Visible = true,
+
+            };
+
+            var bgc0 = new Background()
             {
                 id = "C0",
                 Author = "system",
@@ -95,7 +211,7 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
-            var bg5 = new Background()
+            var bgc1 = new Background()
             {
                 id = "C1",
                 Author = "system",
@@ -106,7 +222,7 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
-            var bg6 = new Background()
+            var bgc2 = new Background()
             {
                 id = "C2",
                 Author = "system",
@@ -117,7 +233,7 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
-            var bg7 = new Background()
+            var bgc3 = new Background()
             {
                 id = "C3",
                 Author = "system",
@@ -128,7 +244,7 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
-            var bg8 = new Background()
+            var bgc4 = new Background()
             {
                 id = "C4",
                 Author = "system",
@@ -139,8 +255,25 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
+            var bgc5 = new Background()
+            {
+                id = "C5",
+                Author = "system",
+                Url = "coffee5.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+            };
 
-            this.Backgrounds.AddRange(new []{ bg1,bg2,bg3,bg4,bg5,bg6,bg7,bg8});
+            this.Backgrounds.AddRange(new []{ 
+                bgc0,bgc1,bgc2,bgc3,bgc4,bgc5,
+                bgl0,bgl1,bgl2,bgl3,
+                bgln0,bgln1,bgln2,bgln3,
+                bgw0,bgw1,bgw2,bgw3
+
+            });
         }
 
 
