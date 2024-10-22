@@ -90,14 +90,16 @@ namespace mct_timer.Controllers
         {
             var bType = (PresetType)Enum.Parse(typeof(PresetType), t, true);
 
-            User user = null;// GetUserInfo();
+            User user = GetUserInfo();
 
             if (user==null)
             {
                 user = new User();
                 user.Ampm = true;
-                user.LoadDefaultBG();
+                
             }
+
+            user.LoadDefaultBG();
 
             var bgList = user.Backgrounds.Where(x => x.Visible && x.BgType == bType).ToList();
 

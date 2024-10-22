@@ -262,6 +262,7 @@ namespace mct_timer.Controllers
                     {
                         bg.id = Guid.NewGuid().ToString();
                         bg.Author = user.Name;
+                        bg.Visible = true;
                         var file = Path.Combine(_tempFilePath, Path.GetFileName((string)TempData["UploadeFile"]));
                         var ext = Path.GetExtension((string)TempData["UploadeName"]);
                         if (System.IO.File.Exists(file))
@@ -280,10 +281,10 @@ namespace mct_timer.Controllers
                             mdata["when"] = DateTime.Now.ToString();
 
                             var content = new BinaryData(System.IO.File.ReadAllBytes(file));
-                            var uri = await _blobRepo.SaveImageAsync(BlobRepo.LaregeImgfolder + bg.id + ext, content, mdata);
+                            var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ext).ToLower(), content, mdata);
 
                             System.IO.File.Delete(file);
-                            bg.Url = uri.ToString();
+                            bg.Url = Path.GetFileName( uri.ToString());
                             if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
                             user.Backgrounds.Add(bg);
 
