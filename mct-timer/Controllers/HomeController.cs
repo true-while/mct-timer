@@ -99,12 +99,9 @@ namespace mct_timer.Controllers
                 
             }
 
-            user.LoadDefaultBG();
+            user.LoadDefaultBG(); //add default BGs.
 
             var bgList = user.Backgrounds.Where(x => x.Visible && x.BgType == bType).ToList();
-
-            Random rn = new Random(DateTime.Now.Second);
-            var curBg = bgList[rn.Next(0,bgList.Count())].Url;
 
             var model = new Models.Timer()
             {
@@ -112,8 +109,15 @@ namespace mct_timer.Controllers
                Timezone = z,
                BreakType = bType,
                Ampm = user.Ampm,
-               BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + curBg).ToString(),
-            }; 
+             };
+
+            Random rn = new Random(DateTime.Now.Second);
+            var index = rn.Next(0, bgList.Count());
+
+            if (bgList.Count > 0)             
+                model.BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + bgList[index].Url).ToString();
+            else
+                model.BGUrl = "~/bg-lib/default.png";
 
             return View(model);
         }

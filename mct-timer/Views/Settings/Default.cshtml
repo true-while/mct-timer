@@ -1,0 +1,68 @@
+﻿@model mct_timer.Models.User
+
+@{
+    ViewData["Title"] = "Settings";
+}
+
+<div id="gbmainbg">
+    <div id="menu" class="menu">
+        <img class="option" src="~/icons/home-w.png" alt="back to home" onclick="javascript:location.href = '/'" />
+        <img class="option" src="~/icons/gear-w.png" alt="settings" onclick="javascript:location.href='/sets'" />
+        <img class="option" src="~/icons/info-w.png" alt="info" onclick="javascript:location.href='/info'" />
+    </div>
+    <div id="loc" class="location">
+        <img class="option" src="~/icons/location-w.png" alt="image info" />
+    </div>
+    <div id="location-info">
+        Turkey, Caldam 
+    </div>
+
+
+        <div class="form" id="defaultbg">
+            <h1>@ViewData["Title"]</h1>
+            <span class="info">
+            The following backgrounds are included in the default settings. You can hide to be viewed from the timer.
+        </span>
+
+            <div class="error">@TempData["Error"]</div>
+            @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
+            
+        </div>
+</div>
+
+
+
+
+@section Scripts
+{
+    <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
+
+    <script>
+
+
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+
+          function menuUpdate() {
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+        }
+
+        $(document).ready(function () {
+            document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/settings.jpg)";
+
+            menuUpdate();
+
+            const bglist = new BgList(
+                document.querySelector("#bgList")
+            );
+        })
+
+        $(window).resize(() => menuUpdate());
+
+
+    </script>
+}

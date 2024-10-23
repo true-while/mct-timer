@@ -1,8 +1,5 @@
 ﻿@model IEnumerable<mct_timer.Models.Background>
 
-@{
-    ViewData["Title"] = "View";
-}
     <table id="bgList">
             @foreach (PresetType tp in Enum.GetValues(typeof(PresetType))) {
             var items = Model.Where(x => x.BgType == (PresetType)tp);
@@ -12,31 +9,11 @@
                 <tr><td>
                         @foreach (var item in items )
                         {
-                            <div class="bg-item">
-                                <table cellpadding="0" cellspacing="0" class="bg-table">
-                                    <tr><td width="100%" valign="middle" align="center">
-                                        <img class="bg-review"
-                                             org-src="@Html.DisplayFor(modelItem => item.Url)"
-                                             info="@Html.DisplayFor(modelItem => item.Info)"
-                                             tp="@Html.DisplayFor(modelItem => item.BgType)"
-                                             author="@Html.DisplayFor(modelItem => item.Author)"
-                                             src="~/icons/def-img.png"
-                                             style="height:100px" />
-                                    </td></tr>
-                                <tr><td align="center">
-                                    <img class="icon-info" alt="Info" src="~/icons/info-b.png" style="width:30px;cursor:pointer">&nbsp;
-                                    @if (item.Visible) {
-                                            <a href="@Url.Action("HideBG", "Settings", new {  bgid=item.id, visible=false })" title="Hide Background"><img alt="Delete" src="~/icons/eye.png" style="width:30px"></a>
-                                    }else{
-                                            <a href="@Url.Action("HideBG", "Settings", new {  bgid=item.id, visible=true  })" title="Show Background"><img alt="Delete" src="~/icons/noeye.png" style="width:30px"></a>
-                                     }&nbsp;
-                                    <a href="@Url.Action("DeleteBG", "Settings", new {  bgid=item.id })"
-                                                  title="Delete Background"><img alt="Delete" src="~/icons/del.png" style="width:30px"></a>
-                                </td></tr>
-                                </table>
-                             </div>
+                            if (item.Locked)
+                                @await Html.PartialAsync("BG-Default", item)
+                            else
+                                @await Html.PartialAsync("BG-Custom", item)
 
-                               
                         }
                 </td></tr>
                 } 

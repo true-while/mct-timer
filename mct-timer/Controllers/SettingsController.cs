@@ -110,6 +110,49 @@ namespace mct_timer.Controllers
 
         [JwtAuthentication]
         [HttpGet]
+        public async Task<IActionResult> HideDefBG(string bgid, bool visible = false)
+        {
+            var token = _context.HttpContext.Request.Cookies["jwt"];
+
+            if (token != null)
+            {
+                JwtSecurityToken jwt;
+                var result = AuthService.GetInstance.Validate(token, out jwt);
+
+                if (result)
+                {
+                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+
+                    if (user != null && bgid != null)
+                    {
+                        if (user.DefBGHidden == null) user.DefBGHidden = new Dictionary<string, bool>();
+                        
+                        if (user.DefBGHidden.ContainsKey(bgid))
+                            user.DefBGHidden[bgid] = visible;
+                        else
+                            user.DefBGHidden.Add(bgid, visible);
+
+                        _ac_context.Update(user);
+                        _ac_context.SaveChanges();
+
+                        user.CleanAllBG();
+
+                        user.LoadDefaultBG();
+
+                        return View("Default", BgLinkPrep(user));
+                    }
+
+                    return RedirectToAction("Index", "Home");
+
+                }
+            }
+            return new UnauthorizedResult();
+        }
+
+
+        [JwtAuthentication]
+        [HttpGet]
         public async Task<IActionResult> HideBG(string bgid, bool visible= false)
         {
             var token = _context.HttpContext.Request.Cookies["jwt"];
@@ -231,9 +274,6 @@ namespace mct_timer.Controllers
                     }
                 }
 
-                // Drain any remaining section body that hasn't been consumed and
-                // read the headers for the next section.
-                //section = await reader.ReadNextSectionAsync();
             }
 
             return new OkObjectResult(Json("{'File':[{'Successfully uploaded'}]}"));
@@ -333,9 +373,10 @@ namespace mct_timer.Controllers
 
             if (user != null)
             {
-                var quote = user.GetQuote();
-                ViewData["UplodaQuote"] = quote;
-                ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                user.CleanAllBG();
+
+                user.LoadDefaultBG(); //loading default BG
+
                 return View(BgLinkPrep(user));
             }
 

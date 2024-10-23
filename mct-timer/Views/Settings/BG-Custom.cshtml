@@ -1,0 +1,34 @@
+﻿@model mct_timer.Models.Background
+
+<div class="bg-item">
+    <table cellpadding="0" cellspacing="0" class="bg-table">
+        <tr>
+            <td width="100%" valign="middle" align="center">
+
+                <img class="bg-review"
+                     org-src="@Html.DisplayFor(modelItem => Model.Url)"
+                     info="@Html.DisplayFor(modelItem => Model.Info)"
+                     tp="@Html.DisplayFor(modelItem => Model.BgType)"
+                     author="@Html.DisplayFor(modelItem => Model.Author)"
+                     src="~/icons/def-img.png"
+                      />                                       
+                                    </td></tr>
+                                <tr><td align="center">
+                                    <img class="icon-info" alt="Info" src="~/icons/info-b.png" style="width:30px;cursor:pointer">&nbsp;
+                @if (Model.Visible)
+                {
+                    <a href="@Url.Action("HideBG", "Settings", new {  bgid=Model.id, visible=false })" title="Hide Background"><img alt="Delete" src="~/icons/eye.png" style="width:30px"></a>
+                }
+                else
+                {
+                    <a href="@Url.Action("HideBG", "Settings", new {  bgid=Model.id, visible=true  })" title="Show Background"><img alt="Delete" src="~/icons/noeye.png" style="width:30px"></a>
+                }
+                &nbsp;
+
+                <a href="@Url.Action("DeleteBG", "Settings", new {  bgid=Model.id })"
+                       title="Delete Background"><img alt="Delete" src="~/icons/del.png" style="width:30px"></a>
+            </td>
+        </tr>
+    </table>
+</div>
+

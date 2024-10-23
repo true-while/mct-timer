@@ -40,10 +40,13 @@ namespace mct_timer.Models
         [DefaultValue(Languages.English)]
         public Languages Language { get; set; }
 
+        public Dictionary<string,bool> DefBGHidden { get; set; }
+
         public List<Background> Backgrounds { get; set; }
 
         public User() {
             Backgrounds = new List<Background>();
+            DefBGHidden = new Dictionary<string,bool>();
         }
 
         public void LoadDefaultBG()
@@ -60,7 +63,6 @@ namespace mct_timer.Models
                 Visible = true,
                 
             };
-
             var bgl1 = new Background()
             {
                 id = "L1",
@@ -73,8 +75,6 @@ namespace mct_timer.Models
                 Visible = true,
 
             };
-
-
             var bgl2 = new Background()
             {
                 id = "L2",
@@ -110,9 +110,8 @@ namespace mct_timer.Models
                 BgType = PresetType.Wait,
                 Locked = true,
                 Visible = true,
+                Info = "Default background"
             };
-
-
             var bgw1 = new Background()
             {
                 id = "W1",
@@ -123,8 +122,8 @@ namespace mct_timer.Models
                 BgType = PresetType.Wait,
                 Locked = true,
                 Visible = true,
+                Info = "Default background"
             };
-
             var bgw2 = new Background()
             {
                 id = "W2",
@@ -135,8 +134,8 @@ namespace mct_timer.Models
                 BgType = PresetType.Wait,
                 Locked = true,
                 Visible = true,
+                Info = "Default background"
             };
-
             var bgw3 = new Background()
             {
                 id = "W3",
@@ -147,6 +146,7 @@ namespace mct_timer.Models
                 BgType = PresetType.Wait,
                 Locked = true,
                 Visible = true,
+                Info = "Default background"
             };
 
             var bgln0 = new Background()
@@ -159,7 +159,7 @@ namespace mct_timer.Models
                 BgType = PresetType.Lunch,
                 Locked = true,
                 Visible = true,
-
+                Info = "Default background"
             };
             var bgln1 = new Background()
             {
@@ -171,9 +171,8 @@ namespace mct_timer.Models
                 BgType = PresetType.Lunch,
                 Locked = true,
                 Visible = true,
-
-            };
-            
+                Info = "Default background"
+            };            
             var bgln2 = new Background()
             {
                 id = "LN2",
@@ -184,9 +183,8 @@ namespace mct_timer.Models
                 BgType = PresetType.Lunch,
                 Locked = true,
                 Visible = true,
-
-            }; 
-            
+                Info = "Default background"
+            };             
             var bgln3 = new Background()
             {
                 id = "LN3",
@@ -197,7 +195,7 @@ namespace mct_timer.Models
                 BgType = PresetType.Lunch,
                 Locked = true,
                 Visible = true,
-
+                Info = "Default background"
             };
 
             var bgc0 = new Background()
@@ -210,6 +208,7 @@ namespace mct_timer.Models
                 BgType = PresetType.Coffee,
                 Locked = true,
                 Visible = true,
+                Info = "Default background"
             };
             var bgc1 = new Background()
             {
@@ -274,6 +273,13 @@ namespace mct_timer.Models
                 bgw0,bgw1,bgw2,bgw3
 
             });
+
+
+            if (this.DefBGHidden == null) this.DefBGHidden = new Dictionary<string, bool>();
+            this.Backgrounds.ForEach(bg =>
+            {
+                bg.Visible = this.DefBGHidden.ContainsKey(bg.id) ? this.DefBGHidden[bg.id] : true;
+            });
         }
 
 
@@ -287,6 +293,11 @@ namespace mct_timer.Models
             
             return dic;
         }
+
+        internal void CleanAllBG()
+        {
+            this.Backgrounds = new List<Background>();
+        }
     }
 
     public class Background
@@ -295,12 +306,18 @@ namespace mct_timer.Models
         public string id { get; set; }     
         public string Author { get; set; }
         public string Url { get; set; }
+        [DefaultValue("")]
         public string Info { get; set; }
+        [DefaultValue("")]
         public string Location { get; set; }
         public string LocationLink { get; set; }
+
+        [DefaultValue(PresetType.Coffee)]
         public PresetType BgType  {get;set;}
+
         [DefaultValue(false)]
         public bool Locked { get; set; }
+
         [DefaultValue(true)]
         public bool Visible { get; set; }
     }
