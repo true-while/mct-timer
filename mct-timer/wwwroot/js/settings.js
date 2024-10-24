@@ -106,9 +106,9 @@ class BgList {
 
             var info = bg.querySelector(".icon-info");
             info.addEventListener('click', () => {
-                $("<div title='Uploaded background info'><table cellpadding=10px><tr><td><img src='" + img.src + "'></td><td><div>Type: " + img.getAttribute("tp") + "</div><div>Info: " + img.getAttribute("info") + "</div><div>Author: " + img.getAttribute("author") + "</div></td></tr></table>")
+                $("<div title='Uploaded background info'><table cellpadding=10px><tr><td><img style='width:200px' src='" + src + "'></td><td><div>Type: " + img.getAttribute("tp") + "</div><div>Info: " + img.getAttribute("info") + "</div><div>Author: " + img.getAttribute("author") + "</div></td></tr></table>")
                     .dialog({
-                        minWidth: 300,
+                        minWidth: 400,
                         modal: true
                     }).position({
                         my: "center",

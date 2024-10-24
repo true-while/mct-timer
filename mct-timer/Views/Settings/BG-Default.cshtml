@@ -4,14 +4,14 @@
     <table cellpadding="0" cellspacing="0" class="bg-table">
         <tr>
             <td width="100%" valign="middle" align="center">
-                    <img class="bg-review"
-                         org-src="@Html.DisplayFor(modelItem => Model.Url)"
-                         info="@Html.DisplayFor(modelItem => Model.Info)"
-                         tp="@Html.DisplayFor(modelItem => Model.BgType)"
-                         author="@Html.DisplayFor(modelItem => Model.Author)"
-                         src="@Model.Url" />
-                                       
-                                    </td></tr>
+
+                <div class="bg-review"
+                     org-src="@Html.DisplayFor(modelItem => Model.Url)"
+                     info="@Html.DisplayFor(modelItem => Model.Info)"
+                     tp="@Html.DisplayFor(modelItem => Model.BgType)"
+                     author="@Html.DisplayFor(modelItem => Model.Author)"
+                     style="background-image: url(@Html.DisplayFor(modelItem => Model.Url));">
+                </div></td></tr>
                                 <tr><td align="center">
                                     <img class="icon-info" alt="Info" src="~/icons/info-b.png" style="width:30px;cursor:pointer">&nbsp;
                 @if (Model.Visible)

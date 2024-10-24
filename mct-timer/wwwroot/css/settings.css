@@ -69,6 +69,12 @@
         margin: 0px;
     }
 
-    .bg-item .bg-table .bg-review {
-        cursor: pointer
-    }
+        .bg-item .bg-table .bg-review {
+            cursor: pointer;
+            border-radius: 10px;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            width: 100px;
+            height: 100px;
+        }

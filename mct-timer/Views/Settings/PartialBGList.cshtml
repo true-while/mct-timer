@@ -5,7 +5,7 @@
             var items = Model.Where(x => x.BgType == (PresetType)tp);
                 @if (items.Count()>0)   {
             
-                <tr><td><div class="info">Backgrounds for <b>@tp.ToString()</b></div></td></tr>
+                <tr><td><div class="info">Backgrounds for <b>@tp.ToString()</b> timer:</div></td></tr>
                 <tr><td>
                         @foreach (var item in items )
                         {
