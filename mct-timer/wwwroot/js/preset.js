@@ -33,10 +33,27 @@
             plus1: root.querySelector("#plus1"),
             minus1: root.querySelector("#minus1"),
             plus5: root.querySelector("#plus5"),
+            plus10: root.querySelector("#plus10"),
             datevalue: root.querySelector("#datevalue"),
-            deftz: root.querySelector("#def-tz") 
+            brtype: root.querySelector("#brtype"),
+            deftz: root.querySelector("#def-tz"),
+            btypes: root.querySelectorAll('.type-icons'),
+            defbtype: root.querySelector('#def-type-icons') 
         };
 
+
+        this.el.defbtype.style.border = '3px solid black'; //default selection
+        this.el.brtype.value = 'wait';//default selection
+
+        this.el.btypes.forEach(btn => {
+            btn.addEventListener("click",
+                function () {
+                    btn.parentElement.querySelectorAll('.type-icons').forEach(otherbtn => { otherbtn.style.border = 'none'; });
+                    btn.style.border = '3px solid black';
+                    document.querySelector("#brtype").value = btn.getAttribute('tp');
+
+                });
+        })
 
         this.el.deftz.addEventListener("click", () => {
             this.el.timezone.value = moment.tz.guess();
@@ -127,6 +144,10 @@
             this.addMinutes(5);
         });
 
+        this.el.plus10.addEventListener("click", () => {
+            this.addMinutes(10);
+        });
+
         this.el.tophour.addEventListener("click", () => {
             const currrentDuration = this.getTimerDuration().tz(this.tz, true);
 
@@ -157,7 +178,7 @@
                 moment.duration(durationMoment.diff(moment().tz(this.tz))).asSeconds() / 60
             );
 
-            this.startTimer(this.tz, minutes, 'wait');
+            this.startTimer(this.tz, minutes, this.el.brtype.value);
         });
     }
 

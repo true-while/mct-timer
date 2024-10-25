@@ -14,7 +14,8 @@ body {
     background-size: cover;
     background-position: center;
     border: none;
-    overflow: hidden;
+    overflow: auto;
+
 }
 
 
@@ -194,7 +195,7 @@ body {
     }
 
     .bglist td {
-        border: 2px solid darkgreen;
+        border: 2px solid darkgreen;        
     }
 
     .bglist-title {

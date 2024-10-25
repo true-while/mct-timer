@@ -1,8 +1,5 @@
 ﻿// common scripts for the website
 
-
-
-
 function outOfScrollPosition(root, element) {
     try {
         var rPos = root.offsetWidth - root.scrollWidth
