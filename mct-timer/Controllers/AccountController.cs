@@ -1,4 +1,6 @@
-﻿using mct_timer.Models;
+﻿using Azure.Core.Serialization;
+using Ixnas.AltchaNet;
+using mct_timer.Models;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +21,8 @@ namespace mct_timer.Controllers
         private readonly AuthService _auth;
         private readonly UsersContext _ac_context;
         private readonly IKeyVaultMng _keyvault;
-
+        private readonly AltchaService _altcha;
+        private readonly TelemetryClient _logger;
         private readonly CookieOptions cOptions = new CookieOptions()
         {
             Expires = DateTime.Now.AddDays(90),
@@ -36,13 +39,16 @@ namespace mct_timer.Controllers
               IOptions<ConfigMng> config,
               TelemetryClient logger,
               IKeyVaultMng keyvault,
-              UsersContext ac_context
+              UsersContext ac_context,
+              AltchaService altcha
               )
         {
             _context = context;
             _config = config;
             _ac_context = ac_context;
             _keyvault = keyvault;
+            _altcha = altcha;
+            _logger = logger;
 
             ViewData["CDNUrl"] = _config.Value.WebCDN;
 
@@ -54,9 +60,16 @@ namespace mct_timer.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(Login login)
+        public async Task<IActionResult> Login(Login login)
         {
-            if (login.email==null || login.password == null)
+            var validationResult = await _altcha.Validate(login.Altcha);
+            if (!validationResult.IsValid)
+            {
+                TempData["Error"] = "Please complete captcha.";
+                _logger.TrackEvent($"altcha validation fail from {login.email}");
+                return View();
+            }
+            else if (login.email==null || login.password == null)
             {
                 TempData["Error"] = "Not empty password and email required for login in";
                 return View();
@@ -81,6 +94,15 @@ namespace mct_timer.Controllers
             }
 
 
+        }
+        
+        
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult GetAltcha()
+        {
+            var challenge = _altcha.Generate();
+             return Json(challenge);
         }
 
         [AllowAnonymous]
@@ -112,11 +134,16 @@ namespace mct_timer.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Create([Bind("Name", "Email","Password", "DefTZ")] User user)
+        public async Task<IActionResult> Create([Bind("Name", "Email","Password", "DefTZ", "Altcha")] User user)
         {
             //user.DefTZ = null; //TODO: could be detected from the current time zone from browser
 
-            if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email))
+            var validationResult = await _altcha.Validate(user.Altcha);
+            if (!validationResult.IsValid)
+            {
+                TempData["Error"] = "Please complete captcha.";                
+                
+            }else if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Password) || string.IsNullOrEmpty(user.Email))
             {
                 TempData["Error"] = "Your name, email and password required.";
             }

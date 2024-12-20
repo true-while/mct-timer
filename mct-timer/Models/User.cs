@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using System.Collections;
+using System.Text.Json.Serialization;
 
 namespace mct_timer.Models
 {
@@ -33,6 +34,10 @@ namespace mct_timer.Models
 
         [DefaultValue(null)]
         public string DefTZ { get; set; }
+
+        [DefaultValue(null)]
+        [JsonIgnore]
+        public string Altcha { get; set; }
 
         [DefaultValue(true)]
         public bool Ampm { get; set; }
@@ -326,6 +331,10 @@ namespace mct_timer.Models
 
         public class Login
     {
+        [HiddenInput()]
+        [JsonIgnore]
+        public string Altcha { get; set; }
+
         [Display(Name = "Email")]
         [Required(AllowEmptyStrings = false, ErrorMessage = "Your email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]

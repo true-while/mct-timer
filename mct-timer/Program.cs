@@ -18,6 +18,8 @@ using Azure.Core;
 using Azure.Identity;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Azure.Cosmos;
+using Ixnas.AltchaNet;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
@@ -71,9 +73,17 @@ builder.Services.AddSingleton<IBlobRepo>(blob);
 DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"], ai);
 builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
 
+
 //KeyVault
 KeyVaultMng keymng = new KeyVaultMng(config["KeyVault"], config["PssKey"],ai);
 builder.Services.AddSingleton<IKeyVaultMng>(keymng);
+
+//Altcha
+var altchaService = Altcha.CreateServiceBuilder()
+                          .UseSha256(Encoding.UTF8.GetBytes(config["JWT"]))
+                          .UseStore(new InMemoryStore())
+                          .Build();
+builder.Services.AddSingleton<AltchaService>(altchaService);
 
 builder.Services
     .AddAuthentication(cfg => {

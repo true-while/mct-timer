@@ -394,6 +394,7 @@ namespace mct_timer.Controllers
                             _logger.TrackTrace("Cannot detect IP");
                         }
 
+                        if (user.AIActivity.Count == 0) user.AIActivity = new Dictionary<string, DateTime>();
                         user.AIActivity.Add(mdata["IP"], DateTime.Now);
 
                         var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ".jpg").ToLower(), imggen.ImageBytes, mdata);
