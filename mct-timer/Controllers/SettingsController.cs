@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using System.Net;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 
 namespace mct_timer.Controllers
 {
@@ -22,6 +23,7 @@ namespace mct_timer.Controllers
         private readonly IOptions<ConfigMng> _config;
         private readonly IHttpContextAccessor _context;
         private readonly UsersContext _ac_context;
+        private readonly IDalleGenerator _gen;
         private readonly IBlobRepo _blobRepo;
         private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
         private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
@@ -49,6 +51,7 @@ namespace mct_timer.Controllers
             _validator = validator; 
             _dalle = dalle;
             _keyVaultMng = keyVault;
+            _gen = dalle;
             
 
             if (AuthService.GetInstance == null)
@@ -340,6 +343,76 @@ namespace mct_timer.Controllers
                     return View("Custom", BgLinkPrep(user));
                 }
                
+            }
+            return new UnauthorizedResult();
+        }
+
+
+        [JwtAuthentication]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> GenerateBG([Bind("Info", "BgType")] Background bg)
+        {
+
+            var token = _context.HttpContext.Request.Cookies["jwt"];
+
+            if (token != null)
+            {
+                JwtSecurityToken jwt;
+                var result = AuthService.GetInstance.Validate(token, out jwt);
+
+                if (result)
+                {
+                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+
+                    if (user != null )
+                    {
+                        bg.id = Guid.NewGuid().ToString();
+                        bg.Author = user.Name;
+                        bg.Visible = true;
+                        bg.Locked = false;
+
+                        //gen image
+                        var imggen = await _gen.GetImage(bg.Info);
+                        bg.Location = imggen.RevisedPrompt;
+                       
+
+                        //sage image
+                        var mdata = new Dictionary<string, string>();
+                        mdata["user"] = user.Name;
+                        mdata["when"] = DateTime.Now.ToString();
+                        mdata["prompt"] = bg.Info;
+
+                        try
+                        {
+                            mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                        }
+                        catch
+                        {
+                            mdata["IP"] = "none";
+                            _logger.TrackTrace("Cannot detect IP");
+                        }
+
+                        user.AIActivity.Add(mdata["IP"], DateTime.Now);
+
+                        var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ".jpg").ToLower(), imggen.ImageBytes, mdata);
+
+                        bg.Url = Path.GetFileName(uri.ToString());
+                        if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
+                        user.Backgrounds.Add(bg);
+
+                        _ac_context.Update(user);
+                        _ac_context.SaveChanges();
+                    }
+
+
+                    var quote = user.GetQuote();
+                    ViewData["UplodaQuote"] = quote;
+                    ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                    return View("Custom", BgLinkPrep(user));
+                }
+
             }
             return new UnauthorizedResult();
         }

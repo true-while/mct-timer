@@ -41,13 +41,15 @@ namespace mct_timer.Models
         public Languages Language { get; set; }
 
         public Dictionary<string,bool> DefBGHidden { get; set; }
-
+        public Dictionary<string, DateTime> AIActivity { get; set; }
         public List<Background> Backgrounds { get; set; }
 
         public User() {
             Backgrounds = new List<Background>();
             DefBGHidden = new Dictionary<string,bool>();
+            AIActivity = new Dictionary<string,DateTime>();
         }
+
 
         public void LoadDefaultBG()
         {
