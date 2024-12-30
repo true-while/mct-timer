@@ -40,8 +40,6 @@ TokenCredential ctoken = new DefaultAzureCredential(
                     });
 
 
-builder.Services.AddDbContext<WebSettingsContext>(options =>
-    options.UseCosmos(config["CosmosDBEndpoint"], ctoken, "webapp"));
    
 builder.Services.AddDbContext<UsersContext>(options =>
     options.UseCosmos(config["CosmosDBEndpoint"], ctoken, "webapp"));
@@ -61,9 +59,6 @@ builder.Services.AddSingleton<TelemetryClient>(ai);
 
 UploadValidator upValid = new UploadValidator(ai);
 builder.Services.AddSingleton<UploadValidator>(upValid);
-
-builder.Services.AddDbContext<WebSettingsContext>(options =>
-        options.UseCosmos(builder.Configuration.GetConnectionString("WebSettingsContext") ?? throw new InvalidOperationException("Connection string 'WebSettingsContext' not found."), "webapp"));
 
 // Blob generator
 BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName"], config["TenantID"]);
