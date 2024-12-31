@@ -24,6 +24,7 @@ namespace mct_timer.Models
         public Task<bool> TransformMediumFileAsync(string fileName);
         public Task<bool> TransformSmallFileAsync(string fileName);
         public Uri  TestConnection();
+        public IDictionary<string, string> GetMetaData(string fileName);
     }
 
     public class BlobRepo : IBlobRepo
@@ -36,10 +37,13 @@ namespace mct_timer.Models
         static string _laregeImgfolder = "/l/";
         static string _smallImgfolder = "/s/";
         static string _mediumImgfolder = "/m/";
+        static string _aigenImgfolder = "/ai/";
 
         static public string LaregeImgfolder { get => _laregeImgfolder; }
         static public string SmallImgfolder { get => _smallImgfolder; }
         static public string MediumImgfolder { get => _mediumImgfolder; }
+        static public string AiGenImgfolder { get => _aigenImgfolder; }
+
 
         public BlobRepo(string accountname, string container, string tenantid)
         {
@@ -52,15 +56,15 @@ namespace mct_timer.Models
         {
             if (_client == null)
             {
-                string containerEndpoint = Path.Combine(_accountname,
-                                                    _container);
+                var blobUri = new Uri($"https://{_accountname}.blob.core.windows.net/{_container}");
+
                 var cred = new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions()
                     {
                         TenantId = _tenantid,
                         AdditionallyAllowedTenants = { "*" },
                     });
-                _client = new BlobContainerClient(new Uri(containerEndpoint), cred);
+                _client = new BlobContainerClient(blobUri, cred);
 
                 _client.CreateIfNotExists();
             }
@@ -183,6 +187,17 @@ namespace mct_timer.Models
             }
 
             return true;
+        }
+
+        public IDictionary<string, string> GetMetaData(string filePath)
+        {
+            CreateContainer();
+
+            BlobClient genTaskFile = _client.GetBlobClient(filePath);
+
+            var blobProperties = genTaskFile.GetProperties();
+            return blobProperties.Value.Metadata;
+
         }
     }
 

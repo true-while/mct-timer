@@ -14,6 +14,9 @@ using Microsoft.Net.Http.Headers;
 using System.Net;
 using Microsoft.IdentityModel.Tokens;
 using System.Data;
+using Azure.Messaging.EventGrid;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text;
 
 namespace mct_timer.Controllers
 {
@@ -52,7 +55,6 @@ namespace mct_timer.Controllers
             _dalle = dalle;
             _keyVaultMng = keyVault;
             _gen = dalle;
-            
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -203,7 +205,6 @@ namespace mct_timer.Controllers
             {
                 ModelState.AddModelError("File",
                     $"The request couldn't be processed (Error 1).");
-                // Log error
 
                 return BadRequest(ModelState);
             }
@@ -368,43 +369,56 @@ namespace mct_timer.Controllers
 
                     if (user != null )
                     {
-                        bg.id = Guid.NewGuid().ToString();
-                        bg.Author = user.Name;
-                        bg.Visible = true;
-                        bg.Locked = false;
+                        if (user.AIActivity == null)
+                            user.AIActivity = new List<DateTime>();
 
-                        //gen image
-                        var imggen = await _gen.GetImage(bg.Info);
-                        bg.Location = imggen.RevisedPrompt;
-                       
+                        if (user.Backgrounds == null)
+                            user.Backgrounds = new List<Background>();
 
-                        //sage image
-                        var mdata = new Dictionary<string, string>();
-                        mdata["user"] = user.Name;
-                        mdata["when"] = DateTime.Now.ToString();
-                        mdata["prompt"] = bg.Info;
-
-                        try
+                        if (!user.IsAIActivityAllowed())
                         {
-                            mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                            TempData["Error"] = $"You have already reach the limit of AI generated backgrounds. Please try again in {user.WhenAIAvaiable()}";
                         }
-                        catch
+                        else if (string.IsNullOrEmpty(bg.Info))
                         {
-                            mdata["IP"] = "none";
-                            _logger.TrackTrace("Cannot detect IP");
+                            TempData["Error"] = $"Prompt for image generation must be provided. Try again.";
                         }
+                        else
+                        {
 
-                        if (user.AIActivity.Count == 0) user.AIActivity = new Dictionary<string, DateTime>();
-                        user.AIActivity.Add(mdata["IP"], DateTime.Now);
+                            bg.id = Guid.NewGuid().ToString();
+                            bg.Author = user.Name;
+                            bg.Visible = true;
+                            bg.Locked = false;
 
-                        var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ".jpg").ToLower(), imggen.ImageBytes, mdata);
+                            //sage image
+                            var mdata = new Dictionary<string, string>();
+                            mdata["user"] = user.Name;
+                            mdata["when"] = DateTime.Now.ToString();
+                            mdata["prompt"] = bg.Info;
+                            try
+                            {
+                                mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                            }
+                            catch
+                            {
+                                mdata["IP"] = "none";
+                                _logger.TrackTrace("Cannot detect IP");
+                            }
 
-                        bg.Url = Path.GetFileName(uri.ToString());
-                        if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
-                        user.Backgrounds.Add(bg);
+                            //register AI activity
+                            user.AIActivity.Add(DateTime.Now);
 
-                        _ac_context.Update(user);
-                        _ac_context.SaveChanges();
+                            //generate task
+                            await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
+
+                            //bg.Url = Path.GetFileName(uri.ToString());
+
+                            user.Backgrounds.Add(bg);
+
+                            _ac_context.Update(user);
+                            _ac_context.SaveChanges();
+                        }
                     }
 
 

@@ -64,6 +64,7 @@ builder.Services.AddSingleton<UploadValidator>(upValid);
 BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName"], config["TenantID"]);
 builder.Services.AddSingleton<IBlobRepo>(blob);
 
+
 // Dalle generator
 DalleGenerator dalleGen = new DalleGenerator(config["OpenAIEndpoint"], config["OpenAIKey"], config["OpenAIModel"], ai);
 builder.Services.AddSingleton<IDalleGenerator>(dalleGen);

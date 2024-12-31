@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using System.Collections;
 using System.Text.Json.Serialization;
+using System.Diagnostics;
 
 namespace mct_timer.Models
 {
@@ -35,7 +36,6 @@ namespace mct_timer.Models
         [DefaultValue(null)]
         public string DefTZ { get; set; }
 
-        [DefaultValue(null)]
         [JsonIgnore]
         public string Altcha { get; set; }
 
@@ -46,15 +46,42 @@ namespace mct_timer.Models
         public Languages Language { get; set; }
 
         public Dictionary<string,bool> DefBGHidden { get; set; }
-        public Dictionary<string, DateTime> AIActivity { get; set; }
+        public List<DateTime> AIActivity { get; set; }
         public List<Background> Backgrounds { get; set; }
 
         public User() {
             Backgrounds = new List<Background>();
             DefBGHidden = new Dictionary<string,bool>();
-            AIActivity = new Dictionary<string,DateTime>();
+            AIActivity = new List<DateTime>();
         }
 
+        public string WhenAIAvaiable()
+        {
+            if (AIActivity != null)
+            {
+                AIActivity = AIActivity.OrderByDescending(x => x).ToList();
+                var range = AIActivity.TakeWhile(x => DateTime.Compare(DateTime.Now.AddHours(-24), x) < 0).ToList();
+                if (range.Count() >= 3)
+                {
+                    var timerange = new TimeSpan(range.Last().Ticks - DateTime.Now.AddHours(-24).Ticks);
+                    return $"{timerange.Hours} hours and {timerange.Minutes} minutes";
+                }
+
+            }
+
+            return null; //no records
+        }
+        public bool IsAIActivityAllowed()
+        {
+            if (AIActivity != null)
+            {
+                AIActivity = AIActivity.OrderByDescending(x=>x).ToList();
+                var range = AIActivity.TakeWhile(x => DateTime.Compare(DateTime.Now.AddHours(-24), x) < 0).ToList();
+                if (range.Count() >= 3) { return false; }
+            }
+
+            return true; //no records
+        }
 
         public void LoadDefaultBG()
         {

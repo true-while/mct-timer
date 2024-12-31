@@ -9,7 +9,14 @@ using System.Text;
 
 namespace mct_timer.Models
 {
-    public class QueueRepo
+    public interface IQueueRepo
+    {
+        public Task<string> SendMessageAsync(string msg);
+        public Task<string> PeakMessageAsync();
+    }
+
+
+    public class QueueRepo: IQueueRepo
     {
 
         QueueClient _client;
@@ -28,16 +35,15 @@ namespace mct_timer.Models
         {
             if (_client == null)
             {
-                string containerEndpoint = Path.Combine(_accountname,
-                                                    _queuename);
+                var queUri = new Uri($"https://{_accountname}.queue.core.windows.net/{_queuename}");
+
                 var cred = new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions()
                     {
                         TenantId = _tenantid,
                         AdditionallyAllowedTenants = { "*" },
                     });
-                _client = new QueueClient(new Uri(containerEndpoint), cred);
-
+                _client = new QueueClient(queUri, cred);
                 _client.CreateIfNotExists();
             }
         }
