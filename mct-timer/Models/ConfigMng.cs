@@ -7,6 +7,7 @@
         public string StorageAccountName { get; set; }   //storage account key for keep images 
         public string ContainerName { get; set; }              //container for keep images
         public string OpenAIModel { get; set; }            //name of open ai dale model
+        public string MaxAIinTheDay { get; set; }          // max ai gen images in the day
         public string JWT { get; set; }                    // jwt encryption string
         public string KeyVault { get; set; }               // keyvault url
         public string PssKey { get; set; }                 // name of the key for pwd encryption

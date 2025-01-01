@@ -15,13 +15,13 @@ namespace mct_timer.Controllers
     {
         private TelemetryClient _tmClient;
         private IBlobRepo _blRepo;
-        private DalleGenerator _dalle;
+        private IDalleGenerator _dalle;
         private IOptions<ConfigMng> _config;
 
         public ImgSrvController(
             TelemetryClient tmClient,
             IOptions<ConfigMng> config,
-            DalleGenerator _dalle,
+            IDalleGenerator _dalle,
             IBlobRepo blRepo) {
 
           _tmClient = tmClient;

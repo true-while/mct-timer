@@ -55,13 +55,13 @@ namespace mct_timer.Models
             AIActivity = new List<DateTime>();
         }
 
-        public string WhenAIAvaiable()
+        public string WhenAIAvaiable(int maxAI)
         {
             if (AIActivity != null)
             {
                 AIActivity = AIActivity.OrderByDescending(x => x).ToList();
                 var range = AIActivity.TakeWhile(x => DateTime.Compare(DateTime.Now.AddHours(-24), x) < 0).ToList();
-                if (range.Count() >= 3)
+                if (range.Count() >= maxAI )
                 {
                     var timerange = new TimeSpan(range.Last().Ticks - DateTime.Now.AddHours(-24).Ticks);
                     return $"{timerange.Hours} hours and {timerange.Minutes} minutes";
@@ -71,13 +71,13 @@ namespace mct_timer.Models
 
             return null; //no records
         }
-        public bool IsAIActivityAllowed()
+        public bool IsAIActivityAllowed(int maxAI)
         {
             if (AIActivity != null)
             {
                 AIActivity = AIActivity.OrderByDescending(x=>x).ToList();
                 var range = AIActivity.TakeWhile(x => DateTime.Compare(DateTime.Now.AddHours(-24), x) < 0).ToList();
-                if (range.Count() >= 3) { return false; }
+                if (range.Count() >= maxAI ) { return false; }
             }
 
             return true; //no records

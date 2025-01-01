@@ -17,6 +17,7 @@ using System.Data;
 using Azure.Messaging.EventGrid;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace mct_timer.Controllers
 {
@@ -93,7 +94,7 @@ namespace mct_timer.Controllers
                     {
                         if (user.Backgrounds.Any(x => x.id == bgid && x.Locked != true))
                         {
-                            await _blobRepo.DeleteImageAsync(bgid);
+                            RunAsync(_blobRepo.DeleteImageAsync(bgid));
                             user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
                             _ac_context.Update(user);
                             _ac_context.SaveChanges();
@@ -349,6 +350,15 @@ namespace mct_timer.Controllers
         }
 
 
+
+        private void RunAsync(Task task)
+        {
+            task.ContinueWith(t =>
+            {
+                _logger.TrackException(t.Exception);
+            }, TaskContinuationOptions.OnlyOnFaulted);
+        }
+
         [JwtAuthentication]
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -375,9 +385,12 @@ namespace mct_timer.Controllers
                         if (user.Backgrounds == null)
                             user.Backgrounds = new List<Background>();
 
-                        if (!user.IsAIActivityAllowed())
+                        int maxAI;
+                        if (int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
+
+                        if (!user.IsAIActivityAllowed(maxAI))
                         {
-                            TempData["Error"] = $"You have already reach the limit of AI generated backgrounds. Please try again in {user.WhenAIAvaiable()}";
+                            TempData["Error"] = $"You have already reach the limit of AI generated backgrounds. Please try again in {user.WhenAIAvaiable(maxAI)}";
                         }
                         else if (string.IsNullOrEmpty(bg.Info))
                         {
@@ -409,7 +422,11 @@ namespace mct_timer.Controllers
                             //register AI activity
                             user.AIActivity.Add(DateTime.Now);
 
+                            //var imggen = await _dalle.GetImage(mdata["prompt"]);
+
+
                             //generate task
+                            //RunAsync(
                             await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
 
                             //bg.Url = Path.GetFileName(uri.ToString());
