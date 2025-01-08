@@ -21,13 +21,13 @@ namespace mct_timer.Controllers
         public ImgSrvController(
             TelemetryClient tmClient,
             IOptions<ConfigMng> config,
-            IDalleGenerator _dalle,
+            IDalleGenerator dalle,
             IBlobRepo blRepo) {
 
           _tmClient = tmClient;
             _blRepo = blRepo;
             _config = config;
-
+            _dalle = dalle;
             ViewData["CDNUrl"] = _config.Value.WebCDN;
         }
 
