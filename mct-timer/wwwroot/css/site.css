@@ -1,7 +1,6 @@
 body {
     padding: 0px;
     margin: 0px;
-  
 }
 
 #gbmainbg {
@@ -15,7 +14,6 @@ body {
     background-position: center;
     border: none;
     overflow: auto;
-
 }
 
 
@@ -74,24 +72,24 @@ body {
     padding: 0px;
 }
 
-.the-progress progress {
-    width: 100%;
-    display: inline-block;
-    height: 10px;
-    margin: 0px;
-}
-
-    .the-progress progress[value] {
-        vertical-align: middle;
-        -moz-appearance: none;
-        -webkit-appearance: none;
-        appearance: none;
-        border: none;
+    .the-progress progress {
+        width: 100%;
+        display: inline-block;
+        height: 10px;
+        margin: 0px;
     }
 
-        .the-progress progress[value]::-webkit-progress-bar {
-            background-color: lightgray;
+        .the-progress progress[value] {
+            vertical-align: middle;
+            -moz-appearance: none;
+            -webkit-appearance: none;
+            appearance: none;
+            border: none;
         }
+
+            .the-progress progress[value]::-webkit-progress-bar {
+                background-color: lightgray;
+            }
 
 @keyframes moveInRight {
     0% {
@@ -104,120 +102,122 @@ body {
 }
 
 
-    .form {
-        background-color: white;
-        color: black;
-        display: inline-block;
-        margin: 30px 30px 30px 30px;
-        padding: 30px 30px 30px 30px;
-        border-radius: 10px;
-        text-align: left;
-        border: 3px solid darkgray;
-        font: 600 24px Segoe UI;
-    }
+.form {
+    background-color: white;
+    color: black;
+    display: inline-block;
+    margin: 30px 30px 30px 30px;
+    padding: 30px 30px 30px 30px;
+    border-radius: 10px;
+    text-align: left;
+    border: 3px solid darkgray;
+    font: 600 24px Segoe UI;
+}
 
 
+.form .required {
+    color: darkred;
+}
+
+.form .submit {
+    color: white;
+    background: green;
+    border-radius: 15px;
+    padding: 5px;
+    margin-left: 5px;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    font: 600 20px Segoe UI;
+    text-transform: uppercase;
+}
+
+.form table {
+    margin: 20px 0px 20px 0px;
+}
+
+.form .info {
+    font: 400 18px Segoe UI;
+    color: darkblue;
+}
+
+.form .back {
+    color: white;
+    background: purple;
+    border-radius: 15px;
+    padding: 5px;
+    margin-left: 5px;
+    height: 50px;
+    display: inline-flex;
+    justify-content: center;
+    font: 400 20px Segoe UI;
+    text-transform: uppercase;
+}
+
+.form .error {
+    margin: 10px 0 10px 0;
+    color: red;
+    font-style: italic;
+    font: 500 16px Segoe UI;
+}
+
+.form select {
+    padding: 7px 7px 6px 7px;
+    margin-left: 5px;
+    border-radius: 7px;
+    text-align: left;
+    border: 2px solid black;
+    background-color: whitesmoke;
+}
+
+.form .text-danger {
+    color: darkred;
+    font-style: italic;
+    font: 500 16px Segoe UI;
+}
+
+.form .form-control-text {
+    padding: 7px 7px 7px 7px;
+    margin: 0px;
+    border-radius: 7px;
+    text-align: left;
+    font: 600 24px Segoe UI;
+    border: 2px solid black;
+    background-color: whitesmoke;
+}
 
 
-    .form .submit {
-        color: white;
-        background: green;
-        border-radius: 15px;
-        padding: 5px;
-        margin-left: 5px;
-        height: 50px;
-        display: inline-flex;
-        justify-content: center;
-        font: 600 20px Segoe UI;
-        text-transform: uppercase;
-    }
-
-    .form table {
-        margin: 20px 0px 20px 0px;
-    }
-
-    .form .info {
-        font: 400 18px Segoe UI;
-        color: darkblue;
-    }
-
-    .form .back {
-        color: white;
-        background: purple;
-        border-radius: 15px;
-        padding: 5px;
-        margin-left: 5px;
-        height: 50px;
-        display: inline-flex;
-        justify-content: center;
-        font: 400 20px Segoe UI;
-        text-transform: uppercase;
-    }
-
-    .form .error {
-        margin: 10px 0 10px 0;
-        color: red;
-        font-style: italic;
-        font: 500 16px Segoe UI;
-    }
-
-    .form select {
-        padding: 7px 7px 6px 7px;
-        margin-left: 5px;
-        border-radius: 7px;
-        text-align: left;
-        border: 2px solid black;
-        background-color: whitesmoke;
-    }
-
-    .form .text-danger {
-        color: darkred;
-        font-style: italic;
-        font: 500 16px Segoe UI;
-    }
-
-    .form .form-control-text {
-        padding: 7px 7px 7px 7px;
-        margin: 0px;
-        border-radius: 7px;
-        text-align: left;
-        font: 600 24px Segoe UI;
-        border: 2px solid black;
-        background-color: whitesmoke;
-    }
-
-
-    .bglist {
-        text-align: left;
-        border: 2px solid darkgreen;
-        width: 100px;
-        background-color: white;
-    }
+.bglist {
+    text-align: left;
+    border: 2px solid darkgreen;
+    width: 100px;
+    background-color: white;
+}
 
     .bglist td {
-        border: 2px solid darkgreen;        
+        border: 2px solid darkgreen;
     }
 
-    .bglist-title {
-        background-color: darkgreen;
-        color: white;
-        font: 600 20px Segoe UI;
-    }
+.bglist-title {
+    background-color: darkgreen;
+    color: white;
+    font: 600 20px Segoe UI;
+}
 
-    .bglist-record {
-        font: 400 14px Segoe UI;
-        color: darkslategrey;
-        background-color: white;
-    }
+.bglist-record {
+    font: 400 14px Segoe UI;
+    color: darkslategrey;
+    background-color: white;
+}
 
-    .bglist-upload {
-        font: 400 16px Segoe UI;
-    }
+.bglist-upload {
+    font: 400 16px Segoe UI;
+}
 
 
-    .control-label-nowrap {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        display: block;
-    }
+.control-label-nowrap {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: block;
+}

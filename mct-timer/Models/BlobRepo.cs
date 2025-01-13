@@ -21,6 +21,7 @@ namespace mct_timer.Models
         public Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata);
         public Uri GetImageSASLink(String name);
         public Task<bool> DeleteImageAsync(String name);
+        public Task<bool> DeleteFileAsync(String path);
         public Task<bool> TransformMediumFileAsync(string fileName);
         public Task<bool> TransformSmallFileAsync(string fileName);
         public Uri  TestConnection();
@@ -87,14 +88,29 @@ namespace mct_timer.Models
             return file.Uri;
         
         }
+        public async Task<bool> DeleteFileAsync(String path)
+        {
+            CreateContainer();           
 
+            var blobs = _client.GetBlobs(BlobTraits.None, BlobStates.None, path).ToList();
+
+            foreach (var item in blobs)
+            {
+                await _client.DeleteBlobIfExistsAsync(item.Name);
+            }
+
+
+            return true;
+
+        }
         public async Task<bool> DeleteImageAsync(String name)
         {
             CreateContainer();
 
+
             var blobs = _client.GetBlobs(BlobTraits.None, BlobStates.None, "l/" + name).ToList();
-            blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "s/" + name));
-            blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "m/" + name));
+            blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "s/" + Path.GetFileNameWithoutExtension(name) + ".png"));
+            blobs.AddRange(_client.GetBlobs(BlobTraits.None, BlobStates.None, "m/" + Path.GetFileNameWithoutExtension(name) + ".png"));
 
             foreach (var item in blobs)
             {

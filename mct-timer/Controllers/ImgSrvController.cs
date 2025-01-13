@@ -87,7 +87,7 @@ namespace mct_timer.Controllers
                             var imggen = await _dalle.GetImage(mdata["prompt"]);
                             mdata.Add("RevisedPrompt", imggen.RevisedPrompt);
                             await _blRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLower(), imggen.ImageBytes, (Dictionary<string,string>)mdata);
-                            var mResult = await _blRepo.DeleteImageAsync(Path.Combine(BlobRepo.AiGenImgfolder, fileName));
+                            var mResult = await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
 
                             _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {mResult}, topic: {eventGridEvent.Topic}");
                         }

@@ -341,12 +341,14 @@ namespace mct_timer.Models
         public string Author { get; set; }
         public string Url { get; set; }
         [DefaultValue("")]
+        [Required]
         public string Info { get; set; }
         [DefaultValue("")]
         public string Location { get; set; }
         public string LocationLink { get; set; }
 
         [DefaultValue(PresetType.Coffee)]
+        [Required]
         public PresetType BgType  {get;set;}
 
         [DefaultValue(false)]

@@ -245,7 +245,6 @@ class CustomBg {
     }
 
 
-   
     
     refreshTheIcon(root, theurl, img, counter) {
 
@@ -278,7 +277,7 @@ class CustomBg {
                         }
                         root.refreshTheIcon(root, orgLink, img, counter)
 
-                    }, 2000));
+                    }, 3000));
                 }
 
             }

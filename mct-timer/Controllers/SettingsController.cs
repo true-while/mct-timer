@@ -18,6 +18,7 @@ using Azure.Messaging.EventGrid;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace mct_timer.Controllers
 {
@@ -94,7 +95,8 @@ namespace mct_timer.Controllers
                     {
                         if (user.Backgrounds.Any(x => x.id == bgid && x.Locked != true))
                         {
-                            RunAsync(_blobRepo.DeleteImageAsync(bgid));
+                            var bg = user.Backgrounds.FirstOrDefault(x => x.id == bgid);
+                            if (bg!=null) _blobRepo.DeleteImageAsync(bg.Url);
                             user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
                             _ac_context.Update(user);
                             _ac_context.SaveChanges();
@@ -305,36 +307,45 @@ namespace mct_timer.Controllers
 
                     if (user != null && TempData.ContainsKey("UploadeFile") && TempData.ContainsKey("UploadeName"))
                     {
-                        bg.id = Guid.NewGuid().ToString();
-                        bg.Author = user.Name;
-                        bg.Visible = true;
-                        var file = Path.Combine(_tempFilePath, Path.GetFileName((string)TempData["UploadeFile"]));
-                        var ext = Path.GetExtension((string)TempData["UploadeName"]);
-                        if (System.IO.File.Exists(file))
+
+                        if (string.IsNullOrEmpty(bg.Info))
                         {
-                            var mdata = new Dictionary<string, string>();
-                            try
+                            TempData["Error"] = "The images info should be provided.";
+                        }
+                        else
+                        {
+                            bg.id = Guid.NewGuid().ToString();
+                            bg.Author = user.Name;
+                            bg.Visible = true;
+                            
+                            var file = Path.Combine(_tempFilePath, Path.GetFileName((string)TempData["UploadeFile"]));
+                            var ext = Path.GetExtension((string)TempData["UploadeName"]);
+                            if (System.IO.File.Exists(file))
                             {
-                                mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                                var mdata = new Dictionary<string, string>();
+                                try
+                                {
+                                    mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                                }
+                                catch
+                                {
+                                    _logger.TrackTrace("Cannot detect IP");
+                                }
+                                mdata["user"] = user.Email;
+                                mdata["author"] = user.Name;
+                                mdata["when"] = DateTime.Now.ToString();
+
+                                var content = new BinaryData(System.IO.File.ReadAllBytes(file));
+                                var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ext).ToLower(), content, mdata);
+
+                                System.IO.File.Delete(file);
+                                bg.Url = Path.GetFileName(uri.ToString());
+                                if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
+                                user.Backgrounds.Add(bg);
+
+                                _ac_context.Update(user);
+                                _ac_context.SaveChanges();
                             }
-                            catch
-                            {
-                                _logger.TrackTrace("Cannot detect IP");
-                            }
-                            mdata["user"] = user.Email;
-                            mdata["author"] = user.Name;
-                            mdata["when"] = DateTime.Now.ToString();
-
-                            var content = new BinaryData(System.IO.File.ReadAllBytes(file));
-                            var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ext).ToLower(), content, mdata);
-
-                            System.IO.File.Delete(file);
-                            bg.Url = Path.GetFileName( uri.ToString());
-                            if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
-                            user.Backgrounds.Add(bg);
-
-                            _ac_context.Update(user);
-                            _ac_context.SaveChanges();
                         }
                     }
 
@@ -351,13 +362,6 @@ namespace mct_timer.Controllers
 
 
 
-        private void RunAsync(Task task)
-        {
-            task.ContinueWith(t =>
-            {
-                _logger.TrackException(t.Exception);
-            }, TaskContinuationOptions.OnlyOnFaulted);
-        }
 
         [JwtAuthentication]
         [HttpPost]
@@ -394,7 +398,7 @@ namespace mct_timer.Controllers
                         }
                         else if (string.IsNullOrEmpty(bg.Info))
                         {
-                            TempData["Error"] = $"Prompt for image generation must be provided. Try again.";
+                            TempData["Error"] = $"The prompt for image generation must be provided.Please try again.";
                         }
                         else
                         {
@@ -403,6 +407,7 @@ namespace mct_timer.Controllers
                             bg.Author = user.Name;
                             bg.Visible = true;
                             bg.Locked = false;
+                            bg.Url = $"{bg.id}.jpg";
 
                             //sage image
                             var mdata = new Dictionary<string, string>();
@@ -449,6 +454,13 @@ namespace mct_timer.Controllers
             return new UnauthorizedResult();
         }
 
+        private int AIAttempts()
+        {
+            int maxAI;
+            if (int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
+            return maxAI;
+        }
+            
 
         private User? GetUserInfo()
         {
@@ -498,6 +510,9 @@ namespace mct_timer.Controllers
             if (user != null)
             { 
                 var quote = user.GetQuote();
+
+
+                ViewData["Attempts"] = AIAttempts();
                 ViewData["UplodaQuote"] = quote;
                 ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
                 return View(BgLinkPrep(user));
