@@ -90,7 +90,6 @@ namespace mct_timer.Controllers
                             var mResult = await _blRepo.DeleteImageAsync(Path.Combine(BlobRepo.AiGenImgfolder, fileName));
 
                             _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {mResult}, topic: {eventGridEvent.Topic}");
-
                         }
                     }
           
