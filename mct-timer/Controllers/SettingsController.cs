@@ -102,6 +102,7 @@ namespace mct_timer.Controllers
                             _ac_context.SaveChanges();
                         }
 
+                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
                         ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
@@ -184,6 +185,7 @@ namespace mct_timer.Controllers
                             _ac_context.Update(user);
                             _ac_context.SaveChanges();
                         }
+                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
                         ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
@@ -349,7 +351,7 @@ namespace mct_timer.Controllers
                         }
                     }
 
-
+                    ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                     var quote = user.GetQuote();
                     ViewData["UplodaQuote"] = quote;
                     ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
@@ -443,7 +445,7 @@ namespace mct_timer.Controllers
                         }
                     }
 
-
+                    ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                     var quote = user.GetQuote();
                     ViewData["UplodaQuote"] = quote;
                     ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
@@ -508,13 +510,12 @@ namespace mct_timer.Controllers
            
 
             if (user != null)
-            { 
-                var quote = user.GetQuote();
+            {
 
-
-                ViewData["Attempts"] = AIAttempts();
+                ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts()); 
+                Dictionary<PresetType, int> quote = user.GetQuote();                
                 ViewData["UplodaQuote"] = quote;
-                ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                ViewData["isUplodaQuote"] = (bool)quote.Values.Any(x => x < 5);
                 return View(BgLinkPrep(user));
             }
 

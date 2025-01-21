@@ -26,8 +26,11 @@
             </span>
 
             <div id="valErrors" class="error">@TempData["Error"]</div>
+
+
         @if (ViewData["isUplodaQuote"] != null && (bool)ViewData["isUplodaQuote"])
             @await Html.PartialAsync("PartialUploadBG", new Background())
+
 
             @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
             

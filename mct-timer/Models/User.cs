@@ -55,6 +55,19 @@ namespace mct_timer.Models
             AIActivity = new List<DateTime>();
         }
 
+
+        public int HowManyActivityAllowed(int maxAI)
+        {
+            if (AIActivity != null)
+            {
+                AIActivity = AIActivity.OrderByDescending(x => x).ToList();
+                var range = AIActivity.TakeWhile(x => DateTime.Compare(DateTime.Now.AddHours(-24), x) < 0).ToList();
+                return maxAI - range.Count();
+            }
+
+            return maxAI; //no records
+        }
+
         public string WhenAIAvaiable(int maxAI)
         {
             if (AIActivity != null)

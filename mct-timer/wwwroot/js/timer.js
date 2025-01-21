@@ -6,14 +6,16 @@
             timepart2: timerroot.querySelector("#timer__part2"),
             timediv: timerroot.querySelector("#timer__devider"),
             home: timerroot.querySelector(".timer__btn--home"),
-            reset: timerroot.querySelector(".timer__btn--reset"),         
+            reset: timerroot.querySelector(".timer__btn--reset"), 
+            music: timerroot.querySelector(".timer__btn--music"), 
             whenpart1: resumeroot.querySelector("#when__part1"),
             whenpart2: resumeroot.querySelector("#when__part2"),
             whendiv: resumeroot.querySelector("#when__devider"),
             zone: resumeroot.querySelector("#zone"),
             zoneFull: resumeroot.querySelector("#zone-full"),
             am: resumeroot.querySelector("#am"), 
-            
+            timeisup: timerroot.querySelector("#time-is-up"),
+            intro: timerroot.querySelector("#intro-music")
         };
 
         this.ampm = true;
@@ -22,7 +24,7 @@
         this.interval = null;       //timer for 1 second
         this.remainingSeconds = 0; // calculated value
         this.timezoneName;  //full time zone, should be pass outside 
-        this.timezoneAbr;  //short timezone name, should be pass outside 
+        this.timezoneAbr;  //short timezone name, should be pass outside
 
         //stop and return to preset
         this.el.home.addEventListener("click", () => {
@@ -40,6 +42,18 @@
             this.updateInterfaceTime();
 
             this.start();
+        });
+
+        //play music
+        this.el.music.addEventListener("click", () => {
+            if (this.el.intro.currentTime === 0) {
+                this.el.intro.play();
+            } else {
+                this.el.intro.pause();
+                this.el.intro.currentTime = 0
+            }
+                
+
         });
     }
 
@@ -69,7 +83,9 @@
         
         if (this.remainingSeconds < 0) {
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
-        } else if (this.remainingSeconds < 60) {
+        } else if (this.remainingSeconds < 30) {
+            this.el.timeisup.play();
+        } else if (this.remainingSeconds < 60) {           
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
         } else if (this.remainingSeconds < 180) {
             this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "darkorange";

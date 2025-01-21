@@ -96,11 +96,11 @@
 }
 
 .timer__btn {
-    margin: 7px;
+    margin: 5px;
     padding: 0px;
     font-size: 10pt;
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     border-radius: 50%;
     border: none;
     color: white;
@@ -118,7 +118,9 @@
     background-color: green;
 
 }
-
+.timer__btn--music {
+    background-color: darkorange;
+}
 .timer__btn--home {
     background-color: purple;
 }

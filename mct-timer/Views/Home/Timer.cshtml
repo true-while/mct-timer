@@ -4,7 +4,6 @@
 @{
     ViewData["Title"] = "MCT Timer";
 }
-
 <div id="gbmainbg" style="overflow:auto">
     <div id="group">
         <table id="group-tbl">
@@ -13,10 +12,15 @@
                     <div class="infopad">
                         <div class="title">remain time</div>
                         <div id="timer">
+                            <audio id="time-is-up" src="/audio/beep30.mp3"></audio>
+                            <audio id="intro-music" src="~/audio/intro.mp3"></audio>
                             <div class="numbers">
                                 <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
                             </div>
                             <div>
+                                <button type="button" class="timer__btn timer__btn--music">
+                                    <img class="material-icons" src="/icons/music.png" />
+                                </button>
                                 <button type="button" class="timer__btn timer__btn--home">
                                     <img class="material-icons" src="/icons/home-w.png"/>
                                 </button>
@@ -62,8 +66,6 @@
     <script type="text/javascript" src="~/js/timer.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/editor.js" asp-append-version="true"></script>
     <script>
-        
-   
 
         const breakLength = Number('@Model.Length');
         const timezoneNameUrlEncoded = '@Model.Timezone';

@@ -95,9 +95,9 @@
 <div id="optGenerate" style="display:none">
     <form asp-action="GenerateBG">
         <div calss="info">
-            <b>
-                You have @ViewBag["Attempts"] to generate AI background in next 24 hours.
-            </b>
+            <i>
+                You have @ViewData["Attempts"] attempts to generate AI background in next 24 hours.
+            </i>
         </div>
 
         <table cellpadding="5" style="max-width:775px;">
