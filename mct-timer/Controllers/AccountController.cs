@@ -138,6 +138,11 @@ namespace mct_timer.Controllers
         {
             //user.DefTZ = null; //TODO: could be detected from the current time zone from browser
 
+            if (user== null || user.Altcha ==null)
+            {
+                return View("Login");
+            }
+
             var validationResult = await _altcha.Validate(user.Altcha);
             if (!validationResult.IsValid)
             {

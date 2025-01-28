@@ -5,27 +5,33 @@
     ViewData["Title"] = "MCT Timer";
 }
 <div id="gbmainbg" style="overflow:auto">
+    <div id="menu" class="menu">
+       <div class="project-name">aka.ms/timer</div>
+    </div>
     <div id="group">
         <table id="group-tbl">
             <tr>
                 <td >
                     <div class="infopad">
+                        
+                    
                         <div class="title">remain time</div>
                         <div id="timer">
+                            <img id="alert" src="/icons/bells-off.png" width="25" />
                             <audio id="time-is-up" src="/audio/beep30.mp3"></audio>
-                            <audio id="intro-music" src="~/audio/intro.mp3"></audio>
+                            <audio id="intro-music" src="/audio/intro.mp3"></audio>
                             <div class="numbers">
                                 <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
                             </div>
                             <div>
                                 <button type="button" class="timer__btn timer__btn--music">
-                                    <img class="material-icons" src="/icons/music.png" />
+                                    <img class="material-icons" src="/icons/music.png" title="play music" />
                                 </button>
                                 <button type="button" class="timer__btn timer__btn--home">
-                                    <img class="material-icons" src="/icons/home-w.png"/>
+                                    <img class="material-icons" src="/icons/home-w.png" title="return to home"/>
                                 </button>
                                 <button type="button" class="timer__btn timer__btn--reset">
-                                    <img class="material-icons" src="/icons/reset-w.png"/>
+                                    <img class="material-icons" src="/icons/reset-w.png" title="restart timer"/>
                                 </button>
                             </div>
                         </div>

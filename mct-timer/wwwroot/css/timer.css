@@ -63,7 +63,15 @@
     height: 200px;
     text-align: center;
     border: 3px solid darkgrey;
+    position: relative;
 }
+
+    .infopad #alert {
+        position: absolute;
+        width: 25px;
+        top: 13px;
+        left: 10px;
+    }
 
     .infopad .title {
         font: 600 20px Segoe UI;
