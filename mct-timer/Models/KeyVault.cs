@@ -22,13 +22,15 @@ namespace mct_timer.Models
         CryptographyClient _crypto = null;
         string _key;
         string _keyvault;
+        string _tenant;
         TelemetryClient _appInsights;
 
-        public KeyVaultMng(string keyvault, string key, TelemetryClient clt)
+        public KeyVaultMng(string keyvault, string key, string tenant, TelemetryClient clt)
         {
             _appInsights = clt;
             _key = key;
-            _keyvault = keyvault;     
+            _keyvault = keyvault;
+            _tenant = tenant;
 
         }
 
@@ -40,6 +42,7 @@ namespace mct_timer.Models
                 var cred = new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions()
                     {
+                        TenantId = _tenant,
                         AdditionallyAllowedTenants = { "*" },
                     });
 

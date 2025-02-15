@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using mct_timer.Models;
 using NuGet.DependencyResolver;
+using System.Reflection.Emit;
 
     public class UsersContext : DbContext
     {
@@ -17,8 +18,10 @@ using NuGet.DependencyResolver;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.HasDefaultContainer("Users");
-            builder.Entity<User>().ToContainer("Users");
+                base.OnModelCreating(builder);
+                builder.HasDefaultContainer("Users");
+
+                builder.Entity<User>().ToContainer("Users");
 
            
         }

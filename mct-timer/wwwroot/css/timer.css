@@ -71,6 +71,7 @@
         width: 25px;
         top: 13px;
         left: 10px;
+        cursor:pointer;
     }
 
     .infopad .title {

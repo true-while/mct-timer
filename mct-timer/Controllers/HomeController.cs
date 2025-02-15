@@ -41,7 +41,7 @@ namespace mct_timer.Controllers
                 AuthService.Init(logger, config);
         }
 
-        private User? GetUserInfo()
+        private Task<User>? GetUserInfo()
         {
             var token = _context.HttpContext.Request.Cookies["jwt"];
 
@@ -53,8 +53,8 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = this._ac_context.Users.FirstOrDefault(x => x.Email == email);
-                    return user;
+
+                    return _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
                 }
             }
 
@@ -86,11 +86,11 @@ namespace mct_timer.Controllers
             return View(info);
         }
 
-        public IActionResult Timer(string m = "15", string z = "America/New_York", string t = "coffee")
+        public async Task<IActionResult> Timer(string m = "15", string z = "America/New_York", string t = "coffee")
         {
             var bType = (PresetType)Enum.Parse(typeof(PresetType), t, true);
 
-            User user = GetUserInfo();
+            User user = await GetUserInfo();
 
             if (user==null)
             {

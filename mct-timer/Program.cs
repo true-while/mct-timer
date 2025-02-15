@@ -32,15 +32,16 @@ builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsigh
 var config = builder.Configuration.GetSection("ConfigMng");
 
 //to test locally you need implement steps provided in readme file.
-TokenCredential ctoken = new DefaultAzureCredential(
-                    new DefaultAzureCredentialOptions()
-                    {
-                        TenantId = config["TenantID"],
-                        AdditionallyAllowedTenants = { "*" },
-                    });
+TokenCredential ctoken = 
+    new DefaultAzureCredential(
+                         new DefaultAzureCredentialOptions()
+                         {
+                             TenantId = config["TenantID"],
+                             //AdditionallyAllowedTenants = { "*" },
+                         });
 
 
-   
+
 builder.Services.AddDbContext<UsersContext>(options =>
     options.UseCosmos(config["CosmosDBEndpoint"], ctoken, "webapp"));
 
@@ -71,7 +72,7 @@ builder.Services.AddSingleton<IDalleGenerator>(dalleGen);
 
 
 //KeyVault
-KeyVaultMng keymng = new KeyVaultMng(config["KeyVault"], config["PssKey"],ai);
+KeyVaultMng keymng = new KeyVaultMng(config["KeyVault"], config["PssKey"], config["TenantID"], ai);
 builder.Services.AddSingleton<IKeyVaultMng>(keymng);
 
 //Altcha

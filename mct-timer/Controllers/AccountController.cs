@@ -77,7 +77,7 @@ namespace mct_timer.Controllers
             }
 
             
-            var user = _ac_context.Users.FirstOrDefault(x => x.Email == login.email);
+            var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == login.email);
             
 
             if (user != null && _keyvault.Decrypt(user.Password) == login.password)
@@ -119,6 +119,7 @@ namespace mct_timer.Controllers
         public async Task<IActionResult> Login()
         {
             await _ac_context.Database.EnsureCreatedAsync();
+            //await _ac_context.Database.EnsureCreatedAsync();
             return View();
         }
 
@@ -152,7 +153,7 @@ namespace mct_timer.Controllers
             {
                 TempData["Error"] = "Your name, email and password required.";
             }
-            else if (_ac_context.Users.FirstOrDefault(x => x.Email == user.Email)!=null)
+            else if (await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == user.Email)!=null)
             {
                 TempData["Error"] = "The user with the same email already exists.";
             }
@@ -161,8 +162,8 @@ namespace mct_timer.Controllers
 
                 user.Email = user.Email.Trim().ToLower();
                 user.Password = _keyvault.Encrypt(user.Password);
-                _ac_context.Users.Add(user);
-                _ac_context.SaveChanges();
+                await _ac_context.Users.AddAsync(user);
+                await _ac_context.SaveChangesAsync();
 
                 var token = AuthService.GetInstance.Create(user);
 

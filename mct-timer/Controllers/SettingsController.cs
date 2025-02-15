@@ -89,7 +89,7 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && bgid!=null)
                     {
@@ -131,7 +131,7 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && bgid != null)
                     {
@@ -174,7 +174,7 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && bgid != null)
                     {
@@ -305,7 +305,7 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && TempData.ContainsKey("UploadeFile") && TempData.ContainsKey("UploadeName"))
                     {
@@ -381,7 +381,7 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = _ac_context.Users.FirstOrDefault(x => x.Email == email);
+                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null )
                     {
@@ -464,7 +464,7 @@ namespace mct_timer.Controllers
         }
             
 
-        private User? GetUserInfo()
+        private async Task<User>? GetUserInfo()
         {
             var token = _context.HttpContext.Request.Cookies["jwt"];
 
@@ -476,8 +476,8 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    var user = this._ac_context.Users.FirstOrDefault(x => x.Email == email);
-                    return user;
+                    User? user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
+                    return user; 
                 }
             }
 
@@ -486,9 +486,9 @@ namespace mct_timer.Controllers
 
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public IActionResult Default()
+        public async Task<IActionResult> Default()
         {
-            var user = GetUserInfo();
+            var user = await GetUserInfo();
 
             if (user != null)
             {
@@ -504,9 +504,9 @@ namespace mct_timer.Controllers
 
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public IActionResult Custom()
+        public async Task<IActionResult> Custom()
         {
-            var user = GetUserInfo();
+            var user = await GetUserInfo();
            
 
             if (user != null)
@@ -524,9 +524,9 @@ namespace mct_timer.Controllers
 
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var user = GetUserInfo();
+            var user = await GetUserInfo();
 
             if (user != null)
             {
@@ -540,9 +540,9 @@ namespace mct_timer.Controllers
         [HttpPost]
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public IActionResult Index([Bind("Ampm", "Language", "DefTZ")] User updates)
+        public async Task<IActionResult> Index([Bind("Ampm", "Language", "DefTZ")] User updates)
         {
-            var user = GetUserInfo();
+            var user = await GetUserInfo();
 
             if (user != null)
             {
@@ -550,8 +550,7 @@ namespace mct_timer.Controllers
                 user.DefTZ = updates.DefTZ;
                 user.Language = updates.Language;
 
-                this._ac_context.Users.Update(user);
-                this._ac_context.SaveChanges();
+                await _ac_context.SaveChangesAsync();
 
                 return View(user);
             }
