@@ -96,10 +96,10 @@ namespace mct_timer.Controllers
                         if (user.Backgrounds.Any(x => x.id == bgid && x.Locked != true))
                         {
                             var bg = user.Backgrounds.FirstOrDefault(x => x.id == bgid);
-                            if (bg!=null) _blobRepo.DeleteImageAsync(bg.Url);
+                            if (bg!=null) await _blobRepo.DeleteImageAsync(bg.Url);
                             user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
                             _ac_context.Update(user);
-                            _ac_context.SaveChanges();
+                            await _ac_context.SaveChangesAsync();
                         }
 
                         ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
@@ -143,7 +143,7 @@ namespace mct_timer.Controllers
                             user.DefBGHidden.Add(bgid, visible);
 
                         _ac_context.Update(user);
-                        _ac_context.SaveChanges();
+                        await _ac_context.SaveChangesAsync();
 
                         user.CleanAllBG();
 
@@ -183,7 +183,7 @@ namespace mct_timer.Controllers
                         {
                             theBg.Visible = visible;
                             _ac_context.Update(user);
-                            _ac_context.SaveChanges();
+                            await _ac_context.SaveChangesAsync();
                         }
                         ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                         var quote = user.GetQuote();
@@ -346,7 +346,7 @@ namespace mct_timer.Controllers
                                 user.Backgrounds.Add(bg);
 
                                 _ac_context.Update(user);
-                                _ac_context.SaveChanges();
+                                await _ac_context.SaveChangesAsync();
                             }
                         }
                     }
@@ -441,7 +441,7 @@ namespace mct_timer.Controllers
                             user.Backgrounds.Add(bg);
 
                             _ac_context.Update(user);
-                            _ac_context.SaveChanges();
+                            await _ac_context.SaveChangesAsync();
                         }
                     }
 
