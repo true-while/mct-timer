@@ -17,7 +17,7 @@
         Italy, Castle della Dragonara
     </div>
 
-    <form asp-action="Create">
+    <form id="newAccount" asp-action="Create">
          <div class="form" style="width:500px">
             <h1>@ViewData["Title"]</h1>
             <span class="info">
@@ -26,7 +26,7 @@
             </span>
             
             
-            <div class="error">@TempData["Error"]</div>
+            <div id="error" class="error">@Html.Raw(TempData["Error"])</div>
             <div asp-validation-summary="ModelOnly" class="error">
                 
             </div>
@@ -36,21 +36,21 @@
                 <tr>
                     <td align="right"><label asp-for="Name" class="control-label"></label></td>
                     <td>:</td>
-                    <td><input asp-for="Name" class="form-control-text" /></td>
+                    <td><input id="Name" asp-for="Name" class="form-control-text" /></td>
                 </tr>
                 <tr><td colspan="3"><span asp-validation-for="Name" class="text-danger"></span></td></tr>
 
                 <tr>
                     <td align="right"><label asp-for="Email" class="control-label"></label></td>
                     <td>:</td>
-                    <td><input asp-for="Email" class="form-control-text" /></td>
+                    <td><input id="Email" asp-for="Email" class="form-control-text" /></td>
                 </tr>
                 <tr><td colspan="3"><span asp-validation-for="Email" class="text-danger"></span></td></tr>
 
                 <tr>
                     <td align="right"><label asp-for="Password" class="control-label"></label></td>
                     <td>:</td>
-                    <td><input asp-for="Password" class="form-control-text" /></td>
+                    <td><input asp-for="Password" id="Password" class="form-control-text" /></td>
                 </tr>
                 <tr><td colspan="3"><span asp-validation-for="Password" class="text-danger"></span></td></tr>
 
@@ -61,8 +61,9 @@
             <br />
             <div class="form-group">
                 <input type="button" value="BACK" class="back" onclick="javascript:location.href = '/'" />
-                <input type="submit" value="Register" class="submit" />
+                <input type="button" value="Register" class="submit" onclick="javascript:checkpasswords(document.querySelector('#newAccount'))" />
             </div>
+         </div>
     </form>
 </div>
 
@@ -91,8 +92,39 @@
 
         $(window).resize(() => menuUpdate());
 
+        function checkpasswords(formObj) {
+                    var pass = document.querySelector("#Password").value;
+                    var email = document.querySelector("#Email").value;
+                    var name = document.querySelector("#Name").value;
 
+                    if (!document.querySelector("#altcha_checkbox").checked) {
+                        document.querySelector("#error").innerText = "Please complete captcha.";
+                        return;
+                    }
+             
 
+                    if (!email.length > 0) {
+                        document.querySelector("#error").innerText = "Please provide your email";
+                        return;
+                    }
+                    if (!pass.length > 0) {
+                        document.querySelector("#error").innerText = "Please provide your password";
+                        return;
+                    }
+
+                    if (!name.length > 0) {
+                        document.querySelector("#error").innerText = "Pleas provide your name";
+                        return;
+                    }
+
+                     if (checkpass(pass, document.querySelector("#error"))) {
+                         formObj.submit();
+                     }
+                    else {
+                         document.querySelector("#error").innerText = "Password must be 6 symbols long and contains capital, small letters and numbers.";
+                    }
+                    return;
+                }
   
     </script>
 }

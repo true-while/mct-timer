@@ -1,7 +1,7 @@
 ﻿@model mct_timer.Models.Login
 
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Password Reset";
 }
 
 
@@ -16,20 +16,15 @@
         Italy, Castle della Dragonara
     </div>
 
-    <form asp-action="login">
+    <form asp-action="Reset">
     <div class="form" style="width:500px">
             <h1>@ViewData["Title"]</h1>
             <span class="info">
-                To upload your backgrounds please <a asp-controller="Account"
-                                                          asp-action="Create">create your account</a> or login with existed account.
+                You can reset your password by providing your registration email.
             </span>
             
             
             <div class="error">@TempData["Error"]</div>
-            @if (TempData.ContainsKey("Error"))
-            {
-                <div class="error"><a href="~/Reset">You can reset your password</a></div>
-            }
             <div asp-validation-summary="ModelOnly" class="error">
                 
             </div>
@@ -40,13 +35,7 @@
                     <td><input asp-for="Email" class="form-control-text" /></td>
                 </tr>
                 <tr><td colspan="3"><span asp-validation-for="Email" class="text-danger"></span></td></tr>
-                <tr>
-                    <td align="right"><label asp-for="Password" class="control-label"></label></td>
-                    <td>:</td>
-                    <td><input type="password" asp-for="Password" class="form-control-text" /></td>
-                </tr>
-                <tr><td colspan="3"><span asp-validation-for="Password" class="text-danger"></span></td></tr>
-
+  
             </table>
 
             <altcha-widget challengeurl="/Account/GetAltcha"></altcha-widget>
@@ -54,7 +43,7 @@
 
             <div class="form-group">
                 <input type="button" value="BACK" class="back" onclick="javascript:location.href = '/'" />
-                <input type="submit" value="LOGIN" class="submit" />
+                <input type="submit" value="Reset" class="submit" />
             </div>
 
     </div>

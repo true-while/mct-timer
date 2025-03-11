@@ -10,4 +10,23 @@ function outOfScrollPosition(root, element) {
     }
 }
 
+function checkpass(pass) {
+
+    const capt = new RegExp('(?=.*[A-Z])');
+    const small = new RegExp('(?=.*[a-z])');
+    const numb = new RegExp('(?=.*\d)');
+    const lngth = new RegExp('(?=.{6})');
+
+    if (capt.test(pass)
+        && small.test(pass)
+        && numb.test(pass)
+        && lngth.test(pass)) {
+         return true;
+    }
+
+   return false;
+}
+
+
+
 

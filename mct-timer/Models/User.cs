@@ -5,6 +5,8 @@ using System.Web.Mvc;
 using System.Collections;
 using System.Text.Json.Serialization;
 using System.Diagnostics;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace mct_timer.Models
 {
@@ -23,13 +25,13 @@ namespace mct_timer.Models
 
         [Key]
         [Display(Name = "Email")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Your email is required")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Your Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
         public string Email { get; set; }
 
         [Display(Name = "Password")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Your password is required")]
-        [StringLength(255, ErrorMessage = "Must be between 8 and 255 characters", MinimumLength = 8)]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Your Password is required")]
+        [StringLength(255, ErrorMessage = "Must be 6 or more characters", MinimumLength = 6)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
@@ -48,11 +50,14 @@ namespace mct_timer.Models
         public Dictionary<string,bool> DefBGHidden { get; set; }
         public List<DateTime> AIActivity { get; set; }
         public List<Background> Backgrounds { get; set; }
+ 
+        public List<String> PwdResets { get; set; }
 
         public User() {
             Backgrounds = new List<Background>();
             DefBGHidden = new Dictionary<string,bool>();
             AIActivity = new List<DateTime>();
+            PwdResets = new List<String>();
         }
 
 
@@ -329,7 +334,6 @@ namespace mct_timer.Models
             });
         }
 
-
         public Dictionary<PresetType, int> GetQuote()
         {
             var dic = new Dictionary<PresetType, int>();
@@ -371,19 +375,46 @@ namespace mct_timer.Models
         public bool Visible { get; set; }
     }
 
-        public class Login
+    public class Login
     {
         [HiddenInput()]
         [JsonIgnore]
         public string Altcha { get; set; }
 
         [Display(Name = "Email")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Your email is required")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Your Email is required")]
         [EmailAddress(ErrorMessage = "Invalid Email Address")]
-        public string email { get; set; }
+        public string Email { get; set; }
 
         [Display(Name = "Password")]
-        [Required(AllowEmptyStrings = false, ErrorMessage = "Your password is required")]
-        public string password { get; set; }
+        [PasswordPropertyText]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Your Password is required")]
+        public string Password { get; set; }
+
+        [Display(Name = "Repeat Password")]
+        [NotMapped]
+        [PasswordPropertyText]
+        [System.ComponentModel.DataAnnotations.Compare("Password")]
+        [Required(AllowEmptyStrings = false, ErrorMessage = "Please repeat your Password")]
+        public string Password_Conformation { get; set; }
+
+        [HiddenInput()]
+        [JsonIgnore]
+        public string Tkn { get; set; }
+
+        public static bool IfPasswordStrong(string pswd)
+        {
+           return
+                Regex.IsMatch(pswd, ".*[A-Z]") &&
+                Regex.IsMatch(pswd, ".*[0-9]") &&
+                Regex.IsMatch(pswd, ".{6}");
+
+        }
+
+        public static bool IsEmail(string email)
+        {
+            return  Regex.IsMatch(email, @"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+        
+        }
     }
 }

@@ -1,0 +1,103 @@
+﻿@model mct_timer.Models.Login
+
+@{
+    ViewData["Title"] = "Reset your password";
+}
+
+
+
+<div id="gbmainbg">
+    <div id="menu" class="menu">
+        <img class="option" src="~/icons/home-w.png" title="back to home" onclick="javascript:location.href = '/'" />
+    </div>
+    <div id="loc" class="location">
+        <a href="https://maps.app.goo.gl/tSMZLH5erYiWjrQg6" target="_blank"><img class="option" src="~/icons/location-w.png" title="image info" /></a>
+    </div>
+    <div id="location-info">
+        Italy, Castle della Dragonara
+    </div>
+
+    <form id="ResetPwd" asp-action="ResetPwd">
+         <div class="form" style="width:500px">
+            <h1>@ViewData["Title"]</h1>
+            <span class="info">
+                To <b>reset</b> your password please provide your new password and confirm it again.
+            </span>            
+            
+            <div id="error" class="error">@TempData["Error"]</div>
+            <div asp-validation-summary="ModelOnly" class="error"></div>
+
+
+            <table cellpadding="5">
+                <tr>
+                    <td align="right"><label asp-for="Password" class="control-label"></label></td>
+                    <td>:</td>
+                    <td><input id="p1" type="password" asp-for="Password" class="form-control-text" /></td>
+                </tr>
+                <tr><td colspan="3"><span asp-validation-for="Password" class="text-danger"></span></td></tr>
+                <tr>
+                    <td align="right"><label asp-for="Password_Conformation" class="control-label"></label></td>
+                    <td>:</td>
+                    <td><input id="p2" type="password" asp-for="Password_Conformation" class="form-control-text" /></td>
+                </tr>
+                <tr><td colspan="3"><span asp-validation-for="Password_Conformation" class="text-danger"></span></td></tr>
+
+            </table>
+            <input asp-for="Email" type="hidden" />
+            <input asp-for="Tkn" type="hidden" />
+
+            <altcha-widget challengeurl="/Account/GetAltcha"></altcha-widget>
+            <br />
+            <div class="form-group">               
+                <input type="button" value="Reset" class="submit" onclick="javascript:checkpasswords(document.querySelector('#ResetPwd'))" />
+            </div>
+    </form>
+</div>
+
+
+@section Scripts
+{
+    <script async defer src="/js/altcha.min.js" type="module"></script>
+
+    <script>
+
+        function menuUpdate() {
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+        }
+
+
+        $(document).ready(function () {
+            document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/account.jpg)";
+            menuUpdate();
+        })
+
+        $(window).resize(() => menuUpdate());
+
+
+     function checkpasswords(formObj) {
+            var p1 = document.querySelector("#p1").value;
+            var p2 = document.querySelector("#p2").value;
+
+            if (!document.querySelector("#altcha_checkbox").checked) {
+                document.querySelector("#error").innerText = "Please complete captcha.";
+                return;
+            }
+
+            if (p1 != p2) {
+                document.querySelector("#error").innerText = "Both passwords should be the same.";
+                return;
+            }
+
+            if (checkpass(p1, document.querySelector("#error"))) {
+                formObj.submit();
+            }
+            else {
+                document.querySelector("#error").innerText = "Password must be 6 symbols long and contains capital, small letters and numbers.";
+            }
+            return;
+        }
+
+  
+    </script>
+}

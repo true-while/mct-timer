@@ -464,7 +464,7 @@ namespace mct_timer.Controllers
         }
             
 
-        private async Task<User>? GetUserInfo()
+        private User? GetUserInfo()
         {
             var token = _context.HttpContext.Request.Cookies["jwt"];
 
@@ -476,7 +476,7 @@ namespace mct_timer.Controllers
                 if (result)
                 {
                     var email = jwt.Claims.First(x => x.Type == "email")?.Value;
-                    User? user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
+                    var user = _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email).Result;
                     return user; 
                 }
             }
@@ -486,9 +486,9 @@ namespace mct_timer.Controllers
 
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public async Task<IActionResult> Default()
+        public IActionResult Default()
         {
-            var user = await GetUserInfo();
+            var user = GetUserInfo();
 
             if (user != null)
             {
@@ -504,14 +504,13 @@ namespace mct_timer.Controllers
 
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public async Task<IActionResult> Custom()
+        public IActionResult Custom()
         {
-            var user = await GetUserInfo();
+            var user = GetUserInfo();
            
 
             if (user != null)
             {
-
                 ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts()); 
                 Dictionary<PresetType, int> quote = user.GetQuote();                
                 ViewData["UplodaQuote"] = quote;
@@ -524,9 +523,9 @@ namespace mct_timer.Controllers
 
         [GenerateAntiforgeryTokenCookie]
         [JwtAuthentication]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var user = await GetUserInfo();
+            var user = GetUserInfo();
 
             if (user != null)
             {
@@ -542,7 +541,7 @@ namespace mct_timer.Controllers
         [JwtAuthentication]
         public async Task<IActionResult> Index([Bind("Ampm", "Language", "DefTZ")] User updates)
         {
-            var user = await GetUserInfo();
+            var user = GetUserInfo();
 
             if (user != null)
             {

@@ -216,6 +216,16 @@ app.MapControllerRoute(
 
 app.MapControllerRoute(
     name: "AvTest",
+    pattern: "/Reset",
+    defaults: new { controller = "Account", action = "Reset" });
+
+app.MapControllerRoute(
+    name: "AvTest",
+    pattern: "/ResetPwd",
+    defaults: new { controller = "Account", action = "ResetPwd" });
+
+app.MapControllerRoute(
+    name: "AvTest",
     pattern: "/avtest",
     defaults: new { controller = "Settings", action = "AvTest" });
 

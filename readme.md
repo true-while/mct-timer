@@ -52,7 +52,10 @@ For local exaction the configuration file should be provided with following temp
     "FileSizeLimit": "max file size in bite (int)",
     "WebCDN": "url of static website created for storage account",
     "CosmosDBEndpoint": "https://<your cosmos acc name>.documents.azure.com:443/",
-    "TenantID": "<your tenant guid>"
+    "TenantID": "<your tenant guid>",
+    "SubscriptionID": "<your subscription guid>",
+    "PwdResetRequestUrl": "https://..."          
+
   },
   "ApplicationInsights": "<cs copy from AI page>",  
   "AllowedHosts": "*"

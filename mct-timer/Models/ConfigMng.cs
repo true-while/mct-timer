@@ -16,5 +16,6 @@
         public string CosmosDBEndpoint { get; set; }       // cosmos db 
         public string TenantID { get; set; }               // tenant Id required for managed identity and tests 
         public string SubscriptionID { get; set; }          // subscription id
+        public string PwdResetRequestUrl { get; set; }  //logic app url to sent Email for Password reset
     }
 }

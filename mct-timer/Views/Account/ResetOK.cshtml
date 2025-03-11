@@ -1,0 +1,49 @@
+﻿@model mct_timer.Models.Login
+
+@{
+    ViewData["Title"] = "Password Reset";
+}
+
+
+<div id="gbmainbg">
+    <div id ="menu" class="menu">
+        <img class="option" src="~/icons/home-w.png" title="back to home" onclick="javascript:location.href = '/'" />
+    </div>
+    <div id="loc" class="location">
+        <a href="https://maps.app.goo.gl/tSMZLH5erYiWjrQg6" target="_blank"><img class="option" src="~/icons/location-w.png" title="image info" /></a>
+    </div>
+    <div id="location-info">
+        Italy, Castle della Dragonara
+    </div>
+
+    <div class="form" style="width:500px">
+            <h1>@ViewData["Title"]</h1>
+            <span class="info">
+                Please check your email to receive the link to reset your password.
+            </span>            
+    </div>
+</div>
+
+
+
+@section Scripts
+{
+    <script async defer src="/js/altcha.min.js" type="module"></script>
+    <script>
+
+
+        function menuUpdate() {
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+        }
+
+        $(document).ready(function () {
+            document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/account.jpg)";
+            menuUpdate();
+        })
+
+        $(window).resize(() => menuUpdate());
+
+    </script>
+}
+
