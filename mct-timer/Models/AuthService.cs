@@ -72,12 +72,27 @@ namespace mct_timer.Models
                 return true;
 
             }
+            catch (SecurityTokenExpiredException ex)
+            {
+                //expired credentials
+                jwt = null;
+                return false;
+            }
             catch (SecurityTokenValidationException ex)
             {
 
                 // Log the reason why the token is not valid
                 _log.TrackException(ex);
                 _log.TrackTrace(String.Format("Authentication token was invalid: {0}",token));
+
+                jwt = null;
+                return false;
+            }
+            catch (Exception ex)
+            {
+                // Log the reason why the token is not valid
+                _log.TrackException(ex);
+                _log.TrackTrace(String.Format("Authentication token check filed: {0}", token));
 
                 jwt = null;
                 return false;

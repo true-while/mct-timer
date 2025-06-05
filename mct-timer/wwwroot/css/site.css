@@ -48,6 +48,13 @@ body {
         display: block;
     }
 
+.bingbg {
+    position: absolute;
+    top: calc(100% - 60px);
+    right: 10px;
+    width: 35px;
+}
+
 .menu {
     position: absolute;
     top: 00px;

@@ -52,9 +52,9 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "Email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type,"Email",true)==0)?.Value;
 
-                    var user =  _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email).Result;
+                    return _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email).Result;
                 }
             }
 
@@ -114,8 +114,11 @@ namespace mct_timer.Controllers
             Random rn = new Random(DateTime.Now.Second);
             var index = rn.Next(0, bgList.Count());
 
-            if (bgList.Count > 0)             
+            if (bgList.Count > 0)
+            {
                 model.BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + bgList[index].Url).ToString();
+                model.IsBing = bgList[index].IsBingBg;
+            }
             else
                 model.BGUrl = "~/bg-lib/default.png";
 

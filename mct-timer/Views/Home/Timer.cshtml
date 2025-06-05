@@ -8,6 +8,9 @@
     <div id="menu" class="menu">
        <div class="project-name">aka.ms/timer</div>
     </div>
+    <div id="bingbg" class="bingbg" style="display:none">
+        <a href="https://www.bing.com/apps/wallpaper"><img src="/bg-lib/bingbg.png" title="Bing backgrounds"/></a>
+    </div>
     <div id="group">
         <table id="group-tbl">
             <tr>
@@ -86,15 +89,28 @@
             document.querySelector("#resume")
         );
 
-        mtimer.ampm = '0Model.Ampm';
+        mtimer.ampm = '@Model.Ampm';
         mtimer.timezoneName = timezoneName;
         mtimer.timezoneAbr = timezoneAbr;
         mtimer.originalSeconds = mtimer.remainingSeconds = breakLength * 60;
         mtimer.originalEnd = moment.tz(timezoneName).add(breakLength, 'minutes');
         mtimer.start();
+           
 
-        document.querySelector("#gbmainbg").style.backgroundImage = "url('@Model.BGUrl')";
+        function menuUpdate() {
+            outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+            if (@Model.IsBing.ToString().ToLower())
+            {
+                document.querySelector("#bingbg").style.display = "block";
+            }
+        }
 
+        $(document).ready(function () {
+           document.querySelector("#gbmainbg").style.backgroundImage = "url('@Model.BGUrl')";
+           menuUpdate();
+        })
+
+        $(window).resize(() => menuUpdate());
    
     </script>
 }

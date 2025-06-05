@@ -198,8 +198,107 @@ namespace mct_timer.Models
                 BgType = PresetType.Wait,
                 Locked = true,
                 Visible = true,
-                Info = "Default background"
+                Info = "Default background",
+                IsBingBg = true
             };
+            var bgw4 = new Background()
+            {
+                id = "W4",
+                Author = "system",
+                Url = "wait4.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
+            var bgw5 = new Background()
+            {
+                id = "W5",
+                Author = "system",
+                Url = "wait5.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
+            var bgw6 = new Background()
+            {
+                id = "W6",
+                Author = "system",
+                Url = "wait6.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
+            var bgw7 = new Background()
+            {
+                id = "W7",
+                Author = "system",
+                Url = "wait7.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
+            var bgw8 = new Background()
+            {
+                id = "W8",
+                Author = "system",
+                Url = "wait8.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
+            var bgw9 = new Background()
+            {
+                id = "W9",
+                Author = "system",
+                Url = "wait9.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
+            var bgw10 = new Background()
+            {
+                id = "W10",
+                Author = "system",
+                Url = "wait10.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = true
+            };
+
 
             var bgln0 = new Background()
             {
@@ -317,12 +416,72 @@ namespace mct_timer.Models
                 Locked = true,
                 Visible = true,
             };
+            var bgc6 = new Background()
+            {
+                id = "C6",
+                Author = "system",
+                Url = "coffee6.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+                IsBingBg = true,
+            };
+            var bgc7 = new Background()
+            {
+                id = "C7",
+                Author = "system",
+                Url = "coffee7.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+                IsBingBg = true,
+            };
+            var bgc8 = new Background()
+            {
+                id = "C8",
+                Author = "system",
+                Url = "coffee8.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+                IsBingBg = true,
+            };
+            var bgc9 = new Background()
+            {
+                id = "C9",
+                Author = "system",
+                Url = "coffee9.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+                IsBingBg = true,
+            };
+            var bgc10 = new Background()
+            {
+                id = "C10",
+                Author = "system",
+                Url = "coffee10.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Coffee,
+                Locked = true,
+                Visible = true,
+                IsBingBg = true,
+            };
 
             this.Backgrounds.AddRange(new []{ 
-                bgc0,bgc1,bgc2,bgc3,bgc4,bgc5,
+                bgc0,bgc1,bgc2,bgc3,bgc4,bgc5,bgc6,bgc7,bgc8,bgc9,bgc10,
                 bgl0,bgl1,bgl2,bgl3,
                 bgln0,bgln1,bgln2,bgln3,
-                bgw0,bgw1,bgw2,bgw3
+                bgw0,bgw1,bgw2,bgw3,bgw4,bgw5,bgw6,bgw7,bgw8,bgw9,bgw10
 
             });
 
@@ -373,6 +532,9 @@ namespace mct_timer.Models
 
         [DefaultValue(true)]
         public bool Visible { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsBingBg { get; set; }
     }
 
     public class Login

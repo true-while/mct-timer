@@ -88,7 +88,7 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
                     var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && bgid!=null)
@@ -130,7 +130,7 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
                     var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && bgid != null)
@@ -173,7 +173,7 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
                     var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && bgid != null)
@@ -304,7 +304,7 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
                     var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null && TempData.ContainsKey("UploadeFile") && TempData.ContainsKey("UploadeName"))
@@ -380,7 +380,7 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
                     var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
 
                     if (user != null )
@@ -475,7 +475,7 @@ namespace mct_timer.Controllers
 
                 if (result)
                 {
-                    var email = jwt.Claims.First(x => x.Type == "email")?.Value;
+                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
                     var user = _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email).Result;
                     return user; 
                 }

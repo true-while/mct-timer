@@ -177,6 +177,9 @@ namespace mct_timer.Controllers
                             theUser.PwdResets = new List<String>();
                     }
 
+                }else
+                {
+                    return View("ResetOK");
                 }
             }
 
@@ -398,29 +401,7 @@ namespace mct_timer.Controllers
 
 
 
-        //[HttpGet]
-        //public IActionResult Info()
-        //{
-        //    var request = _context.HttpContext.Request;
-        //    var token = request.Cookies["jwt"];
-
-        //    if (token != null)
-        //    {
-        //        JwtSecurityToken jwt;
-        //        var result = AuthService.GetInstance.Validate(token, out jwt);
-
-        //        if (result)
-        //        {
-        //            var Email = jwt.Claims.First(x => x.Type == "Email")?.Value;
-        //            var user = _ac_context.Users.FirstOrDefault(x => x.Email == Email);
-        //            return View(user);
-        //        }
-        //    }
-
-        //    _logger.LogError("Token was not read properly from Account Info page");
-        //    return View("Login");
-
-        //}
+       
     }
 }
 
