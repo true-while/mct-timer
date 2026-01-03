@@ -50,15 +50,61 @@
                 function () {
                     btn.parentElement.querySelectorAll('.type-icons').forEach(otherbtn => { otherbtn.style.border = 'none'; });
                     btn.style.border = '3px solid black';
-                    document.querySelector("#brtype").value = btn.getAttribute('tp');
-
-                });
-        })
+                    document.querySelector("#brtype").value = btn.getAttribute('tp');                });
+        });
 
         this.el.deftz.addEventListener("click", () => {
-            this.el.timezone.value = moment.tz.guess();
-            this.el.timezone.dispatchEvent(new Event('change'));
-        });   
+            const newTz = moment.tz.guess();
+            $(this.el.timezone).val(newTz).trigger('change.select2');
+            this.updateTimerForTimezoneChange(newTz);
+        });
+
+        // Initialize Select2 for searchable timezone dropdown
+        $(this.el.timezone).select2({
+            width: '100%',
+            allowClear: false,
+            placeholder: 'Search timezone...',
+            matcher: function (params, data) {
+                // If there are no search terms, return all of the data
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+                
+                // Convert search term: replace spaces with underscores for matching
+                var searchTerm = params.term.toUpperCase();
+                var searchTermWithUnderscore = searchTerm.replace(/\s+/g, '_');
+                
+                // Do a recursive check for options with children
+                if (data.children && data.children.length > 0) {
+                    var filtered = $.map(data.children, function (child) {
+                        var childText = child.text.toUpperCase();
+                        // Match against both original search term and underscore version
+                        if (childText.indexOf(searchTerm) >= 0 || childText.indexOf(searchTermWithUnderscore) >= 0) {
+                            return child;
+                        }
+                    });
+                    // If we have any filtered children, return the parent
+                    if (filtered.length) {
+                        var modifiedData = $.extend({}, data, true);
+                        modifiedData.children = filtered;
+                        return modifiedData;
+                    }
+                    // Otherwise return null
+                    return null;
+                }
+                
+                // If it doesn't have children, filter and return the user data and clone of the placeholder
+                var dataText = data.text.toUpperCase();
+                // Match against both original search term and underscore version
+                if (dataText.indexOf(searchTerm) >= 0 || dataText.indexOf(searchTermWithUnderscore) >= 0) {
+                    var modifiedData = $.extend({}, data, true);
+                    return modifiedData;
+                }                // Return null if the term does not match
+                return null;
+            }        });        // Handle Select2 change event to recalculate timer when timezone changes
+        $(this.el.timezone).on('select2:select', (e) => {
+            this.updateTimerForTimezoneChange(this.el.timezone.value);
+        });
 
         this.state = this.STATE_VALID;
         this.tz = this.getCookieByName("tz");  //get cookies timezone.
@@ -111,22 +157,10 @@
 
             if (tz.value === this.tz) {
                option.selected = true;
-            }
-
-            this.el.timezone.add(option);
+            }            this.el.timezone.add(option);
         }
 
-        this.el.timezone.addEventListener("change", () => {
-            var oldTz = this.tz;
-            this.tz = this.el.timezone.value;
-            this.setCookieByName("tz", this.el.timezone.value, 30);
-
-            const currrentDuration = this.getTimerDuration().tz(oldTz,true);
-            const defaultDuration = currrentDuration.tz(this.tz);
-            this.el.input.value = defaultDuration.format('hh:mm');
-            this.el.ampm.value = defaultDuration.format('A');
-            this.el.datevalue.value = defaultDuration.format('YYYY-MM-DD');
-        });
+        // Note: timezone change is now handled by Select2:select and def-tz button events via updateTimerForTimezoneChange()
 
         this.el.input.addEventListener("change", () => {
             this.onDurationFieldChanged();
@@ -264,9 +298,7 @@
             appInsights.TrackException(e);
             return;
         }
-    }
-
-    setCookieByName(name, value, days) {
+    }    setCookieByName(name, value, days) {
         var exp = "";
         if (days) {
             var date = new Date();
@@ -287,8 +319,17 @@
         return null;
     }
 
+    updateTimerForTimezoneChange(newTz) {
+        var oldTz = this.tz;
+        this.tz = newTz;
+        this.setCookieByName("tz", newTz, 30);
 
-
+        const currrentDuration = this.getTimerDuration().tz(oldTz, true);
+        const defaultDuration = currrentDuration.tz(this.tz);
+        this.el.input.value = defaultDuration.format('hh:mm');
+        this.el.ampm.value = defaultDuration.format('A');
+        this.el.datevalue.value = defaultDuration.format('YYYY-MM-DD');
+    }
 
 }
 

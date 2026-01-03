@@ -23,16 +23,56 @@
         text-align: left;
         color: darkblue;
         margin-bottom: 7px;
-    }
-
-    .timer-defaults #timezone {
-        padding: 2px;
-        border-radius: 4px;
+    }    .timer-defaults #timezone {
+        border-radius: 7px;
         text-align: left;
-        font: 500 18px Segoe UI;
+        font: 600 18px Segoe UI;
         border: 2px solid black;
         background-color: whitesmoke;
         width: stretch;
+        white-space: nowrap;
+    }
+    
+    /* Match ampm font styling for Select2 */
+    .timer-defaults .select2-container--default .select2-selection--single {
+        font: 600 18px Segoe UI !important;
+        padding: 0px 7px;
+        border-radius: 7px;
+        background-color: whitesmoke;
+        border: 2px solid black !important;
+        height: 34px;
+    }
+    
+    .timer-defaults .select2-container--default .select2-selection--single .select2-selection__rendered {
+        padding: 0px 0;
+        color: black;
+    }
+      .select2-container--default .select2-results__option {
+        font: 600 18px Segoe UI;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .select2-container--default .select2-selection--single {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #timezone.select2-hidden-accessible + .select2-container--default .select2-selection--single {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Select2 dropdown menu */
+    .select2-container--default .select2-dropdown {
+        min-width: 100%;
+    }
+
+    .select2-container--default .select2-results {
+        max-height: 300px;
     }
     /*.defaults {
     margin: 10px;

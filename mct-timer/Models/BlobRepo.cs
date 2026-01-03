@@ -75,14 +75,19 @@ namespace mct_timer.Models
         {
             CreateContainer();
             return _client.Uri;
-        }
-
-        public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
+        }        public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
         {
             CreateContainer();
 
-            await _client.UploadBlobAsync(name, data);
             BlobClient file = _client.GetBlobClient(name);
+            
+            // Delete existing blob if it exists to avoid 409 BlobAlreadyExists error
+            await file.DeleteIfExistsAsync();
+            
+            // Upload the new blob
+            await file.UploadAsync(data.ToStream(), overwrite: false);
+            
+            // Set metadata
             BlobInfo info = await file.SetMetadataAsync(mdata);
 
             return file.Uri;

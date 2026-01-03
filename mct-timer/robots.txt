@@ -1,1 +1,39 @@
-﻿
+﻿# MCT Timer Application robots.txt
+# Prevents search engines from indexing sensitive areas
+
+# Block all bots from private/administrative areas
+User-agent: *
+Disallow: /Account/
+Disallow: /Settings/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /bin/
+Disallow: /obj/
+
+# Allow indexing of public content
+Allow: /
+Allow: /Home/
+Allow: /Info
+
+# Specific rules for common bots
+User-agent: Googlebot
+Disallow: /Account/
+Disallow: /Settings/
+Disallow: /api/
+Crawl-delay: 1
+
+User-agent: Bingbot
+Disallow: /Account/
+Disallow: /Settings/
+Disallow: /api/
+Crawl-delay: 1
+
+# Block bad actors
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+# Specify sitemap location (uncomment when you have a sitemap)
+# Sitemap: https://yourdomain.com/sitemap.xml

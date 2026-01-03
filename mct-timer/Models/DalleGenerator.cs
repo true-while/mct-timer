@@ -7,28 +7,25 @@ using OpenAI.Images;
 using System.ClientModel;
 
 namespace mct_timer.Models
-{ 
-
-    public interface IDalleGenerator
+{     public interface IDalleGenerator
     {
-
         public Task<GeneratedImage> GetImage(string promt);
         public bool TestConnection();
-
-    }
-
-    public class DalleGenerator: IDalleGenerator
+        public ValidationResult ValidatePrompt(string prompt);
+    }    public class DalleGenerator: IDalleGenerator
     {
         string _endpoint;
         string _key;
         string _model;
         TelemetryClient _ai;
+        IPromptValidator _validator;
 
         public DalleGenerator(string endpoint, string key, string model, TelemetryClient ai) { 
             _endpoint = endpoint;
             _key = key;
             _model = model;
             _ai = ai;
+            _validator = new PromptValidator(ai);
         }
 
         public bool TestConnection()
@@ -45,11 +42,14 @@ namespace mct_timer.Models
                 _ai.TrackException(ex);
                 return false;
             }
-         }
-
-
-        public async Task<GeneratedImage> GetImage(string promt = "background image for my site")
+         }        public async Task<GeneratedImage> GetImage(string promt = "background image for my site")
         {    
+            // Validate prompt before sending to AI service
+            var validationResult = _validator.ValidatePrompt(promt);
+            if (!validationResult.IsValid)
+            {
+                throw new ArgumentException($"Prompt validation failed: {validationResult.Reason}");
+            }
 
             AzureKeyCredential credential = new AzureKeyCredential(_key);
             AzureOpenAIClient azureClient = new AzureOpenAIClient(new Uri(_endpoint), credential);
@@ -64,6 +64,11 @@ namespace mct_timer.Models
 
             return imageResult.Value;
             
+        }
+
+        public ValidationResult ValidatePrompt(string prompt)
+        {
+            return _validator.ValidatePrompt(prompt);
         }
     }
 

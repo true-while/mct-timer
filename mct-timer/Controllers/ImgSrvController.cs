@@ -76,20 +76,44 @@ namespace mct_timer.Controllers
                         var mResult = await _blRepo.TransformMediumFileAsync(fileName);
                         var sResult = await _blRepo.TransformSmallFileAsync(fileName);
 
-                        _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {sResult & mResult}, topic: {eventGridEvent.Topic}");
-
-                    }else if (data != null && data.url.Contains(BlobRepo.AiGenImgfolder))
+                        _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {sResult & mResult}, topic: {eventGridEvent.Topic}");                    }else if (data != null && data.url.Contains(BlobRepo.AiGenImgfolder))
                     {
                         string fileName = Path.GetFileName(data.url);
                         IDictionary<string,string> mdata = _blRepo.GetMetaData(Path.Combine(BlobRepo.AiGenImgfolder, fileName));
                         if (mdata != null && mdata.ContainsKey("prompt"))
                         {
-                            var imggen = await _dalle.GetImage(mdata["prompt"]);
-                            mdata.Add("RevisedPrompt", imggen.RevisedPrompt);
-                            await _blRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLower(), imggen.ImageBytes, (Dictionary<string,string>)mdata);
-                            var mResult = await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                            string prompt = mdata["prompt"];
+                            
+                            // Validate prompt before sending to AI service
+                            var validationResult = _dalle.ValidatePrompt(prompt);
+                            if (!validationResult.IsValid)
+                            {
+                                _tmClient.TrackTrace($"Prompt validation failed: {validationResult.Reason} - Prompt: {prompt}", 
+                                    severityLevel: Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Warning);
+                                await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                                return new OkObjectResult("Prompt rejected: " + validationResult.Reason);
+                            }
 
-                            _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {mResult}, topic: {eventGridEvent.Topic}");
+                            try
+                            {
+                                var imggen = await _dalle.GetImage(prompt);
+                                mdata.Add("RevisedPrompt", imggen.RevisedPrompt);
+                                await _blRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLower(), imggen.ImageBytes, (Dictionary<string,string>)mdata);
+                                var mResult = await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+
+                                _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {mResult}, topic: {eventGridEvent.Topic}");
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                _tmClient.TrackException(ex);
+                                await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                                return new OkObjectResult("Image generation request rejected: " + ex.Message);
+                            }
+                            catch (Exception ex)
+                            {
+                                _tmClient.TrackException(ex);
+                                return new BadRequestObjectResult("Error processing image generation: " + ex.Message);
+                            }
                         }
                     }
           

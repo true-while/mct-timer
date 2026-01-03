@@ -8,7 +8,7 @@ namespace mct_timer.Models
         public string Timezone;
         public bool Ampm;
         public PresetType BreakType;
-        public string BGUrl;
+        public string BGUrl = string.Empty;
 
         [DefaultValue(false)]
         public bool IsBing;

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Web.Mvc;
 using System.Collections;
 using System.Text.Json.Serialization;
 using System.Diagnostics;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace mct_timer.Models
 {
@@ -299,7 +299,60 @@ namespace mct_timer.Models
                 IsBingBg = true
             };
 
+            var bgw11 = new Background()
+            {
+                id = "W11",
+                Author = "system",
+                Url = "wait11.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = false
+            };
 
+            var bgw12 = new Background()
+            {
+                id = "W12",
+                Author = "system",
+                Url = "wait12.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = false
+            };
+            
+            var bgw13 = new Background()
+            {
+                id = "W13",
+                Author = "system",
+                Url = "wait13.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = false
+            };
+            var bgw14 = new Background()
+            {
+                id = "W14",
+                Author = "system",
+                Url = "wait14.jpg",  //short url just name of the file
+                Location = "",
+                LocationLink = "",
+                BgType = PresetType.Wait,
+                Locked = true,
+                Visible = true,
+                Info = "Default background",
+                IsBingBg = false
+            };
             var bgln0 = new Background()
             {
                 id = "LN0",
@@ -481,7 +534,7 @@ namespace mct_timer.Models
                 bgc0,bgc1,bgc2,bgc3,bgc4,bgc5,bgc6,bgc7,bgc8,bgc9,bgc10,
                 bgl0,bgl1,bgl2,bgl3,
                 bgln0,bgln1,bgln2,bgln3,
-                bgw0,bgw1,bgw2,bgw3,bgw4,bgw5,bgw6,bgw7,bgw8,bgw9,bgw10
+                bgw0,bgw1,bgw2,bgw3,bgw4,bgw5,bgw6,bgw7,bgw8,bgw9,bgw10,bgw11,bgw12,bgw13,bgw14,
 
             });
 

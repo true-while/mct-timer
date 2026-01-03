@@ -73,31 +73,29 @@ namespace mct_timer.Controllers
                 _dalle);
 
             return View(avtest);
-        }
-
-        [JwtAuthentication]
+        }        [JwtAuthentication]
         [HttpGet]
         public async Task<IActionResult> DeleteBG(string bgid)
         {
-            var token = _context.HttpContext.Request.Cookies["jwt"];
+            var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
             {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+                JwtSecurityToken? jwt = null;
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
 
-                if (result)
+                if (result && jwt != null)
                 {
-                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
-                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
-
-                    if (user != null && bgid!=null)
+                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                    var email = emailClaim?.Value;
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid!=null)
                     {
-                        if (user.Backgrounds.Any(x => x.id == bgid && x.Locked != true))
+                        if (user.Backgrounds?.Any(x => x.id == bgid && x.Locked != true) ?? false)
                         {
-                            var bg = user.Backgrounds.FirstOrDefault(x => x.id == bgid);
-                            if (bg!=null) await _blobRepo.DeleteImageAsync(bg.Url);
-                            user.Backgrounds = user.Backgrounds.Where(x => x.id != bgid).ToList();
+                            var bg = user.Backgrounds?.FirstOrDefault(x => x.id == bgid);
+                            if (bg != null && !string.IsNullOrEmpty(bg.Url)) 
+                                await _blobRepo.DeleteImageAsync(bg.Url);
+                            user.Backgrounds = user.Backgrounds?.Where(x => x.id != bgid).ToList() ?? new List<Background>();
                             _ac_context.Update(user);
                             await _ac_context.SaveChangesAsync();
                         }
@@ -105,7 +103,7 @@ namespace mct_timer.Controllers
                         ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
-                        ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                        ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
 
                         return View("Custom", BgLinkPrep(user));
                     }
@@ -115,25 +113,22 @@ namespace mct_timer.Controllers
                 }
             }
             return new UnauthorizedResult();
-        }
-
-        [JwtAuthentication]
+        }        [JwtAuthentication]
         [HttpGet]
         public async Task<IActionResult> HideDefBG(string bgid, bool visible = false)
         {
-            var token = _context.HttpContext.Request.Cookies["jwt"];
+            var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
             {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+                JwtSecurityToken? jwt = null;
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
 
-                if (result)
+                if (result && jwt != null)
                 {
-                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
-                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
-
-                    if (user != null && bgid != null)
+                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                    var email = emailClaim?.Value;
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid != null)
                     {
                         if (user.DefBGHidden == null) user.DefBGHidden = new Dictionary<string, bool>();
                         
@@ -146,7 +141,6 @@ namespace mct_timer.Controllers
                         await _ac_context.SaveChangesAsync();
 
                         user.CleanAllBG();
-
                         user.LoadDefaultBG();
 
                         return View("Default", BgLinkPrep(user));
@@ -154,31 +148,29 @@ namespace mct_timer.Controllers
 
                     return RedirectToAction("Index", "Home");
 
+                    return RedirectToAction("Index", "Home");
+
                 }
             }
             return new UnauthorizedResult();
-        }
-
-
-        [JwtAuthentication]
+        }        [JwtAuthentication]
         [HttpGet]
         public async Task<IActionResult> HideBG(string bgid, bool visible= false)
         {
-            var token = _context.HttpContext.Request.Cookies["jwt"];
+            var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
             {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+                JwtSecurityToken? jwt = null;
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
 
-                if (result)
+                if (result && jwt != null)
                 {
-                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
-                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
-
-                    if (user != null && bgid != null)
+                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                    var email = emailClaim?.Value;
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid != null)
                     {
-                        var theBg = user.Backgrounds.FirstOrDefault(x => x.id == bgid);
+                        var theBg = user.Backgrounds?.FirstOrDefault(x => x.id == bgid);
                         if (theBg != null)
                         {
                             theBg.Visible = visible;
@@ -188,7 +180,7 @@ namespace mct_timer.Controllers
                         ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
-                        ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
+                        ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
 
                         return View("Custom", BgLinkPrep(user));
                     }
@@ -198,15 +190,13 @@ namespace mct_timer.Controllers
                 }
             }
             return new UnauthorizedResult();
-        }
-
-        [JwtAuthentication]
+        }        [JwtAuthentication]
         [HttpPost]
         [DisableFormValueModelBinding]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadPhysical()
         {
-            if (!MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
+            if (string.IsNullOrEmpty(Request.ContentType) || !MultipartRequestHelper.IsMultipartContentType(Request.ContentType))
             {
                 ModelState.AddModelError("File",
                     $"The request couldn't be processed (Error 1).");
@@ -226,7 +216,7 @@ namespace mct_timer.Controllers
                     ContentDispositionHeaderValue.TryParse(
                         section.ContentDisposition, out var contentDisposition);
 
-                if (hasContentDispositionHeader)
+                if (hasContentDispositionHeader && contentDisposition != null)
                 {
                     // This check assumes that there's a file
                     // present without form data. If form data
@@ -287,25 +277,24 @@ namespace mct_timer.Controllers
 
             return new OkObjectResult(Json("{'File':[{'Successfully uploaded'}]}"));
         }
-        
-
-        [JwtAuthentication]
+            [JwtAuthentication]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UploadBG([Bind("File", "Info", "BgType")] Background bg)
         {
             
-            var token = _context.HttpContext.Request.Cookies["jwt"];
+            var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
             {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+                JwtSecurityToken? jwt = null;
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
 
-                if (result)
+                if (result && jwt != null)
                 {
-                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
-                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
+                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                    var email = emailClaim?.Value;
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;
 
                     if (user != null && TempData.ContainsKey("UploadeFile") && TempData.ContainsKey("UploadeName"))
                     {
@@ -320,33 +309,41 @@ namespace mct_timer.Controllers
                             bg.Author = user.Name;
                             bg.Visible = true;
                             
-                            var file = Path.Combine(_tempFilePath, Path.GetFileName((string)TempData["UploadeFile"]));
-                            var ext = Path.GetExtension((string)TempData["UploadeName"]);
-                            if (System.IO.File.Exists(file))
+                            var uploadedFile = TempData["UploadeFile"] as string;
+                            var uploadedName = TempData["UploadeName"] as string;
+                            
+                            if (!string.IsNullOrEmpty(uploadedFile) && !string.IsNullOrEmpty(uploadedName))
                             {
-                                var mdata = new Dictionary<string, string>();
-                                try
+                                var file = Path.Combine(_tempFilePath, Path.GetFileName(uploadedFile));
+                                var ext = Path.GetExtension(uploadedName);
+                                if (System.IO.File.Exists(file))
                                 {
-                                    mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                                    var mdata = new Dictionary<string, string>();
+                                    try
+                                    {
+                                        var remoteIp = _context?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+                                        if (!string.IsNullOrEmpty(remoteIp))
+                                            mdata["IP"] = remoteIp;
+                                    }
+                                    catch
+                                    {
+                                        _logger.TrackTrace("Cannot detect IP");
+                                    }
+                                    mdata["user"] = user.Email ?? "";
+                                    mdata["author"] = user.Name ?? "";
+                                    mdata["when"] = DateTime.Now.ToString();
+
+                                    var content = new BinaryData(System.IO.File.ReadAllBytes(file));
+                                    var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ext).ToLower(), content, mdata);
+
+                                    System.IO.File.Delete(file);
+                                    bg.Url = Path.GetFileName(uri.ToString());
+                                    if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
+                                    user.Backgrounds.Add(bg);
+
+                                    _ac_context.Update(user);
+                                    await _ac_context.SaveChangesAsync();
                                 }
-                                catch
-                                {
-                                    _logger.TrackTrace("Cannot detect IP");
-                                }
-                                mdata["user"] = user.Email;
-                                mdata["author"] = user.Name;
-                                mdata["when"] = DateTime.Now.ToString();
-
-                                var content = new BinaryData(System.IO.File.ReadAllBytes(file));
-                                var uri = await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + bg.id + ext).ToLower(), content, mdata);
-
-                                System.IO.File.Delete(file);
-                                bg.Url = Path.GetFileName(uri.ToString());
-                                if (user.Backgrounds == null) user.Backgrounds = new List<Background>();
-                                user.Backgrounds.Add(bg);
-
-                                _ac_context.Update(user);
-                                await _ac_context.SaveChangesAsync();
                             }
                         }
                     }
@@ -361,29 +358,26 @@ namespace mct_timer.Controllers
             }
             return new UnauthorizedResult();
         }
-
-
-
-
         [JwtAuthentication]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> GenerateBG([Bind("Info", "BgType")] Background bg)
         {
 
-            var token = _context.HttpContext.Request.Cookies["jwt"];
+            var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
             {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+                JwtSecurityToken? jwt = null;
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
 
-                if (result)
+                if (result && jwt != null)
                 {
-                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
-                    var user = await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email);
+                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                    var email = emailClaim?.Value;
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;
 
-                    if (user != null )
+                    if (user != null)
                     {
                         if (user.AIActivity == null)
                             user.AIActivity = new List<DateTime>();
@@ -392,7 +386,7 @@ namespace mct_timer.Controllers
                             user.Backgrounds = new List<Background>();
 
                         int maxAI;
-                        if (int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
+                        if (!int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
 
                         if (!user.IsAIActivityAllowed(maxAI))
                         {
@@ -411,14 +405,15 @@ namespace mct_timer.Controllers
                             bg.Locked = false;
                             bg.Url = $"{bg.id}.jpg";
 
-                            //sage image
+                            //save image
                             var mdata = new Dictionary<string, string>();
-                            mdata["user"] = user.Name;
+                            mdata["user"] = user.Name ?? "";
                             mdata["when"] = DateTime.Now.ToString();
-                            mdata["prompt"] = bg.Info;
+                            mdata["prompt"] = bg.Info ?? "";
                             try
                             {
-                                mdata["IP"] = _context.HttpContext.Connection.RemoteIpAddress.ToString();
+                                var remoteIp = _context?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+                                mdata["IP"] = !string.IsNullOrEmpty(remoteIp) ? remoteIp : "none";
                             }
                             catch
                             {
@@ -429,14 +424,8 @@ namespace mct_timer.Controllers
                             //register AI activity
                             user.AIActivity.Add(DateTime.Now);
 
-                            //var imggen = await _dalle.GetImage(mdata["prompt"]);
-
-
                             //generate task
-                            //RunAsync(
                             await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
-
-                            //bg.Url = Path.GetFileName(uri.ToString());
 
                             user.Backgrounds.Add(bg);
 
@@ -445,11 +434,11 @@ namespace mct_timer.Controllers
                         }
                     }
 
-                    ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
-                    var quote = user.GetQuote();
+                    ViewData["Attempts"] = user?.HowManyActivityAllowed(AIAttempts());
+                    var quote = user?.GetQuote();
                     ViewData["UplodaQuote"] = quote;
-                    ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
-                    return View("Custom", BgLinkPrep(user));
+                    ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
+                    return View("Custom", BgLinkPrep(user!));
                 }
 
             }
@@ -462,22 +451,25 @@ namespace mct_timer.Controllers
             if (int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
             return maxAI;
         }
-            
-
-        private User? GetUserInfo()
+                private User? GetUserInfo()
         {
-            var token = _context.HttpContext.Request.Cookies["jwt"];
+            var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
             {
-                JwtSecurityToken jwt;
-                var result = AuthService.GetInstance.Validate(token, out jwt);
+                JwtSecurityToken? jwt = null;
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
 
-                if (result)
+                if (result && jwt != null)
                 {
-                    var email = jwt.Claims.First(x => string.Compare(x.Type, "Email", true) == 0)?.Value;
-                    var user = _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email).Result;
-                    return user; 
+                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                    var email = emailClaim?.Value;
+                    
+                    if (!string.IsNullOrEmpty(email))
+                    {
+                        var user = _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email).Result;
+                        return user;
+                    }
                 }
             }
 
@@ -561,19 +553,19 @@ namespace mct_timer.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-
-        private User BgLinkPrep(User usr)
+        }        private User BgLinkPrep(User usr)
         {
             if (usr.Backgrounds == null)
                 usr.Backgrounds = new List<Background>();
 
             foreach (var bg in usr.Backgrounds)
             {
-                bg.Url = new Uri( new Uri(_config.Value.WebCDN), 
-                    Path.Combine(BlobRepo.SmallImgfolder, Path.GetFileNameWithoutExtension(bg.Url) + ".png"))
-                    .ToString();         
+                if (!string.IsNullOrEmpty(bg.Url))
+                {
+                    bg.Url = new Uri(new Uri(_config.Value.WebCDN), 
+                        Path.Combine(BlobRepo.SmallImgfolder, Path.GetFileNameWithoutExtension(bg.Url) + ".png"))
+                        .ToString();
+                }
             }
             return usr;
         }
