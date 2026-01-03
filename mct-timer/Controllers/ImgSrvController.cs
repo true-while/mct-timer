@@ -119,7 +119,7 @@ namespace mct_timer.Controllers
                                 var successProperties = new Dictionary<string, string>(aiRequestProperties)
                                 {
                                     { "revisedPrompt", imggen.RevisedPrompt },
-                                    { "imageSize", imggen.ImageBytes?.Length.ToString() ?? "0" },
+                                    { "imageSize", imggen.ImageBytes != null ? imggen.ImageBytes.ToArray().Length.ToString() : "0" },
                                     { "status", "success" }
                                 };
                                 _tmClient.TrackEvent("AIImageGenerationCompleted", successProperties);
