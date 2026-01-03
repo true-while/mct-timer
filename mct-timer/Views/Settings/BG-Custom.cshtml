@@ -17,11 +17,11 @@
                                     <img class="icon-info" title="Info" src="~/icons/info-b.png" style="width:30px;cursor:pointer">&nbsp;
                 @if (Model.Visible)
                 {
-                    <a href="@Url.Action("HideBG", "Settings", new {  bgid=Model.id, visible=false })" title="Hide Background"><img title="Delete" src="~/icons/eye.png" style="width:30px"></a>
+                    <a href="@Url.Action("HideBG", "Settings", new {  bgid=Model.id, visible=false })" title="Hide Background"><img title="Hide" src="~/icons/eye.png" style="width:30px"></a>
                 }
                 else
                 {
-                    <a href="@Url.Action("HideBG", "Settings", new {  bgid=Model.id, visible=true  })" title="Show Background"><img title="Delete" src="~/icons/noeye.png" style="width:30px"></a>
+                    <a href="@Url.Action("HideBG", "Settings", new {  bgid=Model.id, visible=true  })" title="Show Background"><img title="Show" src="~/icons/noeye.png" style="width:30px"></a>
                 }
                 &nbsp;
 

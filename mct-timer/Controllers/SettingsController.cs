@@ -19,12 +19,12 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Ixnas.AltchaNet;
 
 namespace mct_timer.Controllers
 {
     public class SettingsController : Controller
-    {
-        private readonly TelemetryClient _logger;
+    {        private readonly TelemetryClient _logger;
         private readonly IOptions<ConfigMng> _config;
         private readonly IHttpContextAccessor _context;
         private readonly UsersContext _ac_context;
@@ -35,6 +35,7 @@ namespace mct_timer.Controllers
         private readonly UploadValidator _validator;
         private readonly IDalleGenerator _dalle;
         private readonly IKeyVaultMng _keyVaultMng;
+        private readonly AltchaService _altcha;
 
         public string CDNUrl() { return _config.Value.WebCDN; }
 
@@ -46,7 +47,8 @@ namespace mct_timer.Controllers
             UploadValidator validator,
             IBlobRepo blobRepo,
             IKeyVaultMng keyVault,
-            IDalleGenerator dalle)
+            IDalleGenerator dalle,
+            AltchaService altcha)
         {
             _logger = logger;
             _config = config;
@@ -57,6 +59,7 @@ namespace mct_timer.Controllers
             _dalle = dalle;
             _keyVaultMng = keyVault;
             _gen = dalle;
+            _altcha = altcha;
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -302,8 +305,7 @@ namespace mct_timer.Controllers
                         if (string.IsNullOrEmpty(bg.Info))
                         {
                             TempData["Error"] = "The images info should be provided.";
-                        }
-                        else
+                        }                        else
                         {
                             bg.id = Guid.NewGuid().ToString();
                             bg.Author = user.Name;
@@ -348,22 +350,24 @@ namespace mct_timer.Controllers
                         }
                     }
 
-                    ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
-                    var quote = user.GetQuote();
-                    ViewData["UplodaQuote"] = quote;
-                    ViewData["isUplodaQuote"] = quote.Values.Any(x => x < 5);
-                    return View("Custom", BgLinkPrep(user));
+                    if (user != null)
+                    {
+                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
+                        var quote = user.GetQuote();
+                        ViewData["UplodaQuote"] = quote;
+                        ViewData["isUplodaQuote"] = quote?.Values.Any(x => x < 5) ?? false;
+                        return View("Custom", BgLinkPrep(user));
+                    }
                 }
                
             }
             return new UnauthorizedResult();
         }
-        [JwtAuthentication]
-        [HttpPost]
+        [JwtAuthentication]        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> GenerateBG([Bind("Info", "BgType")] Background bg)
+        public async Task<IActionResult> GenerateBG([Bind("Info", "BgType", "Altcha")] Background bg)
         {
-
+            User? user = null;
             var token = _context?.HttpContext?.Request?.Cookies["jwt"];
 
             if (token != null)
@@ -373,74 +377,96 @@ namespace mct_timer.Controllers
 
                 if (result && jwt != null)
                 {
-                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
-                    var email = emailClaim?.Value;
-                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;
-
-                    if (user != null)
+                    // Validate Altcha before proceeding
+                    if (bg?.Altcha == null)
                     {
-                        if (user.AIActivity == null)
-                            user.AIActivity = new List<DateTime>();
-
-                        if (user.Backgrounds == null)
-                            user.Backgrounds = new List<Background>();
-
-                        int maxAI;
-                        if (!int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
-
-                        if (!user.IsAIActivityAllowed(maxAI))
+                        TempData["Error"] = "Please complete Altcha verification.";
+                    }
+                    else
+                    {
+                        var validationResult = await _altcha.Validate(bg.Altcha);
+                        if (!validationResult.IsValid)
                         {
-                            TempData["Error"] = $"You have already reach the limit of AI generated backgrounds. Please try again in {user.WhenAIAvaiable(maxAI)}";
-                        }
-                        else if (string.IsNullOrEmpty(bg.Info))
-                        {
-                            TempData["Error"] = $"The prompt for image generation must be provided.Please try again.";
+                            TempData["Error"] = "Altcha verification failed. Please try again.";
+                            _logger.TrackEvent("AltchaValidationFailedForAIGeneration", new Dictionary<string, string> 
+                            { 
+                                { "user", jwt.Claims?.FirstOrDefault(x => x.Type == "Email")?.Value ?? "unknown" },
+                                { "reason", "Invalid Altcha token" }
+                            });
                         }
                         else
                         {
+                            var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                            var email = emailClaim?.Value;
+                            user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;
 
-                            bg.id = Guid.NewGuid().ToString();
-                            bg.Author = user.Name;
-                            bg.Visible = true;
-                            bg.Locked = false;
-                            bg.Url = $"{bg.id}.jpg";
-
-                            //save image
-                            var mdata = new Dictionary<string, string>();
-                            mdata["user"] = user.Name ?? "";
-                            mdata["when"] = DateTime.Now.ToString();
-                            mdata["prompt"] = bg.Info ?? "";
-                            try
+                            if (user != null)
                             {
-                                var remoteIp = _context?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-                                mdata["IP"] = !string.IsNullOrEmpty(remoteIp) ? remoteIp : "none";
+                                if (user.AIActivity == null)
+                                    user.AIActivity = new List<DateTime>();
+
+                                if (user.Backgrounds == null)
+                                    user.Backgrounds = new List<Background>();
+
+                                int maxAI;
+                                if (!int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
+
+                                if (!user.IsAIActivityAllowed(maxAI))
+                                {
+                                    TempData["Error"] = $"You have already reach the limit of AI generated backgrounds. Please try again in {user.WhenAIAvaiable(maxAI)}";
+                                }
+                                else if (string.IsNullOrEmpty(bg.Info))
+                                {
+                                    TempData["Error"] = $"The prompt for image generation must be provided.Please try again.";
+                                }
+                                else
+                                {
+                                    bg.id = Guid.NewGuid().ToString();
+                                    bg.Author = user.Name;
+                                    bg.Visible = true;
+                                    bg.Locked = false;
+                                    bg.Url = $"{bg.id}.jpg";
+
+                                    //save image
+                                    var mdata = new Dictionary<string, string>();
+                                    mdata["user"] = user.Name ?? "";
+                                    mdata["when"] = DateTime.Now.ToString();
+                                    mdata["prompt"] = bg.Info ?? "";
+                                    try
+                                    {
+                                        var remoteIp = _context?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+                                        mdata["IP"] = !string.IsNullOrEmpty(remoteIp) ? remoteIp : "none";
+                                    }
+                                    catch
+                                    {
+                                        mdata["IP"] = "none";
+                                        _logger.TrackTrace("Cannot detect IP");
+                                    }
+
+                                    //register AI activity
+                                    user.AIActivity.Add(DateTime.Now);
+
+                                    //generate task
+                                    await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
+
+                                    user.Backgrounds.Add(bg);
+
+                                    _ac_context.Update(user);
+                                    await _ac_context.SaveChangesAsync();
+                                }
                             }
-                            catch
-                            {
-                                mdata["IP"] = "none";
-                                _logger.TrackTrace("Cannot detect IP");
-                            }
-
-                            //register AI activity
-                            user.AIActivity.Add(DateTime.Now);
-
-                            //generate task
-                            await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
-
-                            user.Backgrounds.Add(bg);
-
-                            _ac_context.Update(user);
-                            await _ac_context.SaveChangesAsync();
                         }
                     }
 
-                    ViewData["Attempts"] = user?.HowManyActivityAllowed(AIAttempts());
-                    var quote = user?.GetQuote();
-                    ViewData["UplodaQuote"] = quote;
-                    ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
-                    return View("Custom", BgLinkPrep(user!));
+                    if (user != null)
+                    {
+                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
+                        var quote = user.GetQuote();
+                        ViewData["UplodaQuote"] = quote;
+                        ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
+                        return View("Custom", BgLinkPrep(user));
+                    }
                 }
-
             }
             return new UnauthorizedResult();
         }
@@ -448,7 +474,7 @@ namespace mct_timer.Controllers
         private int AIAttempts()
         {
             int maxAI;
-            if (int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
+            if (!int.TryParse(_config.Value.MaxAIinTheDay, out maxAI)) maxAI = 5;
             return maxAI;
         }
                 private User? GetUserInfo()

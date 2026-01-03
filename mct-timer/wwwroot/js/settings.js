@@ -242,42 +242,40 @@ class CustomBg {
         this.el.optSubmit.style.display = 'none';
 
         refreshIcons(0);
-    }
-
-
-    
-    refreshTheIcon(root, theurl, img, counter) {
-
+    }      refreshTheIcon(root, theurl, img, counter) {
+        // Clear any existing retry interval
         if (this.interval.get(theurl)) {
             clearInterval(this.interval.get(theurl));
             this.interval.set(theurl, null);
         }
 
+        const self = this;
 
         $.ajax({
             url: theurl,
             cache: false,
             method: "HEAD",
+            timeout: 5000, // Add 5 second timeout
             success: function (html) {
                 img.src = theurl;
-            },
-            error: function (html) {
-                if (counter && counter < 5 && html.status == 404) {
+            },            error: function (html) {
+                // Only retry on 404 errors (file not yet uploaded), not on other failures
+                if (counter && counter < 6 && html.status == 404) {
 
-                    root.interval.set(theurl, setInterval(() => {
+                    self.interval.set(theurl, setTimeout(() => {
 
                         var orgLink = img.getAttribute("org-src");
-
+                        // Add timestamp for cache busting without modifying org-src
+                        var urlWithTs;
                         if (!orgLink.includes('?')) {
-                            img.setAttribute("org-src", `${orgLink}?${Date.now()}`);
+                            urlWithTs = `${orgLink}?ts=${Date.now()}`;
                         } else {
-                            img.setAttribute("org-src",
-                                orgLink.slice(0, orgLink.indexOf('?') + 1) +
-                                Date.now());
+                            urlWithTs = orgLink.split('?')[0] + `?ts=${Date.now()}`;
                         }
-                        root.refreshTheIcon(root, orgLink, img, counter)
+                        
+                        self.refreshTheIcon(self, urlWithTs, img, counter + 1);
 
-                    }, 3000));
+                    }, 5000)); // 5 second delay between retries (~25 seconds total for 6 attempts)
                 }
 
             }
@@ -285,11 +283,21 @@ class CustomBg {
     }
 
     refreshIcons(counter) {
+        // Process icons sequentially with delays to prevent resource exhaustion
+        const icons = Array.from(this.el.icons);
+        let index = 0;
+        const self = this;
 
-        this.el.icons.forEach(img => {           
+        const processNextIcon = () => {
+            if (index < icons.length) {
+                const img = icons[index];
+                self.refreshTheIcon(self, img.getAttribute("org-src"), img, 1);
+                index++;
+                // Stagger requests by 300ms to reduce concurrent load
+                setTimeout(processNextIcon, 300);
+            }
+        };
 
-            this.refreshTheIcon(this, img.getAttribute("org-src"), img ,1)
-
-        });
+        processNextIcon();
     }
 }

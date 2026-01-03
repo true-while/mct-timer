@@ -16,10 +16,7 @@
     </div>
     <div id="location-info">
         Turkey, Caldam 
-    </div>
-
-
-        <div class="form" id="defaultbg">
+    </div>        <div class="form" id="defaultbg">
             <h1>@ViewData["Title"]</h1>
             <span class="info">
                You can provide up to 3 customized backgrounds in each category.               
@@ -27,9 +24,10 @@
 
             <div id="valErrors" class="error">@TempData["Error"]</div>
 
-
-        @if (ViewData["isUplodaQuote"] != null && (bool)ViewData["isUplodaQuote"])
-            @await Html.PartialAsync("PartialUploadBG", new Background())
+            @if (string.IsNullOrEmpty(TempData["Error"]?.ToString()) && ViewData["isUplodaQuote"] != null && (bool)ViewData["isUplodaQuote"])
+            {
+                @await Html.PartialAsync("PartialUploadBG", new Background())
+            }
 
 
             @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
@@ -42,11 +40,12 @@
 
 @section Scripts
 {
+    <script async defer src="/js/altcha.min.js" type="module"></script>
     <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
 
     <script>
 
-        if (@ViewData["isUplodaQuote"].ToString().ToLower()) {
+        if (@(ViewData["isUplodaQuote"]?.ToString()?.ToLower() ?? "false")) {
             var upld = new CustomBg(
                 document.querySelector("#defaultbg")
             );
@@ -98,9 +97,21 @@
             outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
         }
 
-
-
         function submitForm(formObj,objInfo) {
+
+            if (objInfo && objInfo.value) {
+                formObj.submit();
+            } else {
+                document.querySelector("#valErrors").innerHTML = "Please provide information in required fields";
+            }
+        }
+
+        function submitFormWithAltcha(formObj, objInfo) {
+            // Check if Altcha verification is completed
+            if (!document.querySelector("#altcha_checkbox") || !document.querySelector("#altcha_checkbox").checked) {
+                document.querySelector("#valErrors").innerHTML = "Please complete Altcha verification before generating.";
+                return;
+            }
 
             if (objInfo && objInfo.value) {
                 formObj.submit();

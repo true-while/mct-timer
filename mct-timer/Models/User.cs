@@ -584,10 +584,11 @@ namespace mct_timer.Models
         public bool Locked { get; set; }
 
         [DefaultValue(true)]
-        public bool Visible { get; set; }
-
-        [DefaultValue(false)]
+        public bool Visible { get; set; }        [DefaultValue(false)]
         public bool IsBingBg { get; set; }
+
+        [NotMapped]
+        public string? Altcha { get; set; }
     }
 
     public class Login

@@ -84,12 +84,26 @@ namespace mct_timer.Controllers
                         {
                             string prompt = mdata["prompt"];
                             
+                            // Log AI image generation request with metadata
+                            var aiRequestProperties = new Dictionary<string, string>
+                            {
+                                { "fileName", fileName },
+                                { "prompt", prompt },
+                                { "user", mdata.ContainsKey("user") ? mdata["user"] : "unknown" },
+                                { "author", mdata.ContainsKey("author") ? mdata["author"] : "unknown" },
+                                { "requestTime", mdata.ContainsKey("when") ? mdata["when"] : "unknown" },
+                                { "userIp", mdata.ContainsKey("IP") ? mdata["IP"] : "unknown" }
+                            };
+                            _tmClient.TrackEvent("AIImageGenerationRequested", aiRequestProperties);
+                            
                             // Validate prompt before sending to AI service
                             var validationResult = _dalle.ValidatePrompt(prompt);
                             if (!validationResult.IsValid)
                             {
                                 _tmClient.TrackTrace($"Prompt validation failed: {validationResult.Reason} - Prompt: {prompt}", 
                                     severityLevel: Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Warning);
+                                aiRequestProperties["validationFailureReason"] = validationResult.Reason;
+                                _tmClient.TrackEvent("AIImageGenerationValidationFailed", aiRequestProperties);
                                 await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
                                 return new OkObjectResult("Prompt rejected: " + validationResult.Reason);
                             }
@@ -101,17 +115,40 @@ namespace mct_timer.Controllers
                                 await _blRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLower(), imggen.ImageBytes, (Dictionary<string,string>)mdata);
                                 var mResult = await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
 
-                                _tmClient.TrackTrace($"Processed SubscriptionValidation event data with result: {mResult}, topic: {eventGridEvent.Topic}");
+                                // Log successful image generation
+                                var successProperties = new Dictionary<string, string>(aiRequestProperties)
+                                {
+                                    { "revisedPrompt", imggen.RevisedPrompt },
+                                    { "imageSize", imggen.ImageBytes?.Length.ToString() ?? "0" },
+                                    { "status", "success" }
+                                };
+                                _tmClient.TrackEvent("AIImageGenerationCompleted", successProperties);
+                                _tmClient.TrackTrace($"Processed AI image generation: {fileName} with revised prompt: {imggen.RevisedPrompt}");
                             }
                             catch (ArgumentException ex)
                             {
                                 _tmClient.TrackException(ex);
+                                var errorProperties = new Dictionary<string, string>(aiRequestProperties)
+                                {
+                                    { "exceptionType", "ArgumentException" },
+                                    { "errorMessage", ex.Message },
+                                    { "status", "rejected" }
+                                };
+                                _tmClient.TrackEvent("AIImageGenerationRejected", errorProperties);
                                 await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
                                 return new OkObjectResult("Image generation request rejected: " + ex.Message);
                             }
                             catch (Exception ex)
                             {
                                 _tmClient.TrackException(ex);
+                                var errorProperties = new Dictionary<string, string>(aiRequestProperties)
+                                {
+                                    { "exceptionType", ex.GetType().Name },
+                                    { "errorMessage", ex.Message },
+                                    { "stackTrace", ex.StackTrace ?? "no stack trace" },
+                                    { "status", "failed" }
+                                };
+                                _tmClient.TrackEvent("AIImageGenerationFailed", errorProperties);
                                 return new BadRequestObjectResult("Error processing image generation: " + ex.Message);
                             }
                         }

@@ -87,8 +87,20 @@ namespace mct_timer.Models
             // Upload the new blob
             await file.UploadAsync(data.ToStream(), overwrite: false);
             
-            // Set metadata
-            BlobInfo info = await file.SetMetadataAsync(mdata);
+            // Set metadata only if the dictionary contains entries
+            // This prevents HTTP 411 (Length Required) error from Azure Blob Storage
+            if (mdata != null && mdata.Count > 0)
+            {
+                try
+                {
+                    BlobInfo info = await file.SetMetadataAsync(mdata);
+                }
+                catch (Exception ex)
+                {
+                    // Log the error but don't fail the upload - the blob is already stored
+                    System.Diagnostics.Debug.WriteLine($"Warning: Failed to set metadata for blob '{name}': {ex.Message}");
+                }
+            }
 
             return file.Uri;
         
