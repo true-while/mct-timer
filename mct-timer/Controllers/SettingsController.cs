@@ -27,12 +27,12 @@ namespace mct_timer.Controllers
     {        private readonly TelemetryClient _logger;
         private readonly IOptions<ConfigMng> _config;
         private readonly IHttpContextAccessor _context;
-        private readonly UsersContext _ac_context;
-        private readonly IDalleGenerator _gen;
+        private readonly UsersContext _ac_context;        private readonly IDalleGenerator _gen;
         private readonly IBlobRepo _blobRepo;
         private readonly string[] _permitedext = { ".jpeg", ".jpg", ".png" };
         private readonly string _tempFilePath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory)),"tmp");
         private readonly UploadValidator _validator;
+        private readonly IPromptValidator _promptValidator;
         private readonly IDalleGenerator _dalle;
         private readonly IKeyVaultMng _keyVaultMng;
         private readonly AltchaService _altcha;
@@ -48,6 +48,7 @@ namespace mct_timer.Controllers
             IBlobRepo blobRepo,
             IKeyVaultMng keyVault,
             IDalleGenerator dalle,
+            IPromptValidator promptValidator,
             AltchaService altcha)
         {
             _logger = logger;
@@ -55,7 +56,8 @@ namespace mct_timer.Controllers
             _context = context;
             _ac_context = ac_context;
             _blobRepo = blobRepo;
-            _validator = validator; 
+            _validator = validator;
+            _promptValidator = promptValidator;
             _dalle = dalle;
             _keyVaultMng = keyVault;
             _gen = dalle;
@@ -414,45 +416,59 @@ namespace mct_timer.Controllers
                                 if (!user.IsAIActivityAllowed(maxAI))
                                 {
                                     TempData["Error"] = $"You have already reach the limit of AI generated backgrounds. Please try again in {user.WhenAIAvaiable(maxAI)}";
-                                }
-                                else if (string.IsNullOrEmpty(bg.Info))
+                                }                                else if (string.IsNullOrEmpty(bg.Info))
                                 {
                                     TempData["Error"] = $"The prompt for image generation must be provided.Please try again.";
                                 }
                                 else
                                 {
-                                    bg.id = Guid.NewGuid().ToString();
-                                    bg.Author = user.Name;
-                                    bg.Visible = true;
-                                    bg.Locked = false;
-                                    bg.Url = $"{bg.id}.jpg";
-
-                                    //save image
-                                    var mdata = new Dictionary<string, string>();
-                                    mdata["user"] = user.Name ?? "";
-                                    mdata["when"] = DateTime.Now.ToString();
-                                    mdata["prompt"] = bg.Info ?? "";
-                                    try
+                                    // Validate prompt using centralized validator
+                                    var promptValidationResult = _promptValidator.ValidatePrompt(bg.Info);
+                                    if (!promptValidationResult.IsValid)
                                     {
-                                        var remoteIp = _context?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
-                                        mdata["IP"] = !string.IsNullOrEmpty(remoteIp) ? remoteIp : "none";
+                                        TempData["Error"] = promptValidationResult.Reason;
+                                        _logger.TrackEvent("PromptValidationFailedForAIGeneration", new Dictionary<string, string> 
+                                        { 
+                                            { "user", jwt.Claims?.FirstOrDefault(x => x.Type == "Email")?.Value ?? "unknown" },
+                                            { "prompt", bg.Info },
+                                            { "reason", promptValidationResult.Reason }
+                                        });
                                     }
-                                    catch
+                                    else
                                     {
-                                        mdata["IP"] = "none";
-                                        _logger.TrackTrace("Cannot detect IP");
+                                        bg.id = Guid.NewGuid().ToString();
+                                        bg.Author = user.Name;
+                                        bg.Visible = true;
+                                        bg.Locked = false;
+                                        bg.Url = $"{bg.id}.jpg";
+
+                                        //save image
+                                        var mdata = new Dictionary<string, string>();
+                                        mdata["user"] = user.Name ?? "";
+                                        mdata["when"] = DateTime.Now.ToString();
+                                        mdata["prompt"] = bg.Info ?? "";
+                                        try
+                                        {
+                                            var remoteIp = _context?.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+                                            mdata["IP"] = !string.IsNullOrEmpty(remoteIp) ? remoteIp : "none";
+                                        }
+                                        catch
+                                        {
+                                            mdata["IP"] = "none";
+                                            _logger.TrackTrace("Cannot detect IP");
+                                        }
+
+                                        //register AI activity
+                                        user.AIActivity.Add(DateTime.Now);
+
+                                        //generate task
+                                        await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
+
+                                        user.Backgrounds.Add(bg);
+
+                                        _ac_context.Update(user);
+                                        await _ac_context.SaveChangesAsync();
                                     }
-
-                                    //register AI activity
-                                    user.AIActivity.Add(DateTime.Now);
-
-                                    //generate task
-                                    await _blobRepo.SaveImageAsync((BlobRepo.AiGenImgfolder + bg.id + ".jpg").ToLower(), BinaryData.Empty, mdata);
-
-                                    user.Backgrounds.Add(bg);
-
-                                    _ac_context.Update(user);
-                                    await _ac_context.SaveChangesAsync();
                                 }
                             }
                         }

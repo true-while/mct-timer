@@ -121,8 +121,9 @@
                 </td>
             </tr>            <tr>
                 <td colspan="2">
-                    <textarea id="genInfo" style="width:100%" rows="2" type="text" asp-for="Info" class="form-control-text"></textarea>
+                    <textarea id="genInfo" style="width:100%" rows="2" type="text" asp-for="Info" class="form-control-text" placeholder="Describe what AI should generate..." oninput="updatePromptValidation()"></textarea>
                     <span asp-validation-for="Info" class="text-danger"></span>
+                    <div id="genValidationMessage" style="color: #666; font-size: 12px; margin-top: 5px;"></div>
                 </td>
             </tr>
             <tr>
@@ -133,7 +134,7 @@
             <tr>
                 <td colspan="2">
                     <input id="create" style="width:180px"
-                           type="button" value="Generate" class="submit" onclick="submitFormWithAltcha(this.form,document.getElementById('genInfo'))" />
+                           type="button" value="Generate" class="submit" onclick="submitGenerateForm(this.form,document.getElementById('genInfo'))" />
                      <input style="width:180px"
                            type="button" value="Cancel" class="back" />
                        </td>

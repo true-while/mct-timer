@@ -58,8 +58,12 @@ builder.Services.AddSingleton<AuthService>();
 TelemetryClient ai = new TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration() { ConnectionString = builder.Configuration["ApplicationInsights"] });
 builder.Services.AddSingleton<TelemetryClient>(ai);
 
-UploadValidator upValid = new UploadValidator(ai);
+UploadValidator upValid = new UploadValidator(ai, new PromptValidator(ai));
 builder.Services.AddSingleton<UploadValidator>(upValid);
+
+// Prompt validator - centralized validation logic
+IPromptValidator promptValidator = new PromptValidator(ai);
+builder.Services.AddSingleton<IPromptValidator>(promptValidator);
 
 // Blob generator
 BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName"], config["TenantID"]);

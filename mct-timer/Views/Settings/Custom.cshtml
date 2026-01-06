@@ -16,7 +16,10 @@
     </div>
     <div id="location-info">
         Turkey, Caldam 
-    </div>        <div class="form" id="defaultbg">
+    </div>
+
+
+        <div class="form" id="defaultbg">
             <h1>@ViewData["Title"]</h1>
             <span class="info">
                You can provide up to 3 customized backgrounds in each category.               
@@ -24,10 +27,9 @@
 
             <div id="valErrors" class="error">@TempData["Error"]</div>
 
-            @if (string.IsNullOrEmpty(TempData["Error"]?.ToString()) && ViewData["isUplodaQuote"] != null && (bool)ViewData["isUplodaQuote"])
-            {
-                @await Html.PartialAsync("PartialUploadBG", new Background())
-            }
+
+        @if (ViewData["isUplodaQuote"] != null && (bool)ViewData["isUplodaQuote"])
+            @await Html.PartialAsync("PartialUploadBG", new Background())
 
 
             @await Html.PartialAsync("PartialBGList", Model.Backgrounds)
@@ -41,11 +43,12 @@
 @section Scripts
 {
     <script async defer src="/js/altcha.min.js" type="module"></script>
+    <script type="text/javascript" src="~/js/promptValidator.js" asp-append-version="true"></script>
     <script type="text/javascript" src="~/js/settings.js" asp-append-version="true"></script>
 
     <script>
 
-        if (@(ViewData["isUplodaQuote"]?.ToString()?.ToLower() ?? "false")) {
+        if (@ViewData["isUplodaQuote"].ToString().ToLower()) {
             var upld = new CustomBg(
                 document.querySelector("#defaultbg")
             );
@@ -95,9 +98,7 @@
         function menuUpdate() {
             outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
             outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
-        }
-
-        function submitForm(formObj,objInfo) {
+        }        function submitForm(formObj,objInfo) {
 
             if (objInfo && objInfo.value) {
                 formObj.submit();
@@ -106,18 +107,58 @@
             }
         }
 
-        function submitFormWithAltcha(formObj, objInfo) {
-            // Check if Altcha verification is completed
-            if (!document.querySelector("#altcha_checkbox") || !document.querySelector("#altcha_checkbox").checked) {
-                document.querySelector("#valErrors").innerHTML = "Please complete Altcha verification before generating.";
+        function updatePromptValidation() {
+            const promptInput = document.querySelector("#genInfo");
+            const validationMessage = document.querySelector("#genValidationMessage");
+            
+            if (!promptInput || !validationMessage) return;
+
+            const prompt = promptInput.value;
+            
+            // Skip validation for empty input (user is still typing)
+            if (!prompt || prompt.trim() === "") {
+                validationMessage.innerHTML = "";
+                validationMessage.style.color = "#666";
                 return;
             }
 
-            if (objInfo && objInfo.value) {
-                formObj.submit();
+            // Validate prompt
+            const result = promptValidator.validate(prompt);
+            
+            if (result.isValid) {
+                validationMessage.innerHTML = "✓ Prompt looks good!";
+                validationMessage.style.color = "#28a745"; // Green
             } else {
-                document.querySelector("#valErrors").innerHTML = "Please provide information in required fields";
+                validationMessage.innerHTML = "✗ " + result.reason;
+                validationMessage.style.color = "#dc3545"; // Red
             }
+        }
+
+        function submitGenerateForm(formObj, objInfo) {
+            const errorDisplay = document.querySelector("#valErrors");
+            
+            // Check if prompt is provided
+            if (!objInfo || !objInfo.value) {
+                errorDisplay.innerHTML = "Please provide a prompt for image generation.";
+                return;
+            }
+
+            // Validate prompt using client-side validator
+            const validationResult = promptValidator.validate(objInfo.value);
+            if (!validationResult.isValid) {
+                errorDisplay.innerHTML = "Validation error: " + validationResult.reason;
+                return;
+            }
+
+            // Check if Altcha verification is completed
+            if (!document.querySelector("#altcha_checkbox") || !document.querySelector("#altcha_checkbox").checked) {
+                errorDisplay.innerHTML = "Please complete Altcha verification before generating.";
+                return;
+            }
+
+            // All validations passed, clear errors and submit
+            errorDisplay.innerHTML = "";
+            formObj.submit();
         }
 
         $(document).ready(function () {

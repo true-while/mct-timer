@@ -19,6 +19,8 @@ namespace mct_timer.Models
         // If you require a check on specific characters in the IsValidFileExtensionAndSignature
         // method, supply the characters in the _allowedChars field.
         private readonly byte[] _allowedChars = { };
+        private readonly IPromptValidator _promptValidator;
+        
         // For more file signatures, see the File Signatures Database (https://www.filesignatures.net/)
         // and the official specifications for the file types you wish to add.
         private readonly Dictionary<string, List<byte[]>> _fileSignature = new Dictionary<string, List<byte[]>>
@@ -47,14 +49,13 @@ namespace mct_timer.Models
                     new byte[] { 0x50, 0x4B, 0x05, 0x06 },
                     new byte[] { 0x50, 0x4B, 0x07, 0x08 },
                     new byte[] { 0x57, 0x69, 0x6E, 0x5A, 0x69, 0x70 },
-                }
-            },
-        };
+                }            },        };
         private TelemetryClient ai;
 
-        public UploadValidator(TelemetryClient ai)
+        public UploadValidator(TelemetryClient ai, IPromptValidator promptValidator)
         {
             this.ai = ai;
+            _promptValidator = promptValidator;
         }
 
         // **WARNING!**
@@ -268,9 +269,7 @@ namespace mct_timer.Models
                 // dictionary, the following code tests the input content's
                 // file signature.
                 var signatures = _fileSignature[ext];
-                var headerBytes = reader.ReadBytes(signatures.Max(m => m.Length));
-
-                return signatures.Any(signature =>
+                var headerBytes = reader.ReadBytes(signatures.Max(m => m.Length));                return signatures.Any(signature =>
                     headerBytes.Take(signature.Length).SequenceEqual(signature));
             }
         }
