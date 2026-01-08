@@ -87,22 +87,30 @@ namespace mct_timer.Controllers
             if (token != null)
             {
                 JwtSecurityToken? jwt = null;
-                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;
-
-                if (result && jwt != null)
-                {
-                    var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
-                    var email = emailClaim?.Value;
-                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid!=null)                    {
-                        if (user.Backgrounds?.Any(x => x.id == bgid && x.Locked != true) ?? false)
-                        {
-                            var bg = user.Backgrounds?.FirstOrDefault(x => x.id == bgid);
-                            if (bg != null && !string.IsNullOrEmpty(bg.Url)) 
-                                await _blobRepo.DeleteImageAsync(bg.Url);
-                            user.Backgrounds = user.Backgrounds?.Where(x => x.id != bgid).ToList() ?? new List<Background>();
-                            _ac_context.Update(user);
-                            await _ac_context.SaveChangesAsync();
-                        }
+                var result = AuthService.GetInstance?.Validate(token, out jwt) ?? false;                    if (result && jwt != null)
+                    {
+                        var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
+                        var email = emailClaim?.Value;
+                        var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid!=null)                    {
+                            if (user.Backgrounds?.Any(x => x.id == bgid && x.Locked != true) ?? false)
+                            {
+                                var bg = user.Backgrounds?.FirstOrDefault(x => x.id == bgid);
+                                if (bg != null && !string.IsNullOrEmpty(bg.Url)) 
+                                {
+                                    try
+                                    {
+                                        await _blobRepo.DeleteImageAsync(bg.Url);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine($"Error deleting background image: {ex.Message}");
+                                        // Continue even if delete fails - the background will be removed from user's list
+                                    }
+                                }
+                                user.Backgrounds = user.Backgrounds?.Where(x => x.id != bgid).ToList() ?? new List<Background>();
+                                _ac_context.Update(user);
+                                await _ac_context.SaveChangesAsync();
+                            }
 
                         int maxAI = AIAttempts();
                         int attemptsRemaining = user.HowManyActivityAllowed(maxAI);

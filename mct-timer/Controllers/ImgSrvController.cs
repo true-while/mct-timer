@@ -95,8 +95,7 @@ namespace mct_timer.Controllers
                                 { "userIp", mdata.ContainsKey("IP") ? mdata["IP"] : "unknown" }
                             };
                             _tmClient.TrackEvent("AIImageGenerationRequested", aiRequestProperties);
-                            
-                            // Validate prompt before sending to AI service
+                              // Validate prompt before sending to AI service
                             var validationResult = _dalle.ValidatePrompt(prompt);
                             if (!validationResult.IsValid)
                             {
@@ -104,16 +103,28 @@ namespace mct_timer.Controllers
                                     severityLevel: Microsoft.ApplicationInsights.DataContracts.SeverityLevel.Warning);
                                 aiRequestProperties["validationFailureReason"] = validationResult.Reason;
                                 _tmClient.TrackEvent("AIImageGenerationValidationFailed", aiRequestProperties);
-                                await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                                try
+                                {
+                                    await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Error deleting temp AI file: {ex.Message}");
+                                }
                                 return new OkObjectResult("Prompt rejected: " + validationResult.Reason);
-                            }
-
-                            try
+                            }                            try
                             {
                                 var imggen = await _dalle.GetImage(prompt);
                                 mdata.Add("RevisedPrompt", imggen.RevisedPrompt);
                                 await _blRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLower(), imggen.ImageBytes, (Dictionary<string,string>)mdata);
-                                var mResult = await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                                try
+                                {
+                                    var mResult = await _blRepo.DeleteFileAsync((BlobRepo.AiGenImgfolder + fileName).ToLower());
+                                }
+                                catch (Exception ex)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Error deleting temp AI file after processing: {ex.Message}");
+                                }
 
                                 // Log successful image generation
                                 var successProperties = new Dictionary<string, string>(aiRequestProperties)

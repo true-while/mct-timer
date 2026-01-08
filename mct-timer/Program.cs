@@ -66,7 +66,7 @@ IPromptValidator promptValidator = new PromptValidator(ai);
 builder.Services.AddSingleton<IPromptValidator>(promptValidator);
 
 // Blob generator
-BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName"], config["TenantID"]);
+BlobRepo blob = new BlobRepo(config["StorageAccountName"], config["ContainerName"], config["TenantID"], ai);
 builder.Services.AddSingleton<IBlobRepo>(blob);
 
 
