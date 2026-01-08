@@ -26,7 +26,7 @@ builder.Configuration.AddUserSecrets<Program>();
 
 builder.Services.AddApplicationInsightsTelemetry(new Microsoft.ApplicationInsights.AspNetCore.Extensions.ApplicationInsightsServiceOptions
 {
-    ConnectionString = builder.Configuration["ApplicationInsights"]
+    ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"]
 });
 
 var config = builder.Configuration.GetSection("ConfigMng");
@@ -55,7 +55,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.Configure<ConfigMng>(config);
 builder.Services.AddSingleton<AuthService>();
 
-TelemetryClient ai = new TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration() { ConnectionString = builder.Configuration["ApplicationInsights"] });
+TelemetryClient ai = new TelemetryClient(new Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration() { ConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"] });
 builder.Services.AddSingleton<TelemetryClient>(ai);
 
 UploadValidator upValid = new UploadValidator(ai, new PromptValidator(ai));

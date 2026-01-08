@@ -150,9 +150,7 @@ class CustomBg {
             uplInfo: document.querySelector('#uplInfo'),
          
 
-        };
-
-        this.interval = new Map();
+        };        this.interval = new Map();
 
         this.el.backbtn.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -163,59 +161,96 @@ class CustomBg {
             })
         });
 
-        this.el.createBtn.addEventListener('click', () => {
-            this.refreshIcons(0);
-        })
+        if (this.el.createBtn) {
+            this.el.createBtn.addEventListener('click', () => {
+                this.refreshIcons(0);
+            });
+        }
 
-        this.el.toUpload.addEventListener('click', () => {
-            this.HideChoise();
-            this.HideGenerate();
-            this.HideSubmit();
-            this.ShowUpload();
-        })
-
-        this.el.toGenerate.addEventListener('click', () => {
-            this.HideChoise();
-            this.ShowGenerate();
-            this.HideSubmit();
-            this.HideUpload();
-        })
+        if (this.el.toUpload) {
+            this.el.toUpload.addEventListener('click', () => {
+                this.HideChoise();
+                this.HideGenerate();
+                this.HideSubmit();
+                this.ShowUpload();
+            });
+        }        if (this.el.toGenerate) {
+            this.el.toGenerate.addEventListener('click', () => {
+                this.HideChoise();
+                this.ShowGenerate();
+                this.HideSubmit();
+                this.HideUpload();
+            });
+        }
 
     }
-
-
     HideGenerate() {
-        this.el.optGenerate.style.display = 'none';
-        this.el.genInfo.value = this.el.uplInfo.value = ''; //remove entered text
+        if (this.el.optGenerate) {
+            this.el.optGenerate.style.display = 'none';
+        }
+        if (this.el.genInfo && this.el.uplInfo) {
+            this.el.genInfo.value = this.el.uplInfo.value = ''; //remove entered text
+        }
     }
 
-    ShowGenerate() { this.el.optGenerate.style.display = ''; }
+    ShowGenerate() { 
+        if (this.el.optGenerate) {
+            this.el.optGenerate.style.display = ''; 
+        }
+    }
 
     HideSubmit() {
-        this.el.optSubmit.style.display = 'none';
-        this.el.genInfo.value = this.el.uplInfo.value = ''; //remove entered text
+        if (this.el.optSubmit) {
+            this.el.optSubmit.style.display = 'none';
+        }
+        if (this.el.genInfo && this.el.uplInfo) {
+            this.el.genInfo.value = this.el.uplInfo.value = ''; //remove entered text
+        }
     }
 
-    ShowSubmit() { this.el.optSubmit.style.display = ''; }
+    ShowSubmit() { 
+        if (this.el.optSubmit) {
+            this.el.optSubmit.style.display = ''; 
+        }
+    }
 
-    HideUpload() { this.el.optUpload.style.display = 'none'; }
+    HideUpload() { 
+        if (this.el.optUpload) {
+            this.el.optUpload.style.display = 'none'; 
+        }
+    }
 
-    ShowUpload() { this.el.optUpload.style.display = ''; }
+    ShowUpload() { 
+        if (this.el.optUpload) {
+            this.el.optUpload.style.display = ''; 
+        }
+    }
 
-    HideChoise() { this.el.optChoise.style.display = 'none'; }
+    HideChoise() { 
+        if (this.el.optChoise) {
+            this.el.optChoise.style.display = 'none'; 
+        }
+    }
 
-    ShowChoise() { this.el.optChoise.style.display = ''; }
+    ShowChoise() { 
+        if (this.el.optChoise) {
+            this.el.optChoise.style.display = ''; 
+        }
+    }
 
     StartProgressBar() {
-
-        this.el.progress.style.visibility = 'visible';
-        this.el.progress.style.animation = 'none';
-        this.el.progress.offsetHeight; /* trigger reflow */
-        this.el.progress.style.animation = null; 
-
+        if (this.el.progress) {
+            this.el.progress.style.visibility = 'visible';
+            this.el.progress.style.animation = 'none';
+            this.el.progress.offsetHeight; /* trigger reflow */
+            this.el.progress.style.animation = null; 
+        }
     }
+
     StopProgressBar() {
-        this.el.progress.style.visibility = 'hidden';
+        if (this.el.progress) {
+            this.el.progress.style.visibility = 'hidden';
+        }
     }
 
 
@@ -260,7 +295,7 @@ class CustomBg {
                 img.src = theurl;
             },            error: function (html) {
                 // Only retry on 404 errors (file not yet uploaded), not on other failures
-                if (counter && counter < 6 && html.status == 404) {
+                if (counter && counter < 10 && html.status == 404) {
 
                     self.interval.set(theurl, setTimeout(() => {
 

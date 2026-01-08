@@ -80,9 +80,9 @@
         const timezoneNameUrlEncoded = '@Model.Timezone';
         var timezone = timezoneNameUrlEncoded.replaceAll('@@', '/');
         var timezoneName = decodeURIComponent(timezone);
+
         var timezoneAbr = moment.tz(timezoneName).zoneAbbr();
         if (timezoneAbr.includes('-') || timezoneAbr.includes('+')) timezoneAbr = "GMT" + timezoneAbr;
-
 
         const mtimer = new Timer(
             document.querySelector("#timer"),
@@ -95,7 +95,6 @@
         mtimer.originalSeconds = mtimer.remainingSeconds = breakLength * 60;
         mtimer.originalEnd = moment.tz(timezoneName).add(breakLength, 'minutes');
         mtimer.start();
-           
 
         function menuUpdate() {
             outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
@@ -108,6 +107,11 @@
         $(document).ready(function () {
            document.querySelector("#gbmainbg").style.backgroundImage = "url('@Model.BGUrl')";
            menuUpdate();
+           
+           // Watch for changes to #gbmainbg container size (e.g., when editor grows)
+           const gbmainbg = document.querySelector("#gbmainbg");
+           const resizeObserver = new ResizeObserver(() => menuUpdate());
+           resizeObserver.observe(gbmainbg);
         })
 
         $(window).resize(() => menuUpdate());

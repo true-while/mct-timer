@@ -8,15 +8,9 @@
                     <div><img src="~/icons/upload.png" style="width:50px" /></div>
                     <div>Upload</div>
                 </div>
-            </td>
-            <td>
-                
-                <!--
-                    <div id="toGenerate"></div>
-                -->
-
-                <div  class="submit" id="toGenerate" style="cursor:pointer;">
-                    <div><img src="~/icons/ai.png" style="width:50px"  /></div>
+            </td>            <td>
+                <div class="submit" id="toGenerate" style="cursor:pointer;">
+                    <div><img src="~/icons/ai.png" style="width:50px" /></div>
                     <div>AI Generate</div>
                 </div>
        
@@ -61,18 +55,17 @@
                     <div class="control-label-nowrap"><span class="required">*</span>Tell us more about your image you uploading:</div>
                     </td>
                 <td valign="top" align="right" style="width:100%;">
-                            <label class="control-label">Break Type:</label>
-                            <select id="BgType" name="BgType" style="padding:1px;margin:10px;font-size:13pt">
+                            <label class="control-label">Break Type:</label>                            <select id="BgType" name="BgType" style="padding:1px;margin:10px;font-size:13pt">
                                 @foreach (PresetType val in Enum.GetValues(typeof(PresetType)))
                                 {
-                                    var dic = (Dictionary<PresetType, int>)ViewData["UplodaQuote"];
+                                    var dic = ViewData["UplodaQuote"] as Dictionary<PresetType, int>;
 
-                                    if (!dic.ContainsKey(val) || (dic.ContainsKey(val) && dic[val] < 5))
+                                    if (dic != null && (!dic.ContainsKey(val) || (dic.ContainsKey(val) && dic[val] < 5)))
                                     {
                                         <option value="@val">@val</option>
                                     }
                                 }
-                            </select> 
+                            </select>
                     </td>
                 </tr>
             <tr>
@@ -93,56 +86,77 @@
 </div>
 
 <div id="optGenerate" style="display:none">
-    <form asp-action="GenerateBG">
-        <div calss="info">
-            <i>
-                You have @ViewData["Attempts"] attempts to generate AI background in next 24 hours.
-            </i>
+    @{
+        bool canGenerateAICheck = (ViewData["CanGenerateAI"] as bool?) ?? false;
+        string? aiAvailableInTime = ViewData["AIAvailableIn"] as string;
+        int attemptsCount = (ViewData["Attempts"] as int?) ?? 0;
+    }
+
+    @if (!canGenerateAICheck && !string.IsNullOrEmpty(aiAvailableInTime))
+    {
+        <div style="text-align: center; padding: 30px; background-color: #f9f9f9; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 20px;">
+            <div style="font-size: 18px; font-weight: bold; color: #d9534f; margin-bottom: 10px;">
+                AI Generation Limit Reached
+            </div>
+            <div style="font-size: 16px; color: #666; margin-bottom: 15px;">
+                You've used all your AI generation attempts for the next 24 hours.
+            </div>
+            <div style="font-size: 20px; font-weight: bold; color: #0275d8; padding: 10px; background-color: #e7f3ff; border-radius: 5px;">
+                Get back in <strong>@aiAvailableInTime</strong>
+            </div>
         </div>
+    }
+    else if (canGenerateAICheck)
+    {
+        <form asp-action="GenerateBG">
+            <div calss="info">
+                <i>
+                    You have @attemptsCount attempts to generate AI background in next 24 hours.
+                </i>
+            </div>
 
-        <table cellpadding="5" style="max-width:775px;">
-            <tr>
-                <td valign="top"> 
-                    <div class="control-label-nowrap"><span class="required">*</span>Explain to AI what to generate (prompt):</div>
-                </td>
-                <td valign="top"  align="right" style="width:100%;">
-                    <label class="control-label">Break Type:</label>
-                    <select id="BgType" name="BgType" style="padding:1px;margin:10px;font-size:13pt">
-                        @foreach (PresetType val in Enum.GetValues(typeof(PresetType)))
-                        {
-                            var dic = (Dictionary<PresetType, int>)ViewData["UplodaQuote"];
-
-                            if (!dic.ContainsKey(val) || (dic.ContainsKey(val) && dic[val] < 5))
+            <table cellpadding="5" style="max-width:775px;">
+                <tr>
+                    <td valign="top"> 
+                        <div class="control-label-nowrap"><span class="required">*</span>Explain to AI what to generate (prompt):</div>
+                    </td>
+                    <td valign="top"  align="right" style="width:100%;">
+                        <label class="control-label">Break Type:</label>                        <select id="BgType" name="BgType" style="padding:1px;margin:10px;font-size:13pt">
+                            @foreach (PresetType val in Enum.GetValues(typeof(PresetType)))
                             {
-                                <option value="@val">@val</option>
+                                var dic = ViewData["UplodaQuote"] as Dictionary<PresetType, int>;
+
+                                if (dic != null && (!dic.ContainsKey(val) || (dic.ContainsKey(val) && dic[val] < 5)))
+                                {
+                                    <option value="@val">@val</option>
+                                }
                             }
-                        }
-                    </select>
-                </td>
-            </tr>            <tr>
-                <td colspan="2">
-                    <textarea id="genInfo" style="width:100%" rows="2" type="text" asp-for="Info" class="form-control-text" placeholder="Describe what AI should generate..." oninput="updatePromptValidation()"></textarea>
-                    <span asp-validation-for="Info" class="text-danger"></span>
-                    <div id="genValidationMessage" style="color: #666; font-size: 12px; margin-top: 5px;"></div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <altcha-widget challengeurl="/Account/GetAltcha"></altcha-widget>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input id="create" style="width:180px"
-                           type="button" value="Generate" class="submit" onclick="submitGenerateForm(this.form,document.getElementById('genInfo'))" />
-                     <input style="width:180px"
-                           type="button" value="Cancel" class="back" />
-                       </td>
-            </tr>
-        </table>
-    </form>
-
-
+                        </select>
+                    </td>
+                </tr>            
+                <tr>
+                    <td colspan="2">
+                        <textarea id="genInfo" style="width:100%" rows="2" type="text" asp-for="Info" class="form-control-text" placeholder="Describe what AI should generate..." oninput="updatePromptValidation()"></textarea>
+                        <span asp-validation-for="Info" class="text-danger"></span>
+                        <div id="genValidationMessage" style="color: #666; font-size: 12px; margin-top: 5px;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <altcha-widget challengeurl="/Account/GetAltcha"></altcha-widget>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input id="create" style="width:180px"
+                               type="button" value="Generate" class="submit" onclick="submitGenerateForm(this.form,document.getElementById('genInfo'))" />
+                         <input style="width:180px"
+                               type="button" value="Cancel" class="back" />
+                           </td>
+                </tr>
+            </table>
+        </form>
+    }
 </div>
 
 

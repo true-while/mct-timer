@@ -93,8 +93,7 @@ namespace mct_timer.Controllers
                 {
                     var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
                     var email = emailClaim?.Value;
-                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid!=null)
-                    {
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid!=null)                    {
                         if (user.Backgrounds?.Any(x => x.id == bgid && x.Locked != true) ?? false)
                         {
                             var bg = user.Backgrounds?.FirstOrDefault(x => x.id == bgid);
@@ -105,7 +104,15 @@ namespace mct_timer.Controllers
                             await _ac_context.SaveChangesAsync();
                         }
 
-                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
+                        int maxAI = AIAttempts();
+                        int attemptsRemaining = user.HowManyActivityAllowed(maxAI);
+                        bool canGenerateAI = user.IsAIActivityAllowed(maxAI);
+                        string aiAvailableIn = user.WhenAIAvaiable(maxAI);
+                        
+                        ViewData["Attempts"] = attemptsRemaining;
+                        ViewData["CanGenerateAI"] = canGenerateAI;
+                        ViewData["AIAvailableIn"] = aiAvailableIn;
+                        
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
                         ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
@@ -173,8 +180,7 @@ namespace mct_timer.Controllers
                 {
                     var emailClaim = jwt.Claims?.FirstOrDefault(x => string.Compare(x.Type, "Email", true) == 0);
                     var email = emailClaim?.Value;
-                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid != null)
-                    {
+                    var user = !string.IsNullOrEmpty(email) ? await _ac_context.Users.FirstOrDefaultAsync(x => x.Email == email) : null;                    if (user != null && bgid != null)                    {
                         var theBg = user.Backgrounds?.FirstOrDefault(x => x.id == bgid);
                         if (theBg != null)
                         {
@@ -182,7 +188,16 @@ namespace mct_timer.Controllers
                             _ac_context.Update(user);
                             await _ac_context.SaveChangesAsync();
                         }
-                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
+                        
+                        int maxAI = AIAttempts();
+                        int attemptsRemaining = user.HowManyActivityAllowed(maxAI);
+                        bool canGenerateAI = user.IsAIActivityAllowed(maxAI);
+                        string aiAvailableIn = user.WhenAIAvaiable(maxAI);
+                        
+                        ViewData["Attempts"] = attemptsRemaining;
+                        ViewData["CanGenerateAI"] = canGenerateAI;
+                        ViewData["AIAvailableIn"] = aiAvailableIn;
+                        
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
                         ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
@@ -350,11 +365,17 @@ namespace mct_timer.Controllers
                                 }
                             }
                         }
-                    }
-
-                    if (user != null)
+                    }                    if (user != null)
                     {
-                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
+                        int maxAI = AIAttempts();
+                        int attemptsRemaining = user.HowManyActivityAllowed(maxAI);
+                        bool canGenerateAI = user.IsAIActivityAllowed(maxAI);
+                        string aiAvailableIn = user.WhenAIAvaiable(maxAI);
+                        
+                        ViewData["Attempts"] = attemptsRemaining;
+                        ViewData["CanGenerateAI"] = canGenerateAI;
+                        ViewData["AIAvailableIn"] = aiAvailableIn;
+                        
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
                         ViewData["isUplodaQuote"] = quote?.Values.Any(x => x < 5) ?? false;
@@ -472,11 +493,17 @@ namespace mct_timer.Controllers
                                 }
                             }
                         }
-                    }
-
-                    if (user != null)
+                    }                    if (user != null)
                     {
-                        ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts());
+                        int maxAI = AIAttempts();
+                        int attemptsRemaining = user.HowManyActivityAllowed(maxAI);
+                        bool canGenerateAI = user.IsAIActivityAllowed(maxAI);
+                        string aiAvailableIn = user.WhenAIAvaiable(maxAI);
+                        
+                        ViewData["Attempts"] = attemptsRemaining;
+                        ViewData["CanGenerateAI"] = canGenerateAI;
+                        ViewData["AIAvailableIn"] = aiAvailableIn;
+                        
                         var quote = user.GetQuote();
                         ViewData["UplodaQuote"] = quote;
                         ViewData["isUplodaQuote"] = quote?.Values?.Any(x => x < 5) ?? false;
@@ -537,15 +564,22 @@ namespace mct_timer.Controllers
         }
 
         [GenerateAntiforgeryTokenCookie]
-        [JwtAuthentication]
-        public IActionResult Custom()
+        [JwtAuthentication]        public IActionResult Custom()
         {
             var user = GetUserInfo();
            
 
             if (user != null)
             {
-                ViewData["Attempts"] = user.HowManyActivityAllowed(AIAttempts()); 
+                int maxAI = AIAttempts();
+                int attemptsRemaining = user.HowManyActivityAllowed(maxAI);
+                bool canGenerateAI = user.IsAIActivityAllowed(maxAI);
+                string aiAvailableIn = user.WhenAIAvaiable(maxAI);
+                
+                ViewData["Attempts"] = attemptsRemaining; 
+                ViewData["CanGenerateAI"] = canGenerateAI;
+                ViewData["AIAvailableIn"] = aiAvailableIn;
+                
                 Dictionary<PresetType, int> quote = user.GetQuote();                
                 ViewData["UplodaQuote"] = quote;
                 ViewData["isUplodaQuote"] = (bool)quote.Values.Any(x => x < 5);

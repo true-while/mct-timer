@@ -2,10 +2,14 @@
 
 function outOfScrollPosition(root, element) {
     try {
-        var rPos = root.offsetWidth - root.scrollWidth
-        element.style.right = rPos + "px";
+        // Calculate the scrollbar width: offsetWidth includes the scrollbar, clientWidth doesn't
+        var scrollbarWidth = root.offsetWidth - root.clientWidth;
+        
+        // For absolutely positioned element, adjust the 'right' property by scrollbar width
+        // This moves the element left to prevent it from overlapping the scrollbar
+        element.style.right = scrollbarWidth + "px";
     } catch (ex) {
-        appInsights.TrackException(e);
+        appInsights.TrackException(ex);
         console.log(ex);
     }
 }
