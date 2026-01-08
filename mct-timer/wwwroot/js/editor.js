@@ -16,4 +16,17 @@ const options = {
     placeholder: '',
     theme: 'snow'
 };
-const quill = new Quill('#editor', options);
+
+// Initialize Quill as soon as the script loads
+// Quill should be available since it's loaded before this script in the layout
+if (typeof Quill !== 'undefined') {
+    console.log('Quill is available, initializing editor');
+    try {
+        window.quill = new Quill('#editor', options);
+        console.log('Quill editor initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Quill:', error);
+    }
+} else {
+    console.error('Quill is not defined when editor.js loaded');
+}
