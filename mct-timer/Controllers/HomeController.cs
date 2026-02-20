@@ -88,7 +88,24 @@ namespace mct_timer.Controllers
 
         public async Task<IActionResult> Timer(string m = "15", string z = "America/New_York", string t = "coffee")
         {
-            var bType = (PresetType)Enum.Parse(typeof(PresetType), t, true);
+            // Validate and sanitize input parameters
+            if (!int.TryParse(m, out var minutes) || minutes <= 0)
+            {
+                minutes = 15; // default
+            }
+
+            if (string.IsNullOrWhiteSpace(z))
+            {
+                z = "America/New_York"; // default
+            }
+
+            // Try to parse the timer type, fallback to Coffee if invalid
+            if (!Enum.TryParse(typeof(PresetType), t, true, out var parsedType))
+            {
+                _logger.TrackEvent($"Invalid timer type received: {t}");
+                parsedType = PresetType.Coffee; // default
+            }
+            var bType = (PresetType)parsedType;
 
             var user = GetUserInfo();
 

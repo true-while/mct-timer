@@ -107,12 +107,17 @@
 
 @section Scripts
 {
-        <script type="text/javascript" src="~/js/preset.js" asp-append-version="true"></script>
+    <script type="text/javascript" src="~/js/preset.js" asp-append-version="true"></script>
 
     <script>
-        const timer = new Preset(
-            document.querySelector("#timer-go")
-        )
+        let timer; // Declare timer at global scope
+
+        // Initialize timer when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            timer = new Preset(
+                document.querySelector("#timer-go")
+            );
+        });
 
        function menuUpdate()
        {
@@ -126,9 +131,5 @@
         })
 
         $(window).resize(() => menuUpdate());
-
-
-
-
     </script>
 }
