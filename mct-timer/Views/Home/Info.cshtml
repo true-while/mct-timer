@@ -10,7 +10,8 @@
     </div>
 
     <div id="loc" class="location">
-        <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank"><img class="option" title="~/icons/location-w.png" title="image info" /></a>
+        <a href="https://maps.app.goo.gl/hbQkUNNToMNu8HFx9" target="_blank"><img class="option"
+                src="~/icons/location-w.png" title="image info" /></a>
     </div>
 
     <div id="location-info">
@@ -19,47 +20,128 @@
 
     <div id="info-secondbg">
         <div id="info-set">
-            <div class="info-text">
-                    <div class="title">'MCT Timer' Project</div>
 
-                <p>The "MCT Timer" project is an innovative tool designed to assist the Microsoft Certified Trainer (MCT) community. It simplifies the process of setting up and managing timers for classroom sessions directly from a web page. This project aims to enhance the teaching and learning experience by providing a seamless way to notify learners when classes resume.</p>
+            <div id="user-manual" class="info-text" style="display: none;">
+                <div class="info-header-container">
+                    <div class="info-header" id="manual-header"><b>User Manual</b></div>
+                    <div class="info-divider">|</div>
+                    <div class="info-header" id="about-header" onclick="showAboutProject()">About the Project</div>
+                </div>
+                <h1>Getting Started</h1>
+                <p>The MCT Timer is a simple and intuitive web application designed to help you manage class timers.
+                    Follow these steps to get started:</p>
+
+                <hr>
+                <p>The preset section allows you to quickly select from pre-configured timer durations and presets to
+                    streamline your workflow.</em>
+                    <img src="~/help/preset.png" alt="Preset"
+                        style="width:100%; max-width:800px; margin-bottom:20px;" />
+                </p>
+
+                <hr>
+                <p>The timer section allows you to monitor and manage your class timers effectively. You can start,
+                    pause, reset timers, and receive notifications when classes will resume.</p>
+                <img src="~/help/timer.png" alt="Timer" style="width:100%; max-width:800px; margin-bottom:20px;" />
+                </p>
+
+                <hr>
+                <p>The settings section allows you to customize your timer preferences and application settings.</p>
+                <img src="~/help/top.png" alt="Top" style="width:100%; max-width:400px; margin-bottom:20px;" />
+                </p>
+
+                <hr>
+                <p>The settings section allows you to customize your timer preferences and application settings.</p>
+                <img src="~/help/preset.png" alt="Preset" style="width:100%; max-width:800px; margin-bottom:20px;" />
+                </p>
+                <hr>
+                <p>You can hide or show the background image for different timers.</p>
+                <img src="~/help/gen-bg.png" alt="Generate Background"
+                    style="width:100%; max-width:800px; margin-bottom:20px;" />
+                </p>
+
+                <hr>
+                <p>You can also upload your personal background for different timers.</p>
+                <img src="~/help/upload.png" alt="Upload" style="width:100%; max-width:800px; margin-bottom:20px;" />
+                </p>
+                <hr>
+                <p>Generate custom background with Open AI model DALLE by entering a prompt in the input box and
+                    clicking the generate button.</p>
+                <img src="~/help/generate.png" alt="Generate"
+                    style="width:100%; max-width:800px; margin-bottom:20px;" />
+            </div>
+
+            <div id="about-project" class="info-text">
+                <div class="info-header-container">
+                    <div class="info-header" id="manual-header" onclick="showUserManual()">User Manual</div>
+                    <div class="info-divider">|</div>
+                    <div class="info-header" id="about-header"> <b>About the Project</b></div>
+                </div>
                 <h1>Project Hosting</h1>
-                <p>The MCT Timer is hosted on a robust and reliable platform, the Microsoft Azure Web App. This ensures that the service is scalable, secure, and always available for users. The project is managed and maintained by the Microsoft Trainers Team, who bring their expertise and dedication to ensure its smooth operation and continuous improvement.</p>
-                <p>One of the core principles of the MCT Timer project is accessibility. The website is publicly accessible, meaning anyone can use it without any restrictions. Moreover, the service is provided free of charge, making it an invaluable resource for the MCT community and beyond.</p>
+                <p>The MCT Timer is hosted on a robust and reliable platform, the Microsoft Azure Web App. This ensures
+                    that the service is scalable, secure, and always available for users. The project is managed and
+                    maintained by the Microsoft Trainers Team, who bring their expertise and dedication to ensure its
+                    smooth operation and continuous improvement.</p>
+                <p>One of the core principles of the MCT Timer project is accessibility. The website is publicly
+                    accessible, meaning anyone can use it without any restrictions. Moreover, the service is provided
+                    free of charge, making it an invaluable resource for the MCT community and beyond.</p>
                 <h1>Features and Benefits</h1>
                 <p>
                 <ul>
-                    <li>Easy Setup: The web interface is user-friendly, allowing trainers to quickly set up timers with minimal effort.</li>
-                    <li>Real-Time Notifications: Learners are promptly informed when classes will resume, ensuring that everyone stays on schedule.</li>
-                    <li>Public Access: The site is accessible to all, fostering a collaborative and inclusive learning environment.</li>
+                    <li>Easy Setup: The web interface is user-friendly, allowing trainers to quickly set up timers with
+                        minimal effort.</li>
+                    <li>Real-Time Notifications: Learners are promptly informed when classes will resume, ensuring that
+                        everyone stays on schedule.</li>
+                    <li>Public Access: The site is accessible to all, fostering a collaborative and inclusive learning
+                        environment.</li>
                     <li>Cost-Free: The service is provided at no cost, removing any financial barriers to its use.</li>
-                    <li>Background customization: The service will allowed to upload personal background for different timers and generate custom background with Open AI model DALLE</li>
+                    <li>Background customization: The service will allowed to upload personal background for different
+                        timers and generate custom background with Open AI model DALLE</li>
                 </ul>
                 </p>
                 <h1>Feedback and Contact</h1>
-                <p>The development team values feedback and ideas from users to continually enhance the MCT Timer. To provide feedback, submit ideas, or contact the developers, please follow visit <a href="https://github.com/true-while/mct-timer/issues">GitHub repo</a></p>
+                <p>The development team values feedback and ideas from users to continually enhance the MCT Timer. To
+                    provide feedback, submit ideas, or contact the developers, please follow visit <a
+                        href="https://github.com/true-while/mct-timer/issues">GitHub repo</a></p>
                 <h1>Conclusion</h1>
-                <p>The MCT Timer project exemplifies the commitment of the Microsoft Certified Trainer community to improving educational experiences through innovative solutions. By providing a simple, accessible, and free tool to manage class timings, the project supports both trainers and learners in achieving their educational goals effectively.</p>
+                <p>The MCT Timer project exemplifies the commitment of the Microsoft Certified Trainer community to
+                    improving educational experiences through innovative solutions. By providing a simple, accessible,
+                    and free tool to manage class timings, the project supports both trainers and learners in achieving
+                    their educational goals effectively.</p>
             </div>
         </div>
 
-</div>
+    </div>
 
 
 @section Scripts
 {
         <script>
-                    function menuUpdate() {
-                        outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
-                        outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
-                    }
+            function menuUpdate() {
+                outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#menu"));
+                outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
+            }
 
-                    $(document).ready(function () {
-                                document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/info.jpg)";
-                               menuUpdate();
-                    })
+            function showUserManual() {
+                document.getElementById("user-manual").style.display = "block";
+                document.getElementById("about-project").style.display = "none";
+                document.getElementById("manual-header").classList.add("active");
+                document.getElementById("about-header").classList.remove("active");
+            }
 
-                    $(window).resize(() => menuUpdate());
+            function showAboutProject() {
+                document.getElementById("user-manual").style.display = "none";
+                document.getElementById("about-project").style.display = "block";
+                document.getElementById("about-header").classList.add("active");
+                document.getElementById("manual-header").classList.remove("active");
+            }
+
+            $(document).ready(function () {
+                document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/info.jpg)";
+                menuUpdate();
+                showUserManual(); // Show User Manual by default
+            })
+
+            $(window).resize(() => menuUpdate());
 
         </script>
 }

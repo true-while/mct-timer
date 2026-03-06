@@ -1,5 +1,6 @@
 ﻿const toolbarOptions = [
-    [{ 'header': 1 }, { 'header': 2 }, { 'header': 3 }],
+    [{ header: '1' }, { header: '2' }],
+    ['clean'],
     ['bold', 'italic'],
     [{ 'list': 'bullet' }],
     [ { align: '' }, { align: 'center' }],

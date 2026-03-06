@@ -1,36 +1,69 @@
 
 #info-secondbg {
-    padding: 3px 0px;
+    padding: 0px;
     margin: 50px;
     background-color: rgba(0,0,0,0.3);
-    width: fit-content;
+    width: calc(100% - 100px);
+    min-height: calc(100vh - 200px);
     border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.info-header-container {
+    background-color: white;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px 20px;
+    border-radius: 10px 10px 0px 0px;
+    border-bottom: 2px solid darkgray;
+}
+
+.info-header {
+    cursor: pointer;
+    padding: 8px;
+    font-weight: normal;
+    font-size: 20px;
+    color: darkblue;
+    user-select: none;
+    transition: all 0.3s ease;
 }
 
 
+.info-divider {
+    color: darkgray;
+    font-size: 18px;
+}
+
 #info-set {
-    margin: 10px;
+    margin: 0px;
     resize: both;
     display: flex;
     position: static;
-    width: fit-content;
+    width: 100%;
+    flex: 1;
 }
 
 
 .info-text {
     color: black;
-    display: inline-block;
-    margin: 7px 7px 7px 7px;
-    padding: 7px 7px 7px 7px;
+    display: none;
+    margin: 0px;
+    padding: 20px;
     border-radius: 10px;
     background-color: white;
     text-align: justify-all;
     border: 3px solid darkgray;
-    
-    overflow-y: scroll;
-    height: 80vh;
+    overflow-y: auto;
+    flex: 1;
+    width: 100%;
 }
 
+    .info-text h1 {
+       padding-top: 10px;
+       font-weight: 700;
+    }
     .info-text .title {
         font: 600 20px Segoe UI;
         color: darkblue;
@@ -43,4 +76,8 @@
     .info-text p {
         font: 400 15px Segoe UI;
         color: black;
+    }
+
+    .info-text[style*="display: block"] {
+        display: block !important;
     }

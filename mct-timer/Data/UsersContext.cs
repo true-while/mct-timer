@@ -21,7 +21,8 @@ using System.Reflection.Emit;
                 base.OnModelCreating(builder);
                 builder.HasDefaultContainer("Users");
 
-                builder.Entity<User>().ToContainer("Users");
+                builder.Entity<User>()
+                    .ToContainer("Users");
 
            
         }
