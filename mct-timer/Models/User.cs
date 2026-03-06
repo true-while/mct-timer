@@ -542,7 +542,13 @@ namespace mct_timer.Models
             if (this.DefBGHidden == null) this.DefBGHidden = new Dictionary<string, bool>();
             this.Backgrounds.ForEach(bg =>
             {
-                bg.Visible = this.DefBGHidden.ContainsKey(bg.id) ? this.DefBGHidden[bg.id] : true;
+                // Only apply DefBGHidden to default (locked) backgrounds
+                // Custom backgrounds should maintain their own Visible property
+                if (bg.Locked)
+                {
+                    bg.Visible = this.DefBGHidden.ContainsKey(bg.id) ? this.DefBGHidden[bg.id] : true;
+                }
+                // For custom backgrounds, Visible property is already set from the database
             });
         }
 

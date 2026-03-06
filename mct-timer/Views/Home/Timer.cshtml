@@ -105,7 +105,13 @@
         }
 
         $(document).ready(function () {
-           document.querySelector("#gbmainbg").style.backgroundImage = "url('@Model.BGUrl')";
+           // Only set background if a visible background is available
+           if ('@Model.BGUrl' && '@Model.BGUrl' !== '~/bg-lib/default.png') {
+               document.querySelector("#gbmainbg").style.backgroundImage = "url('@Model.BGUrl')";
+           } else {
+               // Fallback to default only if needed
+               document.querySelector("#gbmainbg").style.backgroundImage = "url(../bg-lib/default.jpg)";
+           }
            menuUpdate();
            
            // Watch for changes to #gbmainbg container size (e.g., when editor grows)
