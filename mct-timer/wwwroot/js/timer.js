@@ -27,6 +27,7 @@
         this.remainingSeconds = 0; // calculated value
         this.timezoneName;  //full time zone, should be pass outside 
         this.timezoneAbr;  //short timezone name, should be pass outside
+        this.musicPlayer = null;
 
         //stop start alerts
         this.el.alert.addEventListener("click", () => {
@@ -45,7 +46,8 @@
 
         //stop and return to preset
         this.el.home.addEventListener("click", () => {
-            this.stop();            
+            this.stop();
+            this.stopMusicPlayer();
             location.href = '/';
         });
      
@@ -99,11 +101,12 @@
             this.el.timepart2.textContent = minutes.toString().padStart(2, "0");
         }
         
-        if (this.remainingSeconds < 0) {
-            this.el.timeisup.pause();
-            this.el.intro.pause();
-            this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
-        } else if (this.remainingSeconds < 10 && this.alert) {
+            if (this.remainingSeconds <= 0) {
+                this.el.timeisup.pause();
+                this.el.intro.pause();
+                this.stopMusicPlayer();
+                this.el.timepart1.style.color = this.el.timepart2.style.color = this.el.timediv.style.color = "red";
+            } else if (this.remainingSeconds < 10 && this.alert) {
             this.el.intro.pause();
             this.el.intro.currentTime = 0
             this.el.timeisup.play();
@@ -133,11 +136,22 @@
             this.remainingSeconds--;
             this.updateInterfaceTime();
 
-            if (this.remainingSeconds === 0) {
+            if (this.remainingSeconds <= 0) {
                 this.stop();
+                this.stopMusicPlayer();
             }
         }, 1000);
 
+    }
+
+    setMusicPlayer(musicPlayer) {
+        this.musicPlayer = musicPlayer;
+    }
+
+    stopMusicPlayer() {
+        if (this.musicPlayer) {
+            this.musicPlayer.stop();
+        }
     }
 
     //stop for restart

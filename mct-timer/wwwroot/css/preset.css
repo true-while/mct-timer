@@ -172,6 +172,56 @@
     background-color: whitesmoke;
 }
 
+.spotify-setup {
+    margin-top: 12px;
+    text-align: left;
+}
+
+.spotify-setup .title {
+    display: block;
+    font: 600 20px Segoe UI;
+    color: darkblue;
+    margin-bottom: 5px;
+}
+
+.spotify-input-row {
+    display: flex;
+    gap: 6px;
+}
+
+.spotify-input-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 7px;
+    border-radius: 7px;
+    border: 2px solid black;
+    background-color: whitesmoke;
+    font: 500 14px Segoe UI;
+}
+
+.spotify-input-row button {
+    color: white;
+    background: purple;
+    border: none;
+    border-radius: 10px;
+    padding: 0 10px;
+    font: 600 14px Segoe UI;
+    cursor: pointer;
+}
+
+.spotify-help {
+    margin-top: 4px;
+    font: 400 13px Segoe UI;
+    color: #333;
+}
+
+.spotify-error {
+    min-height: 18px;
+    margin-top: 4px;
+    font: 500 13px Segoe UI;
+    color: darkred;
+}
+
 
 .timer-choice {
     color: black;

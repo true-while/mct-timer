@@ -70,6 +70,15 @@
 
                         <span class="button" id="go" style="width:200px"><b>START</b></span>
                 </div>
+                <div class="spotify-setup">
+                    <label class="title" for="spotify-playlist">Spotify Playlist</label>
+                    <div class="spotify-input-row">
+                        <input id="spotify-playlist" type="text" placeholder="Playlist URL, URI, embed URL, or ID" />
+                        <button id="spotify-playlist-clear" type="button">clear</button>
+                    </div>
+                    <div class="spotify-help">Optional. Music starts only after using the Spotify player on the countdown page.</div>
+                    <div id="spotify-playlist-error" class="spotify-error" aria-live="polite"></div>
+                </div>
                 <div class="adds-group">
                     <span class="adds-buttons" id="tophour">top hour</span>
                         <span class="adds-buttons" id="plus1">+1 min</span>
@@ -107,8 +116,6 @@
 
 @section Scripts
 {
-    <script type="text/javascript" src="~/js/preset.js" asp-append-version="true"></script>
-
     <script>
         let timer; // Declare timer at global scope
 
