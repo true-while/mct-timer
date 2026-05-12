@@ -45,7 +45,7 @@ The countdown page shows a Spotify embedded playlist player when a playlist is p
 
 ## Configuration
 
-For local exaction the configuration file should be provided with following template: 
+For local execution the configuration file should be provided with following template:
 
 ```JSON
 {
@@ -59,8 +59,8 @@ For local exaction the configuration file should be provided with following temp
     "OpenAIEndpoint": "https://<your service>.openai.azure.com/",
     "OpenAIKey": "<your key copied from portal>",
     "OpenAIModel": "<name of the dale model>",
-    "StorageAccountName": "https://<your storage acc name>.blob.core.windows.net/",
-    "ContainerName": "<cosmos db container name for images>",
+    "StorageAccountName": "<your storage account name>",
+    "ContainerName": "<blob container name for images, usually $web>",
     "JWT": "<generated token to encrypt jwt>",
     "KeyVault": "<keyvault address>",
     "PssKey": "<key name>",
@@ -72,10 +72,127 @@ For local exaction the configuration file should be provided with following temp
     "PwdResetRequestUrl": "https://..."          
 
   },
-  "ApplicationInsights": "<cs copy from AI page>",  
+  "ApplicationInsights": {
+    "ConnectionString": "<connection string copied from Application Insights>"
+  },
   "AllowedHosts": "*"
 }
 ````
+
+## Deploy to your Azure subscription with GitHub Actions
+
+This repository includes Bicep infrastructure in `infra/` and a GitHub Actions workflow in `.github/workflows/azure-webapps-dotnet-core.yml`. The workflow uses GitHub OpenID Connect (OIDC) with Microsoft Entra ID, so you do not need to store an Azure publish profile or Azure password in GitHub.
+
+The workflow provisions:
+
+- Azure App Service for the ASP.NET Core web app
+- Application Insights and Log Analytics
+- Azure Cosmos DB for NoSQL database `webapp` and container `Users`
+- Azure Storage static website container for uploaded/generated backgrounds
+- Azure Key Vault with an RSA key for password encryption
+- Managed identity and RBAC assignments for the web app
+
+### 1. Create the Microsoft Entra app registration
+
+Run these commands from Azure Cloud Shell or a local terminal with Azure CLI. Replace `<owner>` and `<repo>` with your GitHub owner and repository name, and keep the environment name aligned with the GitHub environment used by the workflow, for example `dev`.
+
+```bash
+az login
+az account set --subscription "<your-subscription-id>"
+
+SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+TENANT_ID=$(az account show --query tenantId -o tsv)
+APP_ID=$(az ad app create --display-name "mct-timer-github" --query appId -o tsv)
+az ad sp create --id "$APP_ID"
+SP_OBJECT_ID=$(az ad sp show --id "$APP_ID" --query id -o tsv)
+```
+
+### 2. Add the federated identity credential
+
+Create a file named `credential.json`:
+
+```json
+{
+  "name": "github-dev-environment",
+  "issuer": "https://token.actions.githubusercontent.com",
+  "subject": "repo:<owner>/<repo>:environment:dev",
+  "description": "Allow GitHub Actions from the dev environment to deploy MCT Timer",
+  "audiences": [
+    "api://AzureADTokenExchange"
+  ]
+}
+```
+
+Then attach it to the app registration:
+
+```bash
+az ad app federated-credential create \
+  --id "$APP_ID" \
+  --parameters credential.json
+```
+
+If you use a different GitHub environment name, update both the workflow environment and the `subject` value. If you deploy from multiple environments, add one federated credential per environment.
+
+### 3. Assign Azure roles to the GitHub deployment identity
+
+The workflow creates a resource group, provisions Bicep resources, and creates RBAC assignments for the web app managed identity. For a fully automated first deployment, assign these roles at subscription scope:
+
+```bash
+SCOPE="/subscriptions/$SUBSCRIPTION_ID"
+
+az role assignment create \
+  --assignee-object-id "$SP_OBJECT_ID" \
+  --assignee-principal-type ServicePrincipal \
+  --role "Contributor" \
+  --scope "$SCOPE"
+
+az role assignment create \
+  --assignee-object-id "$SP_OBJECT_ID" \
+  --assignee-principal-type ServicePrincipal \
+  --role "Role Based Access Control Administrator" \
+  --scope "$SCOPE"
+```
+
+After the first deployment, you can reduce scope to the created resource group if you do not need the workflow to create new resource groups.
+
+### 4. Configure GitHub secrets and variables
+
+In your GitHub repository, create these **Actions secrets**:
+
+| Secret | Value |
+|--------|-------|
+| `AZURE_CLIENT_ID` | `$APP_ID` from the app registration |
+| `AZURE_TENANT_ID` | `$TENANT_ID` |
+| `AZURE_SUBSCRIPTION_ID` | `$SUBSCRIPTION_ID` |
+| `JWT_SECRET` | Strong random value used by the app for JWT/ALTCHA signing |
+| `AZURE_OPENAI_ENDPOINT` | Optional Azure OpenAI endpoint |
+| `AZURE_OPENAI_KEY` | Optional Azure OpenAI key |
+| `PWD_RESET_REQUEST_URL` | Optional password reset email endpoint |
+
+Create these **Actions variables**:
+
+| Variable | Value |
+|----------|-------|
+| `AZURE_ENV_NAME` | `dev` or another short environment name |
+| `AZURE_LOCATION` | Azure region, for example `eastus2` |
+| `AZURE_OPENAI_MODEL` | Optional image model deployment name, for example `dall-e-3` |
+
+### 5. Run the deployment workflow
+
+Push to `main`, or run **Provision and deploy MCT Timer** from the GitHub Actions tab. The manual workflow lets you override `environmentName` and `location`.
+
+The workflow runs tests, publishes the .NET 10 app, provisions Bicep infrastructure, and deploys the published output to the provisioned Azure Web App.
+
+## .NET Aspire local orchestration
+
+The solution includes an Aspire AppHost project in `mct-timer.AppHost/`. Use it for local orchestration and Aspire dashboard support:
+
+```bash
+dotnet run --project ./mct-timer.AppHost/mct-timer.AppHost.csproj
+```
+
+Production deployment remains Azure App Service because this application is a single ASP.NET Core MVC web app and does not need a container-orchestrated production topology.
+
 ## Security Config
 
 The project configured to use *System assigned Managed Identity* with *DefaultAzureCredentialOptions*. 

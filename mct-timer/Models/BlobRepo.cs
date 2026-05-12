@@ -4,7 +4,6 @@ using Azure.Storage;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
-using Mono.TextTemplating;
 using Azure.Identity;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
