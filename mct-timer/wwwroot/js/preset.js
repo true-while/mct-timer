@@ -15,12 +15,17 @@
         {
             valid: false,
             message: 'please provide a time in the future',
+        },
+        {
+            valid: false,
+            message: 'Please enter a valid Spotify playlist URL, URI, embed URL, or playlist ID.',
         }
     ];
 
     STATE_VALID = 1
     STATE_INVALID = 2
     STATE_PAST = 3
+    STATE_SPOTIFY_INVALID = 4
 
     constructor(root) {
         
@@ -38,7 +43,10 @@
             brtype: root.querySelector("#brtype"),
             deftz: root.querySelector("#def-tz"),
             btypes: root.querySelectorAll('.type-icons'),
-            defbtype: root.querySelector('#def-type-icons') 
+            defbtype: root.querySelector('#def-type-icons'),
+            spotifyPlaylist: root.querySelector("#spotify-playlist"),
+            spotifyPlaylistError: root.querySelector("#spotify-playlist-error"),
+            spotifyPlaylistClear: root.querySelector("#spotify-playlist-clear")
         };
 
 
@@ -166,6 +174,19 @@
             this.onDurationFieldChanged();
         });
 
+        if (this.el.spotifyPlaylist) {
+            this.el.spotifyPlaylist.addEventListener("change", () => {
+                this.normalizeSpotifyPlaylistInput();
+            });
+        }
+
+        if (this.el.spotifyPlaylistClear) {
+            this.el.spotifyPlaylistClear.addEventListener("click", () => {
+                this.el.spotifyPlaylist.value = "";
+                this.showSpotifyPlaylistError("");
+            });
+        }
+
         this.el.plus1.addEventListener("click", () => {
             this.addMinutes(1);
         });
@@ -217,12 +238,21 @@
     }
 
     startTimer(timezone, duration, timerType) {
+        const spotifyEmbedUrl = this.normalizeSpotifyPlaylistInput();
+
+        if (spotifyEmbedUrl === null) {
+            return;
+        }
 
         appInsights.trackMetric({ name: "CustomTimer", tz: timezone, lenght: duration, tp: timerType  });
 
         const timezoneUrlEncoded = encodeURIComponent(timezone.replaceAll('/','@'));
 
-        const timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
+        let timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
+
+        if (spotifyEmbedUrl) {
+            timerUri += `?spotify=${encodeURIComponent(spotifyEmbedUrl)}`;
+        }
 
         location.href = timerUri;
     }
@@ -245,6 +275,39 @@
         } else {
             this.el.input.style.color = "red";
         }
+    }
+
+    normalizeSpotifyPlaylistInput() {
+        if (!this.el.spotifyPlaylist) {
+            return "";
+        }
+
+        const rawPlaylistValue = this.el.spotifyPlaylist.value.trim();
+
+        if (!rawPlaylistValue) {
+            this.showSpotifyPlaylistError("");
+            return "";
+        }
+
+        const normalized = SpotifyPlaylistHelper.normalize(rawPlaylistValue);
+
+        if (!normalized.valid) {
+            this.showSpotifyPlaylistError(this.validationStates[this.STATE_SPOTIFY_INVALID].message);
+            return null;
+        }
+
+        this.el.spotifyPlaylist.value = normalized.embedUrl;
+        this.showSpotifyPlaylistError("");
+        return normalized.embedUrl;
+    }
+
+    showSpotifyPlaylistError(message) {
+        if (!this.el.spotifyPlaylistError) {
+            return;
+        }
+
+        this.el.spotifyPlaylistError.textContent = message;
+        this.el.spotifyPlaylist.style.borderColor = message ? "red" : "black";
     }
 
     onDurationFieldChanged() {

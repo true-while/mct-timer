@@ -53,6 +53,43 @@
                     </div>
                 </td>
             </tr>
+            @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistEmbedUrl))
+            {
+                <tr>
+                    <td colspan="2" valign="top">
+                        <section id="spotify-player" class="spotify-player" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
+                            <div class="spotify-player-header">
+                                <span class="spotify-player-title">Spotify playlist</span>
+                                <div class="spotify-player-controls">
+                                    <button id="spotify-playlist-start" type="button">Play playlist</button>
+                                    <button id="spotify-player-toggle" type="button">Hide player</button>
+                                    <button id="spotify-player-stop" type="button">Stop music</button>
+                                    <button id="spotify-player-clear" type="button">Clear playlist</button>
+                                </div>
+                            </div>
+                            <div id="spotify-player-status" class="spotify-player-status">Use the Spotify play button in the embedded player to start music.</div>
+                            <div id="spotify-player-frame-wrap" class="spotify-player-frame-wrap">
+                                <iframe id="spotify-playlist-iframe"
+                                        title="Spotify playlist"
+                                        src="@Model.SpotifyPlaylistEmbedUrl"
+                                        width="100%"
+                                        height="152"
+                                        frameborder="0"
+                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                        loading="lazy"></iframe>
+                            </div>
+                        </section>
+                    </td>
+                </tr>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
+            {
+                <tr>
+                    <td colspan="2" valign="top">
+                        <div class="spotify-player spotify-error-message">@Model.SpotifyPlaylistValidationMessage</div>
+                    </td>
+                </tr>
+            }
             <tr>
                 <td colspan="2" valign="top">
                     <div id="editormain">
@@ -88,6 +125,10 @@
             document.querySelector("#timer"),
             document.querySelector("#resume")
         );
+        const spotifyPlayerRoot = document.querySelector("#spotify-player");
+        if (spotifyPlayerRoot) {
+            mtimer.setMusicPlayer(new SpotifyPlaylistPlayer(spotifyPlayerRoot));
+        }
 
         mtimer.ampm = '@Model.Ampm';
         mtimer.timezoneName = timezoneName;

@@ -86,7 +86,7 @@ namespace mct_timer.Controllers
             return View(info);
         }
 
-        public async Task<IActionResult> Timer(string m = "15", string z = "America/New_York", string t = "coffee")
+        public async Task<IActionResult> Timer(string m = "15", string z = "America/New_York", string t = "coffee", string? spotify = null)
         {
             // Validate and sanitize input parameters
             if (!int.TryParse(m, out var minutes) || minutes <= 0)
@@ -122,11 +122,23 @@ namespace mct_timer.Controllers
 
             var model = new Models.Timer()
             {
-               Length = int.Parse(m),
+               Length = minutes,
                Timezone = z,
                BreakType = bType,
                Ampm = user.Ampm,
-             };
+              };
+
+            if (!string.IsNullOrWhiteSpace(spotify))
+            {
+                if (SpotifyPlaylistHelper.TryNormalizeEmbedUrl(spotify, out var spotifyEmbedUrl))
+                {
+                    model.SpotifyPlaylistEmbedUrl = spotifyEmbedUrl;
+                }
+                else
+                {
+                    model.SpotifyPlaylistValidationMessage = "The Spotify playlist value was not recognized. The timer will continue without playlist music.";
+                }
+            }
 
             Random rn = new Random(DateTime.Now.Second);
             var index = rn.Next(0, bgList.Count());

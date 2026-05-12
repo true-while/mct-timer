@@ -13,6 +13,7 @@ One of the core principles of the MCT Timer project is accessibility. The websit
 - Public Access: The site is accessible to all, fostering a collaborative and inclusive learning environment.
 - Cost-Free: The service is provided at no cost, removing any financial barriers to its use.
 - Background customization: The service will allowed to upload personal background for different timers and generate custom background with Open AI model DALE
+- Spotify playlist support: Trainers can attach a public Spotify playlist to a timer session and play it from the countdown page.
 
 
 ## Architecture
@@ -26,6 +27,20 @@ The project are contains from following resources deploy in Azure.
 - Azure Open AI service provisioned DALE3 model that used for image generation.
 
 ![schema](schena.png)
+
+## Spotify Playlist Support
+
+Timer setup includes an optional **Spotify Playlist** field. Paste a public Spotify playlist URL, Spotify playlist URI, Spotify embed URL, or raw playlist ID before starting a timer. The timer stores only the normalized playlist embed URL in the timer session URL; it does not use Spotify credentials, OAuth, private APIs, or paid API features.
+
+Supported input formats:
+
+- `https://open.spotify.com/playlist/{playlistId}`
+- `https://open.spotify.com/playlist/{playlistId}?si=abc123`
+- `spotify:playlist:{playlistId}`
+- `https://open.spotify.com/embed/playlist/{playlistId}`
+- `{playlistId}`
+
+The countdown page shows a Spotify embedded playlist player when a playlist is provided. Music does not autoplay on page load; use **Play playlist** and then the Spotify play button inside the embedded player. Use the countdown page controls to show or hide the player, stop playback, or clear the playlist from the timer session. When the timer reaches zero, the embedded player is reset so music does not continue unnoticed.
 
 
 ## Configuration

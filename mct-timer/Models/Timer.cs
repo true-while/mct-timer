@@ -9,6 +9,8 @@ namespace mct_timer.Models
         public bool Ampm;
         public PresetType BreakType;
         public string BGUrl = string.Empty;
+        public string SpotifyPlaylistEmbedUrl = string.Empty;
+        public string SpotifyPlaylistValidationMessage = string.Empty;
 
         [DefaultValue(false)]
         public bool IsBing;

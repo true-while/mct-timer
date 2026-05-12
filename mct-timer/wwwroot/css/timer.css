@@ -135,3 +135,65 @@
     background-color: purple;
 }
 
+.spotify-player {
+    background: white;
+    border: 3px solid darkgrey;
+    border-radius: 15px;
+    color: black;
+    max-width: 640px;
+    padding: 10px;
+}
+
+.spotify-player-header {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.spotify-player-title {
+    color: darkblue;
+    font: 600 20px Segoe UI;
+}
+
+.spotify-player-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+}
+
+.spotify-player-controls button {
+    background: purple;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font: 600 13px Segoe UI;
+    padding: 6px 10px;
+}
+
+.spotify-player-controls #spotify-player-stop {
+    background: darkorange;
+}
+
+.spotify-player-controls #spotify-player-clear {
+    background: darkred;
+}
+
+.spotify-player-status {
+    color: #333;
+    font: 400 13px Segoe UI;
+    margin: 6px 0;
+    text-align: left;
+}
+
+.spotify-player-frame-wrap iframe {
+    border-radius: 12px;
+    display: block;
+}
+
+.spotify-error-message {
+    color: darkred;
+    font: 500 16px Segoe UI;
+}
