@@ -1,88 +1,103 @@
-# This workflow will build and push a .NET Core app to an Azure Web App when a commit is pushed to your default branch.
-#
-# This workflow assumes you have already created the target Azure App Service web app.
-# For instructions see https://docs.microsoft.com/en-us/azure/app-service/quickstart-dotnetcore?tabs=net60&pivots=development-environment-vscode
-#
-# To configure this workflow:
-#
-# 1. Download the Publish Profile for your Azure Web App. You can download this file from the Overview page of your Web App in the Azure Portal.
-#    For more information: https://docs.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials
-#
-# 2. Create a secret in your repository named AZURE_WEBAPP_PUBLISH_PROFILE, paste the publish profile contents as the value of the secret.
-#    For instructions on obtaining the publish profile see: https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
-#
-# 3. Change the value for the AZURE_WEBAPP_NAME. Optionally, change the AZURE_WEBAPP_PACKAGE_PATH and DOTNET_VERSION environment variables below.
-#
-# For more information on GitHub Actions for Azure: https://github.com/Azure/Actions
-# For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
-
-name: Build and deploy ASP.Net Core app to an Azure Web App
-
-env:
-  AZURE_WEBAPP_NAME: your-app-name    # set this to the name of your Azure Web App
-  AZURE_WEBAPP_PACKAGE_PATH: '.'      # set this to the path to your web app project, defaults to the repository root
-  DOTNET_VERSION: '5'                 # set this to the .NET Core version to use
+name: Provision and deploy MCT Timer
 
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
+    inputs:
+      environmentName:
+        description: "Short environment name used in Azure resource names"
+        required: true
+        default: "dev"
+      location:
+        description: "Azure region"
+        required: true
+        default: "eastus2"
 
 permissions:
   contents: read
+  id-token: write
+
+env:
+  DOTNET_VERSION: "10.0.x"
+  PROJECT_PATH: "./mct-timer/mct-timer.csproj"
+  TEST_PROJECT_PATH: "./mct-timer.Tests/mct-timer.Tests.csproj"
+  PUBLISH_DIR: "${{ github.workspace }}/publish"
+  AZURE_ENV_NAME: ${{ inputs.environmentName || vars.AZURE_ENV_NAME || 'dev' }}
+  AZURE_LOCATION: ${{ inputs.location || vars.AZURE_LOCATION || 'eastus2' }}
 
 jobs:
-  build:
+  build-test-provision-deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environmentName || vars.AZURE_ENV_NAME || 'dev' }}
+      url: ${{ steps.deploy.outputs.webapp-url }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Set up .NET Core
+      - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Set up dependency caching for faster builds
-        uses: actions/cache@v3
+      - name: Restore
+        run: dotnet restore ./mct-timer.sln
+
+      - name: Test
+        run: dotnet test ${{ env.TEST_PROJECT_PATH }} --configuration Release --no-restore
+
+      - name: Publish
+        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --no-restore --output "${{ env.PUBLISH_DIR }}"
+
+      - name: Azure login
+        uses: azure/login@v2
         with:
-          path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nuget-
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Create resource group
+        run: |
+          az group create \
+            --name "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --location "${AZURE_LOCATION}"
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      - name: Provision Azure infrastructure
+        id: provision
+        env:
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_MODEL: ${{ vars.AZURE_OPENAI_MODEL || 'dall-e-3' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PWD_RESET_REQUEST_URL: ${{ secrets.PWD_RESET_REQUEST_URL }}
+        run: |
+          deployment_name="mct-timer-${AZURE_ENV_NAME}-${GITHUB_RUN_ID}"
 
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v3
-        with:
-          name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          az deployment group create \
+            --name "$deployment_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --template-file ./infra/main.bicep \
+            --parameters environmentName="${AZURE_ENV_NAME}" \
+                         location="${AZURE_LOCATION}" \
+                         openAiEndpoint="${AZURE_OPENAI_ENDPOINT}" \
+                         openAiKey="${AZURE_OPENAI_KEY}" \
+                         openAiModel="${AZURE_OPENAI_MODEL}" \
+                         jwtSecret="${JWT_SECRET}" \
+                         pwdResetRequestUrl="${PWD_RESET_REQUEST_URL}"
 
-  deploy:
-    permissions:
-      contents: none
-    runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'Development'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+          web_app_name=$(az deployment group show \
+            --name "$deployment_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --query "properties.outputs.webAppName.value" \
+            --output tsv)
 
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v3
-        with:
-          name: .net-app
+          echo "WEB_APP_NAME=$web_app_name" >> "$GITHUB_ENV"
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
-        uses: azure/webapps-deploy@v2
+        id: deploy
+        uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ env.AZURE_WEBAPP_NAME }}
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+          app-name: ${{ env.WEB_APP_NAME }}
+          package: ${{ env.PUBLISH_DIR }}

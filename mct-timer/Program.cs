@@ -10,7 +10,6 @@ using System.Text;
 using Microsoft.Azure.Cosmos.Core;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.CodeAnalysis.Options;
 using System.Net;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -217,6 +216,8 @@ app.MapControllerRoute(
     name: "UploadPhysical",
     pattern: "/UploadPhysical",
     defaults: new { controller = "Home", action = "UploadPhysical" });
+
+app.MapGet("/health", () => Results.Ok("Healthy"));
 
 app.MapControllerRoute(
     name: "AvTest",

@@ -1,0 +1,8 @@
+name: mct-timer
+metadata:
+  template: mct-timer-appservice-bicep
+services:
+  web:
+    project: ./mct-timer
+    language: dotnet
+    host: appservice
