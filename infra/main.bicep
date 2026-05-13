@@ -9,7 +9,7 @@ param environmentName string
 param location string = resourceGroup().location
 
 @description('App Service Plan SKU.')
-param appServiceSkuName string = 'S1'
+param appServiceSkuName string = 'F1'
 
 @description('Blob container used for uploaded and generated background files. $web enables static website delivery.')
 param storageContainerName string = '$web'
@@ -216,9 +216,9 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
   sku: {
     name: appServiceSkuName
   }
-  kind: 'linux'
+  kind: 'app'
   properties: {
-    reserved: true
+    reserved: false
   }
 }
 
@@ -226,7 +226,7 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
   name: 'app-${namePrefix}'
   location: location
   tags: tags
-  kind: 'app,linux'
+  kind: 'app'
   identity: {
     type: 'SystemAssigned'
   }
@@ -235,12 +235,15 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
     httpsOnly: true
     serverFarmId: appServicePlan.id
     siteConfig: {
-      alwaysOn: appServiceSkuName != 'F1'
+      alwaysOn: !contains([
+        'F1'
+        'D1'
+      ], appServiceSkuName)
       ftpsState: 'Disabled'
       healthCheckPath: '/health'
       http20Enabled: true
-      linuxFxVersion: 'DOTNETCORE|10.0'
       minTlsVersion: '1.2'
+      use32BitWorkerProcess: true
     }
   }
 }

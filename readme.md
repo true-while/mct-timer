@@ -175,23 +175,23 @@ Create these **Actions variables**:
 |----------|-------|
 | `AZURE_ENV_NAME` | `dev` or another short environment name |
 | `AZURE_LOCATION` | Azure region, for example `eastus2` |
-| `APP_SERVICE_SKU_NAME` | App Service Plan SKU, defaults to `S1`; examples: `S1`, `P0v3`, `B1` |
+| `APP_SERVICE_SKU_NAME` | App Service Plan SKU, defaults to free `F1`; examples: `F1`, `D1`, `S1` |
 | `AZURE_OPENAI_MODEL` | Optional image model deployment name, for example `dall-e-3` |
 
 ### 5. Run the deployment workflow
 
 Push to `main`, or run **Provision and deploy MCT Timer** from the GitHub Actions tab. The manual workflow lets you override `environmentName` and `location`.
 
-The workflow runs tests, publishes the .NET 10 app, provisions Bicep infrastructure, and deploys the published output to the provisioned Azure Web App.
+The workflow runs tests, publishes the .NET 10 app as a self-contained Windows build, provisions Bicep infrastructure, and deploys the published output to the provisioned Azure Web App. The self-contained build keeps the free `F1` tier usable even when the App Service image does not have the exact .NET runtime installed.
 
 ### App Service quota errors
 
-If the provisioning step fails with `SubscriptionIsOverQuotaForSku`, the selected App Service Plan SKU is not available in that subscription and region. The workflow defaults to `S1` to avoid subscriptions that have `Basic VMs` quota set to 0.
+If the provisioning step fails with `SubscriptionIsOverQuotaForSku`, the selected App Service Plan SKU is not available in that subscription and region. The workflow defaults to the Windows `F1` free tier, which avoids dedicated Basic/Standard/Premium worker quota.
 
 Fix it by doing one of the following:
 
 - Run the workflow in another Azure region by changing `AZURE_LOCATION`.
-- Choose a SKU with available quota by setting `APP_SERVICE_SKU_NAME`, for example `S1`, `P0v3`, or `P1v3`.
+- Choose a SKU with available quota by setting `APP_SERVICE_SKU_NAME`, for example `F1`, `D1`, or `S1`.
 - Request quota for the blocked SKU family in the Azure portal.
 
 ## .NET Aspire local orchestration
