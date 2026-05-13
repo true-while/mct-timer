@@ -132,20 +132,28 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01'
       enabled: true
       days: 7
     }
-    // Bicep type metadata omits staticWebsite for this API version, but ARM accepts it
-    // and the app relies on the storage website endpoint for background images.
-    #disable-next-line BCP037
-    staticWebsite: {
-      enabled: true
-      indexDocument: 'index.html'
-      error404Document: '404.html'
-    }
+  }
+}
+
+// Static website is modeled as a child resource because Azure rejects the older
+// inline blobServices.staticWebsite payload as properties.staticWebsiteEnabled.
+#disable-next-line BCP081
+resource storageStaticWebsite 'Microsoft.Storage/storageAccounts/blobServices/staticWebsite@2023-05-01' = {
+  parent: blobService
+  name: 'default'
+  properties: {
+    enabled: true
+    indexDocument: 'index.html'
+    error404Document: '404.html'
   }
 }
 
 resource backgroundContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
   parent: blobService
   name: storageContainerName
+  dependsOn: [
+    storageStaticWebsite
+  ]
   properties: {
     publicAccess: 'None'
   }

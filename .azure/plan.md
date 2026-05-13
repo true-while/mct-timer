@@ -137,6 +137,7 @@ Notes:
 | .NET tests | `dotnet test .\mct-timer.Tests\mct-timer.Tests.csproj --verbosity minimal` | Passed | Current session |
 | Diff whitespace | `git --no-pager diff --check` | Passed | Current session |
 | Deployment error fix | Enabled storage-account blob public access required by static website hosting for `$web` background delivery | Passed local Bicep validation | Current session |
+| Deployment error fix | Moved Storage static website configuration from inline `blobServices.staticWebsite` to the `blobServices/staticWebsite` child resource to avoid Azure rejecting `properties.staticWebsiteEnabled` | Passed local Bicep validation | Current session |
 | Docker availability | `docker --version` | Docker CLI not installed locally; image build is delegated to `az acr build` in GitHub Actions | Current session |
 
 **Validated by:** azure-validate skill with local CLI checks
