@@ -14,9 +14,9 @@ on:
         required: true
         default: "eastus2"
       appServiceSkuName:
-        description: "App Service Plan SKU, for example B1, S1, P0v3"
+        description: "App Service Plan SKU, for example S1, P0v3, B1"
         required: true
-        default: "B1"
+        default: "S1"
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ env:
   PUBLISH_DIR: "${{ github.workspace }}/publish"
   AZURE_ENV_NAME: ${{ inputs.environmentName || vars.AZURE_ENV_NAME || 'dev' }}
   AZURE_LOCATION: ${{ inputs.location || vars.AZURE_LOCATION || 'eastus2' }}
-  APP_SERVICE_SKU_NAME: ${{ inputs.appServiceSkuName || vars.APP_SERVICE_SKU_NAME || 'B1' }}
+  APP_SERVICE_SKU_NAME: ${{ inputs.appServiceSkuName || vars.APP_SERVICE_SKU_NAME || 'S1' }}
 
 jobs:
   build-test-provision-deploy:

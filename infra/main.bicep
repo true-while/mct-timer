@@ -9,7 +9,7 @@ param environmentName string
 param location string = resourceGroup().location
 
 @description('App Service Plan SKU.')
-param appServiceSkuName string = 'B1'
+param appServiceSkuName string = 'S1'
 
 @description('Blob container used for uploaded and generated background files. $web enables static website delivery.')
 param storageContainerName string = '$web'

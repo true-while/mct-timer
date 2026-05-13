@@ -175,7 +175,7 @@ Create these **Actions variables**:
 |----------|-------|
 | `AZURE_ENV_NAME` | `dev` or another short environment name |
 | `AZURE_LOCATION` | Azure region, for example `eastus2` |
-| `APP_SERVICE_SKU_NAME` | App Service Plan SKU, for example `B1`, `S1`, or `P0v3` |
+| `APP_SERVICE_SKU_NAME` | App Service Plan SKU, defaults to `S1`; examples: `S1`, `P0v3`, `B1` |
 | `AZURE_OPENAI_MODEL` | Optional image model deployment name, for example `dall-e-3` |
 
 ### 5. Run the deployment workflow
@@ -186,12 +186,12 @@ The workflow runs tests, publishes the .NET 10 app, provisions Bicep infrastruct
 
 ### App Service quota errors
 
-If the provisioning step fails with `SubscriptionIsOverQuotaForSku`, the selected App Service Plan SKU is not available in that subscription and region. For example, `Current Limit (Basic VMs): 0` means the default `B1` plan cannot be created there.
+If the provisioning step fails with `SubscriptionIsOverQuotaForSku`, the selected App Service Plan SKU is not available in that subscription and region. The workflow defaults to `S1` to avoid subscriptions that have `Basic VMs` quota set to 0.
 
 Fix it by doing one of the following:
 
 - Run the workflow in another Azure region by changing `AZURE_LOCATION`.
-- Choose a SKU with available quota by setting `APP_SERVICE_SKU_NAME`, for example `S1` or `P0v3`.
+- Choose a SKU with available quota by setting `APP_SERVICE_SKU_NAME`, for example `S1`, `P0v3`, or `P1v3`.
 - Request quota for the blocked SKU family in the Azure portal.
 
 ## .NET Aspire local orchestration
