@@ -93,7 +93,7 @@ The workflow provisions:
 - Azure Key Vault with an RSA key for password encryption
 - Managed identity and RBAC assignments for the container app
 
-The storage account enables static website hosting for the `$web` background image container. That requires blob public access to be enabled at the storage account level, while the Bicep template still keeps the `$web` container access setting at `None` and relies on the static website endpoint for public delivery.
+The storage account enables static website hosting for the `$web` background image container during the GitHub Actions workflow after ARM provisioning creates the account. That requires blob public access to be enabled at the storage account level, and the workflow passes the resulting static website endpoint into the Container App configuration for public background delivery.
 
 ### 1. Create the Microsoft Entra app registration
 

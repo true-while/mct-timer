@@ -95,8 +95,32 @@ jobs:
             --query "properties.outputs.acrLoginServer.value" \
             --output tsv)
 
+          storage_account_name=$(az deployment group show \
+            --name "$deployment_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --query "properties.outputs.storageAccountName.value" \
+            --output tsv)
+
+          az storage blob service-properties update \
+            --account-name "$storage_account_name" \
+            --static-website \
+            --index-document index.html \
+            --404-document 404.html
+
+          storage_web_cdn=$(az storage account show \
+            --name "$storage_account_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --query "primaryEndpoints.web" \
+            --output tsv)
+
+          if [ -z "$storage_web_cdn" ]; then
+            echo "::error::Storage static website endpoint was not available after enabling static website hosting."
+            exit 1
+          fi
+
           echo "ACR_NAME=$acr_name" >> "$GITHUB_ENV"
           echo "ACR_LOGIN_SERVER=$acr_login_server" >> "$GITHUB_ENV"
+          echo "STORAGE_WEB_CDN=$storage_web_cdn" >> "$GITHUB_ENV"
 
       - name: Build and push container image
         run: |
@@ -124,8 +148,9 @@ jobs:
             --template-file ./infra/main.bicep \
             --parameters environmentName="${AZURE_ENV_NAME}" \
                          location="${AZURE_LOCATION}" \
-                         containerImage="$image" \
-                         openAiEndpoint="${AZURE_OPENAI_ENDPOINT}" \
+                          containerImage="$image" \
+                          webCdnUrl="${STORAGE_WEB_CDN}" \
+                          openAiEndpoint="${AZURE_OPENAI_ENDPOINT}" \
                          openAiKey="${AZURE_OPENAI_KEY}" \
                          openAiModel="${AZURE_OPENAI_MODEL}" \
                          jwtSecret="${JWT_SECRET}" \

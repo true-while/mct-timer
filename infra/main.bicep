@@ -29,6 +29,9 @@ param maxReplicas int = 1
 @description('Blob container used for uploaded and generated background files. $web enables static website delivery.')
 param storageContainerName string = '$web'
 
+@description('Static website endpoint for uploaded/generated background delivery. The workflow enables static website hosting and passes the resulting endpoint during the final app deployment.')
+param webCdnUrl string = ''
+
 @description('Azure OpenAI endpoint. Leave empty to disable AI background generation until configured.')
 param openAiEndpoint string = ''
 
@@ -132,30 +135,6 @@ resource blobService 'Microsoft.Storage/storageAccounts/blobServices@2023-05-01'
       enabled: true
       days: 7
     }
-  }
-}
-
-// Static website is modeled as a child resource because Azure rejects the older
-// inline blobServices.staticWebsite payload as properties.staticWebsiteEnabled.
-#disable-next-line BCP081
-resource storageStaticWebsite 'Microsoft.Storage/storageAccounts/blobServices/staticWebsite@2023-05-01' = {
-  parent: blobService
-  name: 'default'
-  properties: {
-    enabled: true
-    indexDocument: 'index.html'
-    error404Document: '404.html'
-  }
-}
-
-resource backgroundContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2023-05-01' = {
-  parent: blobService
-  name: storageContainerName
-  dependsOn: [
-    storageStaticWebsite
-  ]
-  properties: {
-    publicAccess: 'None'
   }
 }
 
@@ -392,7 +371,7 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
             }
             {
               name: 'ConfigMng__WebCDN'
-              value: storage.properties.primaryEndpoints.web
+              value: empty(webCdnUrl) ? storage.properties.primaryEndpoints.blob : webCdnUrl
             }
           ]
           resources: {
@@ -459,6 +438,7 @@ output acrLoginServer string = registry.properties.loginServer
 output containerAppName string = containerApp.name
 output containerAppUrl string = 'https://${containerApp.properties.configuration.ingress.fqdn}'
 output resourceGroupName string = resourceGroup().name
-output storageStaticWebsiteUrl string = storage.properties.primaryEndpoints.web
+output storageAccountName string = storage.name
+output storageStaticWebsiteUrl string = empty(webCdnUrl) ? storage.properties.primaryEndpoints.blob : webCdnUrl
 output cosmosEndpoint string = cosmosAccount.properties.documentEndpoint
 output keyVaultUri string = keyVault.properties.vaultUri
