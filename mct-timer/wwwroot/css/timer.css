@@ -139,9 +139,22 @@
     background: white;
     border: 3px solid darkgrey;
     border-radius: 15px;
+    box-sizing: border-box;
     color: black;
     max-width: 640px;
     padding: 10px;
+}
+
+.spotify-player-td {
+    width: 340px;
+}
+
+.spotify-player--side {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 430px;
+    width: 320px;
 }
 
 .spotify-player-header {
@@ -163,6 +176,15 @@
     justify-content: flex-end;
 }
 
+.spotify-player--side .spotify-player-header {
+    align-items: stretch;
+    flex-direction: column;
+}
+
+.spotify-player--side .spotify-player-controls {
+    justify-content: flex-start;
+}
+
 .spotify-player-controls button {
     background: purple;
     border: none;
@@ -171,6 +193,10 @@
     cursor: pointer;
     font: 600 13px Segoe UI;
     padding: 6px 10px;
+}
+
+.spotify-player--side .spotify-player-controls button {
+    flex: 1 1 calc(50% - 6px);
 }
 
 .spotify-player-controls #spotify-player-stop {
@@ -188,9 +214,19 @@
     text-align: left;
 }
 
+.spotify-player--side .spotify-player-frame-wrap {
+    flex: 1;
+    min-height: 352px;
+}
+
 .spotify-player-frame-wrap iframe {
     border-radius: 12px;
     display: block;
+}
+
+.spotify-player--side .spotify-player-frame-wrap iframe {
+    height: 100%;
+    min-height: 352px;
 }
 
 .spotify-error-message {

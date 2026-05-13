@@ -52,12 +52,10 @@
                         </div>
                     </div>
                 </td>
-            </tr>
-            @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistEmbedUrl))
-            {
-                <tr>
-                    <td colspan="2" valign="top">
-                        <section id="spotify-player" class="spotify-player" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
+                @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistEmbedUrl))
+                {
+                    <td class="spotify-player-td" rowspan="2" valign="top">
+                        <section id="spotify-player" class="spotify-player spotify-player--side" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
                             <div class="spotify-player-header">
                                 <span class="spotify-player-title">Spotify playlist</span>
                                 <div class="spotify-player-controls">
@@ -73,15 +71,15 @@
                                         title="Spotify playlist"
                                         src="@Model.SpotifyPlaylistEmbedUrl"
                                         width="100%"
-                                        height="152"
+                                        height="352"
                                         frameborder="0"
                                         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
                                         loading="lazy"></iframe>
                             </div>
                         </section>
                     </td>
-                </tr>
-            }
+                }
+            </tr>
             @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
             {
                 <tr>
