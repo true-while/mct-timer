@@ -8,8 +8,23 @@ param environmentName string
 @description('Azure region for all resources.')
 param location string = resourceGroup().location
 
-@description('App Service Plan SKU.')
-param appServiceSkuName string = 'F1'
+@description('Container image to run. The workflow deploys once with the placeholder image, builds to ACR, then redeploys with the real app image.')
+param containerImage string = 'mcr.microsoft.com/k8se/quickstart:latest'
+
+@description('HTTP port exposed by the container.')
+param containerPort int = 8080
+
+@description('Container CPU allocation.')
+param containerCpu string = '0.25'
+
+@description('Container memory allocation.')
+param containerMemory string = '0.5Gi'
+
+@description('Minimum Container Apps replicas. Set to 0 for consumption scale-to-zero.')
+param minReplicas int = 0
+
+@description('Maximum Container Apps replicas.')
+param maxReplicas int = 1
 
 @description('Blob container used for uploaded and generated background files. $web enables static website delivery.')
 param storageContainerName string = '$web'
@@ -18,7 +33,7 @@ param storageContainerName string = '$web'
 param openAiEndpoint string = ''
 
 @secure()
-@description('Azure OpenAI key. Stored as an App Service setting.')
+@description('Azure OpenAI key. Stored as a Container Apps secret.')
 param openAiKey string = ''
 
 @description('Azure OpenAI image model deployment name.')
@@ -38,10 +53,14 @@ param pwdResetRequestUrl string = ''
 @description('Key Vault key name used by the app for password encryption.')
 param cryptographyKeyName string = 'password-encryption'
 
-var normalizedEnvironment = take(toLower(replace(replace(environmentName, '-', ''), '_', '')), 12)
+var normalizedEnvironment = take(toLower(replace(replace(environmentName, '-', ''), '_', '')), 7)
 var uniqueSuffix = uniqueString(resourceGroup().id, normalizedEnvironment)
 var namePrefix = 'mct-${normalizedEnvironment}-${uniqueSuffix}'
 var storageAccountName = take('mct${normalizedEnvironment}${uniqueSuffix}', 24)
+var registryName = take('mct${normalizedEnvironment}${uniqueSuffix}acr', 50)
+var keyVaultName = take('kv${normalizedEnvironment}${uniqueSuffix}', 24)
+var appName = 'ca-${namePrefix}'
+var usesPrivateRegistry = startsWith(containerImage, '${registry.properties.loginServer}/')
 var tags = {
   application: 'mct-timer'
   environment: environmentName
@@ -67,6 +86,19 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: 'web'
     WorkspaceResourceId: logAnalytics.id
+  }
+}
+
+resource registry 'Microsoft.ContainerRegistry/registries@2023-07-01' = {
+  name: registryName
+  location: location
+  tags: tags
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    adminUserEnabled: false
+    publicNetworkAccess: 'Enabled'
   }
 }
 
@@ -178,7 +210,7 @@ resource usersContainer 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/cont
 }
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
-  name: 'kv-${namePrefix}'
+  name: keyVaultName
   location: location
   tags: tags
   properties: {
@@ -209,106 +241,213 @@ resource passwordKey 'Microsoft.KeyVault/vaults/keys@2023-07-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
-  name: 'plan-${namePrefix}'
+resource containerIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' = {
+  name: 'id-${namePrefix}'
   location: location
   tags: tags
-  sku: {
-    name: appServiceSkuName
-  }
-  kind: 'app'
-  properties: {
-    reserved: false
-  }
 }
 
-resource webApp 'Microsoft.Web/sites@2023-12-01' = {
-  name: 'app-${namePrefix}'
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' = {
+  name: 'cae-${namePrefix}'
   location: location
   tags: tags
-  kind: 'app'
-  identity: {
-    type: 'SystemAssigned'
-  }
   properties: {
-    enabled: true
-    httpsOnly: true
-    serverFarmId: appServicePlan.id
-    siteConfig: {
-      alwaysOn: !contains([
-        'F1'
-        'D1'
-      ], appServiceSkuName)
-      ftpsState: 'Disabled'
-      healthCheckPath: '/health'
-      http20Enabled: true
-      minTlsVersion: '1.2'
-      use32BitWorkerProcess: true
+    appLogsConfiguration: {
+      destination: 'log-analytics'
+      logAnalyticsConfiguration: {
+        customerId: logAnalytics.properties.customerId
+        sharedKey: logAnalytics.listKeys().primarySharedKey
+      }
     }
   }
 }
 
-resource webAppSettings 'Microsoft.Web/sites/config@2023-12-01' = {
-  parent: webApp
-  name: 'appsettings'
+resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
+  name: appName
+  location: location
+  tags: tags
+  dependsOn: [
+    acrPull
+  ]
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${containerIdentity.id}': {}
+    }
+  }
   properties: {
-    APPLICATIONINSIGHTS_CONNECTION_STRING: appInsights.properties.ConnectionString
-    ApplicationInsights__ConnectionString: appInsights.properties.ConnectionString
-    ConfigMng__ContainerName: storageContainerName
-    ConfigMng__CosmosDBEndpoint: cosmosAccount.properties.documentEndpoint
-    ConfigMng__FileSizeLimit: '10485760'
-    ConfigMng__JWT: jwtSecret
-    ConfigMng__KeyVault: keyVault.properties.vaultUri
-    ConfigMng__MaxAIinTheDay: maxAiInTheDay
-    ConfigMng__OpenAIEndpoint: openAiEndpoint
-    ConfigMng__OpenAIKey: openAiKey
-    ConfigMng__OpenAIModel: openAiModel
-    ConfigMng__PssKey: passwordKey.name
-    ConfigMng__PwdResetRequestUrl: pwdResetRequestUrl
-    ConfigMng__StorageAccountName: storage.name
-    ConfigMng__SubscriptionID: subscription().subscriptionId
-    ConfigMng__TenantID: tenant().tenantId
-    ConfigMng__WebCDN: storage.properties.primaryEndpoints.web
-    SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
+    managedEnvironmentId: containerAppsEnvironment.id
+    configuration: {
+      activeRevisionsMode: 'Single'
+      ingress: {
+        external: true
+        targetPort: containerPort
+        transport: 'auto'
+        allowInsecure: false
+      }
+      registries: usesPrivateRegistry ? [
+        {
+          server: registry.properties.loginServer
+          identity: containerIdentity.id
+        }
+      ] : []
+      secrets: [
+        {
+          name: 'jwt-secret'
+          value: jwtSecret
+        }
+        {
+          name: 'openai-key'
+          value: empty(openAiKey) ? 'not-configured' : openAiKey
+        }
+        {
+          name: 'pwd-reset-request-url'
+          value: empty(pwdResetRequestUrl) ? 'not-configured' : pwdResetRequestUrl
+        }
+      ]
+    }
+    template: {
+      containers: [
+        {
+          name: 'mct-timer'
+          image: containerImage
+          env: [
+            {
+              name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+              value: appInsights.properties.ConnectionString
+            }
+            {
+              name: 'ApplicationInsights__ConnectionString'
+              value: appInsights.properties.ConnectionString
+            }
+            {
+              name: 'AZURE_CLIENT_ID'
+              value: containerIdentity.properties.clientId
+            }
+            {
+              name: 'ConfigMng__ContainerName'
+              value: storageContainerName
+            }
+            {
+              name: 'ConfigMng__CosmosDBEndpoint'
+              value: cosmosAccount.properties.documentEndpoint
+            }
+            {
+              name: 'ConfigMng__FileSizeLimit'
+              value: '10485760'
+            }
+            {
+              name: 'ConfigMng__JWT'
+              secretRef: 'jwt-secret'
+            }
+            {
+              name: 'ConfigMng__KeyVault'
+              value: keyVault.properties.vaultUri
+            }
+            {
+              name: 'ConfigMng__MaxAIinTheDay'
+              value: maxAiInTheDay
+            }
+            {
+              name: 'ConfigMng__OpenAIEndpoint'
+              value: openAiEndpoint
+            }
+            {
+              name: 'ConfigMng__OpenAIKey'
+              secretRef: 'openai-key'
+            }
+            {
+              name: 'ConfigMng__OpenAIModel'
+              value: openAiModel
+            }
+            {
+              name: 'ConfigMng__PssKey'
+              value: passwordKey.name
+            }
+            {
+              name: 'ConfigMng__PwdResetRequestUrl'
+              secretRef: 'pwd-reset-request-url'
+            }
+            {
+              name: 'ConfigMng__StorageAccountName'
+              value: storage.name
+            }
+            {
+              name: 'ConfigMng__SubscriptionID'
+              value: subscription().subscriptionId
+            }
+            {
+              name: 'ConfigMng__TenantID'
+              value: tenant().tenantId
+            }
+            {
+              name: 'ConfigMng__WebCDN'
+              value: storage.properties.primaryEndpoints.web
+            }
+          ]
+          resources: {
+            cpu: json(containerCpu)
+            memory: containerMemory
+          }
+        }
+      ]
+      scale: {
+        minReplicas: minReplicas
+        maxReplicas: maxReplicas
+      }
+    }
   }
 }
 
 var storageBlobDataContributorRoleId = 'ba92f5b4-2d11-453d-a403-e96b0029c9fe'
 var keyVaultCryptoUserRoleId = '12338af0-0e69-4776-bea7-57ae8d297424'
 var cosmosDataContributorRoleDefinitionId = '00000000-0000-0000-0000-000000000002'
+var acrPullRoleId = '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 
 resource storageBlobDataContributor 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(storage.id, webApp.name, storageBlobDataContributorRoleId)
+  name: guid(storage.id, containerIdentity.name, storageBlobDataContributorRoleId)
   scope: storage
   properties: {
-    principalId: webApp.identity.principalId
+    principalId: containerIdentity.properties.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', storageBlobDataContributorRoleId)
   }
 }
 
 resource keyVaultCryptoUser 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
-  name: guid(keyVault.id, webApp.name, keyVaultCryptoUserRoleId)
+  name: guid(keyVault.id, containerIdentity.name, keyVaultCryptoUserRoleId)
   scope: keyVault
   properties: {
-    principalId: webApp.identity.principalId
+    principalId: containerIdentity.properties.principalId
     principalType: 'ServicePrincipal'
     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', keyVaultCryptoUserRoleId)
   }
 }
 
+resource acrPull 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+  name: guid(registry.id, containerIdentity.name, acrPullRoleId)
+  scope: registry
+  properties: {
+    principalId: containerIdentity.properties.principalId
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', acrPullRoleId)
+  }
+}
+
 resource cosmosDataContributor 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2024-05-15' = {
   parent: cosmosAccount
-  name: guid(cosmosAccount.id, webApp.name, cosmosDataContributorRoleDefinitionId)
+  name: guid(cosmosAccount.id, containerIdentity.name, cosmosDataContributorRoleDefinitionId)
   properties: {
-    principalId: webApp.identity.principalId
+    principalId: containerIdentity.properties.principalId
     roleDefinitionId: '${cosmosAccount.id}/sqlRoleDefinitions/${cosmosDataContributorRoleDefinitionId}'
     scope: cosmosAccount.id
   }
 }
 
-output webAppName string = webApp.name
-output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
+output acrName string = registry.name
+output acrLoginServer string = registry.properties.loginServer
+output containerAppName string = containerApp.name
+output containerAppUrl string = 'https://${containerApp.properties.configuration.ingress.fqdn}'
 output resourceGroupName string = resourceGroup().name
 output storageStaticWebsiteUrl string = storage.properties.primaryEndpoints.web
 output cosmosEndpoint string = cosmosAccount.properties.documentEndpoint

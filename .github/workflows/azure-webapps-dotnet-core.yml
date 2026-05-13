@@ -13,10 +13,6 @@ on:
         description: "Azure region"
         required: true
         default: "eastus2"
-      appServiceSkuName:
-        description: "App Service Plan SKU, for example F1, D1, S1"
-        required: true
-        default: "F1"
 
 permissions:
   contents: read
@@ -24,19 +20,17 @@ permissions:
 
 env:
   DOTNET_VERSION: "10.0.x"
-  PROJECT_PATH: "./mct-timer/mct-timer.csproj"
   TEST_PROJECT_PATH: "./mct-timer.Tests/mct-timer.Tests.csproj"
-  PUBLISH_DIR: "${{ github.workspace }}/publish"
   AZURE_ENV_NAME: ${{ inputs.environmentName || vars.AZURE_ENV_NAME || 'dev' }}
   AZURE_LOCATION: ${{ inputs.location || vars.AZURE_LOCATION || 'eastus2' }}
-  APP_SERVICE_SKU_NAME: ${{ inputs.appServiceSkuName || vars.APP_SERVICE_SKU_NAME || 'F1' }}
+  IMAGE_REPOSITORY: "mct-timer"
 
 jobs:
   build-test-provision-deploy:
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environmentName || vars.AZURE_ENV_NAME || 'dev' }}
-      url: ${{ steps.deploy.outputs.webapp-url }}
+      url: ${{ steps.deploy.outputs.container-app-url }}
 
     steps:
       - name: Checkout
@@ -52,9 +46,6 @@ jobs:
 
       - name: Test
         run: dotnet test ${{ env.TEST_PROJECT_PATH }} --configuration Release --no-restore
-
-      - name: Publish
-        run: dotnet publish ${{ env.PROJECT_PATH }} --configuration Release --no-restore --runtime win-x86 --self-contained true --output "${{ env.PUBLISH_DIR }}"
 
       - name: Azure login
         uses: azure/login@v2
@@ -78,7 +69,7 @@ jobs:
           JWT_SECRET: ${{ secrets.JWT_SECRET }}
           PWD_RESET_REQUEST_URL: ${{ secrets.PWD_RESET_REQUEST_URL }}
         run: |
-          deployment_name="mct-timer-${AZURE_ENV_NAME}-${GITHUB_RUN_ID}"
+          deployment_name="mct-timer-${AZURE_ENV_NAME}-${GITHUB_RUN_ID}-bootstrap"
 
           az deployment group create \
             --name "$deployment_name" \
@@ -86,24 +77,64 @@ jobs:
             --template-file ./infra/main.bicep \
             --parameters environmentName="${AZURE_ENV_NAME}" \
                          location="${AZURE_LOCATION}" \
-                         appServiceSkuName="${APP_SERVICE_SKU_NAME}" \
                          openAiEndpoint="${AZURE_OPENAI_ENDPOINT}" \
                          openAiKey="${AZURE_OPENAI_KEY}" \
                          openAiModel="${AZURE_OPENAI_MODEL}" \
                          jwtSecret="${JWT_SECRET}" \
                          pwdResetRequestUrl="${PWD_RESET_REQUEST_URL}"
 
-          web_app_name=$(az deployment group show \
+          acr_name=$(az deployment group show \
             --name "$deployment_name" \
             --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
-            --query "properties.outputs.webAppName.value" \
+            --query "properties.outputs.acrName.value" \
             --output tsv)
 
-          echo "WEB_APP_NAME=$web_app_name" >> "$GITHUB_ENV"
+          acr_login_server=$(az deployment group show \
+            --name "$deployment_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --query "properties.outputs.acrLoginServer.value" \
+            --output tsv)
 
-      - name: Deploy to Azure Web App
+          echo "ACR_NAME=$acr_name" >> "$GITHUB_ENV"
+          echo "ACR_LOGIN_SERVER=$acr_login_server" >> "$GITHUB_ENV"
+
+      - name: Build and push container image
+        run: |
+          az acr build \
+            --registry "${ACR_NAME}" \
+            --image "${IMAGE_REPOSITORY}:${GITHUB_SHA}" \
+            --file ./mct-timer/Dockerfile \
+            .
+
+      - name: Deploy Container App image
         id: deploy
-        uses: azure/webapps-deploy@v3
-        with:
-          app-name: ${{ env.WEB_APP_NAME }}
-          package: ${{ env.PUBLISH_DIR }}
+        env:
+          AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+          AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
+          AZURE_OPENAI_MODEL: ${{ vars.AZURE_OPENAI_MODEL || 'dall-e-3' }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          PWD_RESET_REQUEST_URL: ${{ secrets.PWD_RESET_REQUEST_URL }}
+        run: |
+          deployment_name="mct-timer-${AZURE_ENV_NAME}-${GITHUB_RUN_ID}-app"
+          image="${ACR_LOGIN_SERVER}/${IMAGE_REPOSITORY}:${GITHUB_SHA}"
+
+          az deployment group create \
+            --name "$deployment_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --template-file ./infra/main.bicep \
+            --parameters environmentName="${AZURE_ENV_NAME}" \
+                         location="${AZURE_LOCATION}" \
+                         containerImage="$image" \
+                         openAiEndpoint="${AZURE_OPENAI_ENDPOINT}" \
+                         openAiKey="${AZURE_OPENAI_KEY}" \
+                         openAiModel="${AZURE_OPENAI_MODEL}" \
+                         jwtSecret="${JWT_SECRET}" \
+                         pwdResetRequestUrl="${PWD_RESET_REQUEST_URL}"
+
+          container_app_url=$(az deployment group show \
+            --name "$deployment_name" \
+            --resource-group "rg-mct-timer-${AZURE_ENV_NAME}" \
+            --query "properties.outputs.containerAppUrl.value" \
+            --output tsv)
+
+          echo "container-app-url=$container_app_url" >> "$GITHUB_OUTPUT"

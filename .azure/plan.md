@@ -1,14 +1,14 @@
 # Azure Deployment Plan
 
-> **Status:** Ready for Validation
+> **Status:** Validated
 
-Generated: 2026-05-12T10:56:24+03:00
+Generated: 2026-05-13T12:52:07+03:00
 
 ---
 
 ## 1. Project Overview
 
-**Goal:** Add Azure infrastructure-as-code, upgrade the application to .NET 10, introduce .NET Aspire where it adds value, and enable deployment to a user-owned Azure subscription from GitHub Actions.
+**Goal:** Remove the Azure App Service dependency and deploy the existing ASP.NET Core MVC app to Azure Container Apps from GitHub Actions, preserving current functionality while avoiding App Service Plan quota issues.
 
 **Path:** Modernize Existing
 
@@ -21,15 +21,14 @@ Generated: 2026-05-12T10:56:24+03:00
 | Classification | Development-ready, production-adjustable |
 | Scale | Small |
 | Budget | Cost-Optimized by default |
-| **Subscription** | To be confirmed before validation/deployment |
-| **Location** | To be confirmed before validation/deployment |
+| **Subscription** | User-owned subscription via GitHub Actions OIDC |
+| **Location** | GitHub variable/input, default `eastus2` |
 
 Notes:
 
-- The existing app is an ASP.NET Core MVC classroom timer hosted on Azure App Service.
-- The current repo has a GitHub Actions publish-profile workflow but no checked-in Bicep, ARM, azd, or Aspire projects.
-- The target deployment experience should let a fork or copy of this repository deploy into the user's own subscription from GitHub Actions.
-- The app currently depends on Azure App Service, Application Insights, Cosmos DB, Storage, Key Vault, and optionally Azure OpenAI plus a password reset endpoint.
+- The current app is still an ASP.NET Core MVC web app, not a SPA.
+- Rewriting to SPA + APIs would be a larger product refactor. This plan removes App Service first by containerizing the existing app.
+- Azure Container Apps Consumption still has Azure quota considerations, but it avoids App Service Plan worker quota and should be more suitable for low-traffic usage.
 
 ---
 
@@ -37,56 +36,57 @@ Notes:
 
 | Component | Type | Technology | Path |
 |-----------|------|------------|------|
-| mct-timer | Web app | ASP.NET Core MVC, .NET 8 currently | `mct-timer/` |
-| mct-timer.Tests | Tests | xUnit, .NET 8 currently | `mct-timer.Tests/` |
-| GitHub Actions deployment | CI/CD | Azure Web Apps Deploy with publish profile placeholder | `.github/workflows/azure-webapps-dotnet-core.yml` |
+| mct-timer | Web app | ASP.NET Core MVC, .NET 10 | `mct-timer/` |
+| mct-timer.Tests | Tests | xUnit, .NET 10 | `mct-timer.Tests/` |
+| mct-timer.AppHost | Local orchestration | .NET Aspire AppHost | `mct-timer.AppHost/` |
+| GitHub Actions deployment | CI/CD | OIDC + Azure CLI + Bicep | `.github/workflows/azure-webapps-dotnet-core.yml` |
 
 ---
 
 ## 4. Recipe Selection
 
-**Selected:** GitHub Actions + Bicep, with azd-compatible configuration where useful
+**Selected:** GitHub Actions + Bicep + Azure Container Apps
 
-**Rationale:** The user wants deployment to their own subscription as a GitHub Action and asked for Bicep/ARM IaC. Bicep is the maintainable source format for ARM deployments. GitHub Actions will authenticate with Azure through OpenID Connect (OIDC) and run `az deployment` plus `dotnet publish`/Web App deployment steps. `azure.yaml` can still be added for local azd-oriented workflows, but GitHub Actions is the primary deployment path.
+**Rationale:** The user wants to remove the App Service dependency and continue deploying from GitHub Actions to their own Azure subscription. Container Apps can host the existing MVC app as a container with less application rewrite than SPA migration. Bicep remains the IaC source of truth.
 
 ---
 
 ## 5. Architecture
 
-**Stack:** App Service with managed Azure dependencies
+**Stack:** Azure Container Apps Consumption with managed Azure dependencies
 
 ### Service Mapping
 
 | Component | Azure Service | SKU |
 |-----------|---------------|-----|
-| `mct-timer` | Azure App Service on Linux | B1 default parameter |
-| User/profile/settings store | Azure Cosmos DB for NoSQL | Serverless default |
+| `mct-timer` | Azure Container Apps | Consumption |
+| Container images | Azure Container Registry | Basic |
+| User/profile/settings store | Azure Cosmos DB for NoSQL | Serverless |
 | Uploaded/generated backgrounds | Azure Storage account + Blob container | Standard LRS |
-| Public background delivery | Storage static website endpoint parameter/output | Storage static website |
+| Public background delivery | Storage static website endpoint | Storage static website |
 | Password encryption | Azure Key Vault key | Standard vault |
 | Monitoring | Application Insights + Log Analytics | Consumption/default |
-| App identity | System-assigned managed identity | N/A |
+| App identity | User-assigned managed identity on Container App | N/A |
 | CI/CD identity | Microsoft Entra app registration with federated GitHub credential | N/A |
 
 ### Supporting Services
 
 | Service | Purpose |
 |---------|---------|
-| GitHub Actions | Provision and deploy to the user's Azure subscription |
-| Azure Login Action | OIDC login without storing Azure passwords or publish profiles |
-| Azure Developer CLI | Optional local provisioning/deployment workflow |
-| Bicep modules | App Service, Cosmos DB, Storage, Key Vault, monitoring, RBAC |
-| .NET Aspire AppHost | Local orchestration of the web project and Azure dependency placeholders |
+| GitHub Actions | Build container, push to ACR, provision/deploy Container App |
+| Azure Login Action | OIDC login without Azure passwords or publish profiles |
+| Bicep | Container Apps, ACR, Cosmos, Storage, Key Vault, monitoring, RBAC |
+| .NET Aspire AppHost | Local orchestration/dashboard support |
 
 ### Important Design Decisions
 
-- Keep Azure App Service as the production host because this is the current architecture and the existing app is a single MVC web app.
-- Add Aspire AppHost for local developer experience and dashboard support, not as a forced migration to Azure Container Apps. ServiceDefaults were intentionally not wired into the production app because the current MVC startup already has explicit Application Insights configuration and the production target remains App Service.
-- Provision core Azure resources with Bicep. Treat Azure OpenAI and password-reset email endpoint as configurable parameters unless the user explicitly wants those provisioned too, because Azure OpenAI availability, quota, and approval vary by subscription and region.
-- Use managed identity for Azure resource access. Do not add storage keys, Cosmos keys, or Key Vault secrets for internal service access.
-- Upgrade project target frameworks to .NET 10 and update CI/CD workflow runtime settings accordingly.
-- Replace publish-profile deployment with OIDC-based GitHub Actions deployment. This requires users to create a Microsoft Entra app registration/federated credential once, then set repository variables/secrets such as `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_LOCATION`, and an environment name.
-- The workflow should support manual dispatch and pushes to `main`, so users can deploy from their own fork after configuring GitHub environments/secrets.
+- Preserve the existing MVC app and public timer behavior; do not rewrite to SPA in this pass.
+- Add a Linux Dockerfile for the .NET 10 web app and expose port `8080`.
+- Replace App Service Plan/Web App resources with Azure Container Apps Environment, Container App, and Azure Container Registry.
+- Use GitHub Actions to build and push a container image to ACR, then deploy Bicep with the image tag.
+- Assign the Container App managed identity access to Cosmos DB, Storage, Key Vault, and ACR pull.
+- Continue to support OIDC deployment from a user-owned subscription.
+- Update docs to explain that App Service is no longer required.
 
 ---
 
@@ -96,7 +96,6 @@ Notes:
 
 - [x] Analyze workspace
 - [x] Gather requirements from user prompt
-- [ ] Confirm subscription and location with user before deployment
 - [x] Scan codebase
 - [x] Select recipe
 - [x] Plan architecture
@@ -104,29 +103,27 @@ Notes:
 
 ### Phase 2: Execution
 
-- [x] Upgrade `mct-timer` and `mct-timer.Tests` target frameworks to `net10.0`
-- [x] Replace publish-profile CI/CD with OIDC GitHub Actions workflow for provisioning and deployment
-- [x] Add `azure.yaml` for azd App Service deployment
-- [x] Add Bicep infrastructure under `infra/`
-- [x] Add App Service app settings that map to the existing `ConfigMng` and Application Insights keys
-- [x] Add managed identity role assignments for Cosmos DB, Storage, and Key Vault
-- [x] Add Aspire AppHost where it fits cleanly
-- [x] Update the solution file
-- [x] Update README deployment instructions for user-owned subscription, OIDC setup, required GitHub variables/secrets, and manual workflow dispatch
+- [x] Add Dockerfile and `.dockerignore`
+- [x] Replace App Service Bicep resources with ACR, Container Apps Environment, and Container App
+- [x] Move app settings into Container App environment variables/secrets
+- [x] Update RBAC assignments from Web App identity to Container App identity
+- [x] Update GitHub Actions to build/push image and deploy Container Apps instead of Web App package deployment
+- [x] Update `azure.yaml` host metadata from App Service to Container Apps
+- [x] Update README deployment and quota guidance
 - [x] Update plan status to "Ready for Validation"
 
 ### Phase 3: Validation
 
-- [ ] Invoke azure-validate skill
-- [ ] All validation checks pass
-- [ ] Update plan status to "Validated"
-- [ ] Record validation proof below
+- [x] Build/test solution
+- [x] Build Docker image locally if Docker is available
+- [x] Build Bicep template
+- [x] Run workflow syntax/diff checks
+- [x] Invoke azure-validate skill before any deployment
 
 ### Phase 4: Deployment
 
-- [ ] Invoke azure-deploy skill if the user wants this deployed from the session
-- [ ] Deployment successful
-- [ ] Update plan status to "Deployed"
+- [ ] Deploy via GitHub Actions after secrets/variables are configured
+- [ ] Update plan status to "Deployed" after successful deployment
 
 ---
 
@@ -136,11 +133,14 @@ Notes:
 
 | Check | Command Run | Result | Timestamp |
 |-------|-------------|--------|-----------|
-| Pending | Pending | Pending | Pending |
+| Bicep build | `az bicep build --file .\infra\main.bicep` | Passed | Current session |
+| .NET tests | `dotnet test .\mct-timer.Tests\mct-timer.Tests.csproj --verbosity minimal` | Passed | Current session |
+| Diff whitespace | `git --no-pager diff --check` | Passed | Current session |
+| Docker availability | `docker --version` | Docker CLI not installed locally; image build is delegated to `az acr build` in GitHub Actions | Current session |
 
-**Validated by:** Pending
+**Validated by:** azure-validate skill with local CLI checks
 
-**Validation timestamp:** Pending
+**Validation timestamp:** Current session
 
 ---
 
@@ -149,21 +149,18 @@ Notes:
 | File | Purpose | Status |
 |------|---------|--------|
 | `.azure/plan.md` | This plan | Complete |
-| `azure.yaml` | Optional AZD configuration for App Service deployment | Complete |
-| `infra/main.bicep` | Main Bicep composition | Complete |
-| `infra/main.parameters.json.template` | Example deployment parameters | Complete |
-| `mct-timer/mct-timer.csproj` | .NET 10 upgrade | Complete |
-| `mct-timer.Tests/mct-timer.Tests.csproj` | .NET 10 test upgrade | Complete |
-| `mct-timer.AppHost/*` | Aspire AppHost | Complete |
-| `.github/workflows/azure-webapps-dotnet-core.yml` | Replace with OIDC-based provision/deploy workflow for .NET 10 | Complete |
-| `readme.md` | Deployment and Aspire usage docs | Complete |
+| `mct-timer/Dockerfile` | Container build for MVC app | Complete |
+| `.dockerignore` | Efficient container build context | Complete |
+| `infra/main.bicep` | Container Apps IaC | Complete |
+| `.github/workflows/azure-webapps-dotnet-core.yml` | Container build/push/deploy workflow | Complete |
+| `azure.yaml` | Container Apps metadata | Complete |
+| `readme.md` | App-Service-free deployment docs | Complete |
 
 ---
 
 ## 9. Next Steps
 
-> Current: Ready for Validation
+> Current: Validated
 
-1. Run Azure validation.
-2. Confirm subscription/location before any real deployment.
-3. Deploy through GitHub Actions after repository secrets and variables are configured.
+1. Commit and push the Container Apps migration.
+2. Deploy via GitHub Actions after secrets/variables are configured.

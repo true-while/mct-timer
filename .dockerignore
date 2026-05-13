@@ -1,0 +1,14 @@
+.azure
+.git
+.github
+artifacts
+bin
+obj
+**/bin
+**/obj
+**/.vs
+**/.vscode
+**/TestResults
+**/*.user
+**/*.suo
+infra/main.json

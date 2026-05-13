@@ -1,8 +1,10 @@
 name: mct-timer
 metadata:
-  template: mct-timer-appservice-bicep
+  template: mct-timer-container-apps-bicep
 services:
   web:
     project: ./mct-timer
-    language: dotnet
-    host: appservice
+    host: containerapp
+    docker:
+      path: ./mct-timer/Dockerfile
+      context: .

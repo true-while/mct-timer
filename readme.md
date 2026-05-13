@@ -3,7 +3,7 @@
 The "MCT Timer" project is an innovative tool designed to assist the Microsoft Certified Trainer (MCT) community. It simplifies the process of setting up and managing timers for classroom sessions directly from a web page. This project aims to enhance the teaching and learning experience by providing a seamless way to notify learners when classes resume.
 
 ### Project Hosting
-The MCT Timer is hosted on a robust and reliable platform, the Microsoft Azure Web App. This ensures that the service is scalable, secure, and always available for users. The project is managed and maintained by the Microsoft Trainers Team, who bring their expertise and dedication to ensure its smooth operation and continuous improvement.
+The MCT Timer can be hosted on Azure Container Apps using the infrastructure and GitHub Actions workflow included in this repository. This keeps the app deployable without an Azure App Service Plan while still using managed Azure services for storage, identity, data, and monitoring.
 
 One of the core principles of the MCT Timer project is accessibility. The website is publicly accessible, meaning anyone can use it without any restrictions. Moreover, the service is provided free of charge, making it an invaluable resource for the MCT community and beyond.
 
@@ -18,11 +18,11 @@ One of the core principles of the MCT Timer project is accessibility. The websit
 
 ## Architecture
 
-The project are contains from following resources deploy in Azure.  
-- Azure App Services used for hosting ASP core MVC project. 
+The project contains the following resources deployed in Azure:
+- Azure Container Apps hosts the ASP.NET Core MVC project.
+- Azure Container Registry stores the application container image.
 - Azure Cosmos DB is used to persist metadata and information about customized settings and user profiles and user generated backgrounds.
 - Azure Storage account will be used for persisting customized images. 
-- Azure Function will be used for compression and conversion of customized images. 
 - Azure Keyvault is used to persist cryptography keys for encrypt user's sensitive information.
 - Azure Open AI service provisioned DALE3 model that used for image generation.
 
@@ -85,12 +85,13 @@ This repository includes Bicep infrastructure in `infra/` and a GitHub Actions w
 
 The workflow provisions:
 
-- Azure App Service for the ASP.NET Core web app
+- Azure Container Apps for the ASP.NET Core web app
+- Azure Container Registry for the application image
 - Application Insights and Log Analytics
 - Azure Cosmos DB for NoSQL database `webapp` and container `Users`
 - Azure Storage static website container for uploaded/generated backgrounds
 - Azure Key Vault with an RSA key for password encryption
-- Managed identity and RBAC assignments for the web app
+- Managed identity and RBAC assignments for the container app
 
 ### 1. Create the Microsoft Entra app registration
 
@@ -135,7 +136,7 @@ If you use a different GitHub environment name, update both the workflow environ
 
 ### 3. Assign Azure roles to the GitHub deployment identity
 
-The workflow creates a resource group, provisions Bicep resources, and creates RBAC assignments for the web app managed identity. For a fully automated first deployment, assign these roles at subscription scope:
+The workflow creates a resource group, provisions Bicep resources, builds the container image in Azure Container Registry, and creates RBAC assignments for the container app managed identity. For a fully automated first deployment, assign these roles at subscription scope:
 
 ```bash
 SCOPE="/subscriptions/$SUBSCRIPTION_ID"
@@ -175,24 +176,23 @@ Create these **Actions variables**:
 |----------|-------|
 | `AZURE_ENV_NAME` | `dev` or another short environment name |
 | `AZURE_LOCATION` | Azure region, for example `eastus2` |
-| `APP_SERVICE_SKU_NAME` | App Service Plan SKU, defaults to free `F1`; examples: `F1`, `D1`, `S1` |
 | `AZURE_OPENAI_MODEL` | Optional image model deployment name, for example `dall-e-3` |
 
 ### 5. Run the deployment workflow
 
 Push to `main`, or run **Provision and deploy MCT Timer** from the GitHub Actions tab. The manual workflow lets you override `environmentName` and `location`.
 
-The workflow runs tests, publishes the .NET 10 app as a self-contained Windows build, provisions Bicep infrastructure, and deploys the published output to the provisioned Azure Web App. The self-contained build keeps the free `F1` tier usable even when the App Service image does not have the exact .NET runtime installed.
+The workflow runs tests, provisions Bicep infrastructure, builds the .NET 10 container image with ACR Tasks, pushes it to Azure Container Registry, and updates the Azure Container App with the new image tag.
 
-### App Service quota errors
+### Container Apps and registry quota notes
 
-If the provisioning step fails with `SubscriptionIsOverQuotaForSku`, the selected App Service Plan SKU is not available in that subscription and region. The workflow defaults to the Windows `F1` free tier, which avoids dedicated Basic/Standard/Premium worker quota.
+This deployment no longer creates an App Service Plan, so App Service worker quota is not required. Azure Container Apps and Azure Container Registry can still be subject to regional availability, subscription policy, or resource provider registration requirements.
 
 Fix it by doing one of the following:
 
 - Run the workflow in another Azure region by changing `AZURE_LOCATION`.
-- Choose a SKU with available quota by setting `APP_SERVICE_SKU_NAME`, for example `F1`, `D1`, or `S1`.
-- Request quota for the blocked SKU family in the Azure portal.
+- Register the required resource providers: `Microsoft.App`, `Microsoft.ContainerRegistry`, `Microsoft.OperationalInsights`, `Microsoft.DocumentDB`, `Microsoft.Storage`, and `Microsoft.KeyVault`.
+- If Container Apps capacity is unavailable in a region, choose a nearby region with Container Apps support.
 
 ## .NET Aspire local orchestration
 
@@ -202,13 +202,13 @@ The solution includes an Aspire AppHost project in `mct-timer.AppHost/`. Use it 
 dotnet run --project ./mct-timer.AppHost/mct-timer.AppHost.csproj
 ```
 
-Production deployment remains Azure App Service because this application is a single ASP.NET Core MVC web app and does not need a container-orchestrated production topology.
+Production deployment uses Azure Container Apps so the app does not depend on Azure App Service.
 
 ## Security Config
 
-The project configured to use *System assigned Managed Identity* with *DefaultAzureCredentialOptions*. 
+The deployed container app uses a user-assigned managed identity with `DefaultAzureCredentialOptions`.
 Local runs should be implemented behalf of the VS login user. Alternatively you can use App registration and configure local environment variables described in the following [link](https://learn.microsoft.com/en-us/dotnet/azure/sdk/authentication/local-development-service-principal?tabs=azure-cli%2Cwindows%2Ccommand-line#4---set-application-environment-variables)
 
-For Keyvault connection you have to configure role 'Key Vault Crypto User' for the web site account and test account. 
+For Keyvault connection you have to configure role 'Key Vault Crypto User' for the container app managed identity and test account.
 For cosmos DB we recommend use RBAC assignment as explained in the following doc. By now custom role need to be manualy assigned as explained in following [link](https://learn.microsoft.com/en-us/azure/cosmos-db/how-to-setup-rbac#metadata-requests)
 
