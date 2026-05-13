@@ -70,6 +70,38 @@
 
                         <span class="button" id="go" style="width:200px"><b>START</b></span>
                 </div>
+                <div class="session-setup">
+                    <label class="title" for="session-title">Session title</label>
+                    <input id="session-title" type="text" maxlength="120" placeholder="Course, module, or break title" />
+
+                    <div class="session-grid">
+                        <div>
+                            <label for="customer-name">Customer</label>
+                            <input id="customer-name" type="text" maxlength="120" placeholder="Customer or audience" />
+                        </div>
+                        <div>
+                            <label for="session-location">Region/location</label>
+                            <input id="session-location" type="text" maxlength="120" placeholder="City, region, or room" />
+                        </div>
+                        <div>
+                            <label for="class-hours">Class hours</label>
+                            <input id="class-hours" type="text" maxlength="120" placeholder="9:00 AM - 5:00 PM" />
+                        </div>
+                        <div>
+                            <label for="instructor-name">Instructor</label>
+                            <input id="instructor-name" type="text" maxlength="120" placeholder="Instructor name" />
+                        </div>
+                    </div>
+
+                    <label class="session-option">
+                        <input id="ai-background" type="checkbox" />
+                        Use AI to create a background from the session title and context
+                    </label>
+                    <label class="session-option">
+                        <input id="bing-daily-background" type="checkbox" />
+                        Feeling lucky: use today's Bing image when the countdown page refreshes
+                    </label>
+                </div>
                 <div class="spotify-setup">
                     <label class="title" for="spotify-playlist">Spotify Playlist</label>
                     <div class="spotify-input-row">
@@ -78,6 +110,12 @@
                     </div>
                     <div class="spotify-help">Optional. Music starts only after using the Spotify player on the countdown page.</div>
                     <div id="spotify-playlist-error" class="spotify-error" aria-live="polite"></div>
+                </div>
+                <div class="showcase-setup">
+                    <label class="title" for="showcase-media">Showcase media</label>
+                    <input id="showcase-media" type="url" placeholder="Image, GIF, MP4/WebM/Ogg, YouTube, or Vimeo URL" />
+                    <input id="showcase-caption" type="text" maxlength="160" placeholder="Optional caption or call to action" />
+                    <div class="spotify-help">Optional. Use this for upcoming topics, references, ads, animated images, or videos.</div>
                 </div>
                 <div class="adds-group">
                     <span class="adds-buttons" id="tophour">top hour</span>

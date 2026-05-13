@@ -11,6 +11,16 @@ namespace mct_timer.Models
         public string BGUrl = string.Empty;
         public string SpotifyPlaylistEmbedUrl = string.Empty;
         public string SpotifyPlaylistValidationMessage = string.Empty;
+        public string SessionTitle = string.Empty;
+        public string CustomerName = string.Empty;
+        public string RegionLocation = string.Empty;
+        public string ClassHours = string.Empty;
+        public string InstructorName = string.Empty;
+        public string ShowcaseMediaUrl = string.Empty;
+        public string ShowcaseMediaCaption = string.Empty;
+        public string ShowcaseMediaValidationMessage = string.Empty;
+        public ShowcaseMediaKind ShowcaseMediaKind = ShowcaseMediaKind.None;
+        public bool UseBingDailyBackground;
 
         [DefaultValue(false)]
         public bool IsBing;

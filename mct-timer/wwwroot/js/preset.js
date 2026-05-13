@@ -46,7 +46,16 @@
             defbtype: root.querySelector('#def-type-icons'),
             spotifyPlaylist: root.querySelector("#spotify-playlist"),
             spotifyPlaylistError: root.querySelector("#spotify-playlist-error"),
-            spotifyPlaylistClear: root.querySelector("#spotify-playlist-clear")
+            spotifyPlaylistClear: root.querySelector("#spotify-playlist-clear"),
+            sessionTitle: root.querySelector("#session-title"),
+            customerName: root.querySelector("#customer-name"),
+            sessionLocation: root.querySelector("#session-location"),
+            classHours: root.querySelector("#class-hours"),
+            instructorName: root.querySelector("#instructor-name"),
+            aiBackground: root.querySelector("#ai-background"),
+            bingDailyBackground: root.querySelector("#bing-daily-background"),
+            showcaseMedia: root.querySelector("#showcase-media"),
+            showcaseCaption: root.querySelector("#showcase-caption")
         };
 
 
@@ -248,13 +257,37 @@
 
         const timezoneUrlEncoded = encodeURIComponent(timezone.replaceAll('/','@'));
 
-        let timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
+        const query = new URLSearchParams();
+        this.appendQueryValue(query, "spotify", spotifyEmbedUrl);
+        this.appendQueryValue(query, "title", this.el.sessionTitle?.value);
+        this.appendQueryValue(query, "customer", this.el.customerName?.value);
+        this.appendQueryValue(query, "region", this.el.sessionLocation?.value);
+        this.appendQueryValue(query, "hours", this.el.classHours?.value);
+        this.appendQueryValue(query, "instructor", this.el.instructorName?.value);
+        this.appendQueryValue(query, "media", this.el.showcaseMedia?.value);
+        this.appendQueryValue(query, "mediaCaption", this.el.showcaseCaption?.value);
 
-        if (spotifyEmbedUrl) {
-            timerUri += `?spotify=${encodeURIComponent(spotifyEmbedUrl)}`;
+        if (this.el.aiBackground?.checked) {
+            query.set("aiBg", "true");
+        }
+
+        if (this.el.bingDailyBackground?.checked) {
+            query.set("bingDaily", "true");
+        }
+
+        let timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
+        const queryText = query.toString();
+        if (queryText) {
+            timerUri += `?${queryText}`;
         }
 
         location.href = timerUri;
+    }
+
+    appendQueryValue(query, key, value) {
+        if (value && value.trim()) {
+            query.set(key, value.trim());
+        }
     }
     
     startDefaultTimer(duration, timerType) {

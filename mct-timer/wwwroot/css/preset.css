@@ -172,6 +172,55 @@
     background-color: whitesmoke;
 }
 
+.session-setup,
+.showcase-setup {
+    margin-top: 12px;
+    text-align: left;
+}
+
+.session-setup .title,
+.showcase-setup .title {
+    display: block;
+    font: 600 20px Segoe UI;
+    color: darkblue;
+    margin-bottom: 5px;
+}
+
+.session-setup input[type="text"],
+.showcase-setup input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 7px;
+    border-radius: 7px;
+    border: 2px solid black;
+    background-color: whitesmoke;
+    font: 500 14px Segoe UI;
+}
+
+.session-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.session-grid label,
+.session-option {
+    color: #333;
+    display: block;
+    font: 600 13px Segoe UI;
+    margin-bottom: 3px;
+}
+
+.session-option {
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.showcase-setup input + input {
+    margin-top: 6px;
+}
+
 .spotify-setup {
     margin-top: 12px;
     text-align: left;

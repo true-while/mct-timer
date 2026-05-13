@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using System.Net;
 using Microsoft.IdentityModel.Tokens;
+using System.Text.Json;
 
 namespace mct_timer.Controllers
 {
@@ -21,6 +22,8 @@ namespace mct_timer.Controllers
         private readonly IOptions<ConfigMng> _config;
         private readonly IHttpContextAccessor _context;
         private readonly UsersContext _ac_context;
+        private readonly IDalleGenerator _dalle;
+        private readonly IBlobRepo _blobRepo;
 
         public string CDNUrl() { return _config.Value.WebCDN; }
 
@@ -28,13 +31,17 @@ namespace mct_timer.Controllers
             TelemetryClient logger,
             IOptions<ConfigMng> config,
             IHttpContextAccessor context,
-            UsersContext ac_context)
+            UsersContext ac_context,
+            IDalleGenerator dalle,
+            IBlobRepo blobRepo)
 
         {
             _logger = logger;
             _config = config;
             _context = context;
-            _ac_context = ac_context;        
+            _ac_context = ac_context;
+            _dalle = dalle;
+            _blobRepo = blobRepo;
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -85,7 +92,20 @@ namespace mct_timer.Controllers
             return View(info);
         }
 
-        public async Task<IActionResult> Timer(string m = "15", string z = "America/New_York", string t = "coffee", string? spotify = null)
+        public async Task<IActionResult> Timer(
+            string m = "15",
+            string z = "America/New_York",
+            string t = "coffee",
+            string? spotify = null,
+            string? title = null,
+            string? customer = null,
+            string? region = null,
+            string? hours = null,
+            string? instructor = null,
+            bool aiBg = false,
+            bool bingDaily = false,
+            string? media = null,
+            string? mediaCaption = null)
         {
             // Validate and sanitize input parameters
             if (!int.TryParse(m, out var minutes) || minutes <= 0)
@@ -121,11 +141,18 @@ namespace mct_timer.Controllers
 
             var model = new Models.Timer()
             {
-               Length = minutes,
-               Timezone = z,
-               BreakType = bType,
-               Ampm = user.Ampm,
-              };
+                Length = minutes,
+                Timezone = z,
+                BreakType = bType,
+                Ampm = user.Ampm,
+                SessionTitle = CleanSessionText(title, 120),
+                CustomerName = CleanSessionText(customer, 120),
+                RegionLocation = CleanSessionText(region, 120),
+                ClassHours = CleanSessionText(hours, 120),
+                InstructorName = CleanSessionText(instructor, 120),
+                ShowcaseMediaCaption = CleanSessionText(mediaCaption, 160),
+                UseBingDailyBackground = bingDaily,
+            };
 
             if (!string.IsNullOrWhiteSpace(spotify))
             {
@@ -136,6 +163,20 @@ namespace mct_timer.Controllers
                 else
                 {
                     model.SpotifyPlaylistValidationMessage = "The Spotify playlist value was not recognized. The timer will continue without playlist music.";
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(media))
+            {
+                if (SessionMediaHelper.TryNormalizeMediaUrl(media, out var mediaUrl, out var mediaKind) &&
+                    mediaKind != ShowcaseMediaKind.None)
+                {
+                    model.ShowcaseMediaUrl = mediaUrl;
+                    model.ShowcaseMediaKind = mediaKind;
+                }
+                else
+                {
+                    model.ShowcaseMediaValidationMessage = "The showcase media URL was not recognized. Use an image, MP4/WebM/Ogg video, YouTube, or Vimeo URL.";
                 }
             }
 
@@ -150,7 +191,93 @@ namespace mct_timer.Controllers
             else
                 model.BGUrl = "~/bg-lib/default.png";
 
+            if (aiBg)
+            {
+                var aiBackgroundUrl = await TryCreateAiBackgroundAsync(model, bType);
+                if (!string.IsNullOrWhiteSpace(aiBackgroundUrl))
+                {
+                    model.BGUrl = aiBackgroundUrl;
+                    model.IsBing = false;
+                }
+            }
+
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> BingImage()
+        {
+            try
+            {
+                using var client = new HttpClient();
+                var json = await client.GetStringAsync("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US");
+                using var doc = JsonDocument.Parse(json);
+                var image = doc.RootElement.GetProperty("images")[0];
+                var imageUrl = image.GetProperty("url").GetString();
+                var copyright = image.TryGetProperty("copyright", out var copyrightValue) ? copyrightValue.GetString() : string.Empty;
+
+                if (string.IsNullOrWhiteSpace(imageUrl))
+                {
+                    return NotFound();
+                }
+
+                return Json(new
+                {
+                    url = new Uri(new Uri("https://www.bing.com"), imageUrl).ToString(),
+                    copyright
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.TrackException(ex);
+                return StatusCode(StatusCodes.Status502BadGateway);
+            }
+        }
+
+        private async Task<string> TryCreateAiBackgroundAsync(Models.Timer model, PresetType breakType)
+        {
+            try
+            {
+                var promptParts = new[]
+                {
+                    $"Create a professional classroom countdown timer background for a {breakType} session.",
+                    string.IsNullOrWhiteSpace(model.SessionTitle) ? string.Empty : $"Session title: {model.SessionTitle}.",
+                    string.IsNullOrWhiteSpace(model.CustomerName) ? string.Empty : $"Customer or audience: {model.CustomerName}.",
+                    string.IsNullOrWhiteSpace(model.RegionLocation) ? string.Empty : $"Region or location: {model.RegionLocation}.",
+                    string.IsNullOrWhiteSpace(model.ClassHours) ? string.Empty : $"Class hours: {model.ClassHours}.",
+                    string.IsNullOrWhiteSpace(model.InstructorName) ? string.Empty : $"Instructor: {model.InstructorName}.",
+                    "Use an engaging, modern training-room style with clear negative space for countdown text. Do not include readable text, logos, trademarks, or faces."
+                };
+
+                var prompt = string.Join(' ', promptParts.Where(x => !string.IsNullOrWhiteSpace(x)));
+                var image = await _dalle.GetImage(prompt);
+                var fileName = $"session-{Guid.NewGuid():N}.png";
+                var metadata = new Dictionary<string, string>
+                {
+                    ["prompt"] = prompt,
+                    ["source"] = "timer-session",
+                    ["when"] = DateTimeOffset.UtcNow.ToString("O")
+                };
+
+                await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLowerInvariant(), image.ImageBytes, metadata);
+                return new Uri(new Uri(_config.Value.WebCDN), BlobRepo.LaregeImgfolder + fileName).ToString();
+            }
+            catch (Exception ex)
+            {
+                _logger.TrackException(ex);
+                return string.Empty;
+            }
+        }
+
+        private static string CleanSessionText(string? value, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return string.Empty;
+            }
+
+            var trimmed = value.Trim();
+            return trimmed.Length <= maxLength ? trimmed : trimmed[..maxLength];
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

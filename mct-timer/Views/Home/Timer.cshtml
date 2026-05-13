@@ -26,20 +26,24 @@
                             <div class="numbers">
                                 <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
                             </div>
-                            <div>
-                                <button type="button" class="timer__btn timer__btn--music">
-                                    <img class="material-icons" src="/icons/music.png" title="play music" />
-                                </button>
+                             <div>
+                                 <button type="button" class="timer__btn timer__btn--music">
+                                     <img class="material-icons" src="/icons/music.png" title="play music" />
+                                 </button>
                                 <button type="button" class="timer__btn timer__btn--home">
                                     <img class="material-icons" src="/icons/home-w.png" title="return to home"/>
                                 </button>
-                                <button type="button" class="timer__btn timer__btn--reset">
-                                    <img class="material-icons" src="/icons/reset-w.png" title="restart timer"/>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </td>
+                                 <button type="button" class="timer__btn timer__btn--reset">
+                                     <img class="material-icons" src="/icons/reset-w.png" title="restart timer"/>
+                                 </button>
+                             </div>
+                             <div class="timer-quick-actions" aria-label="Timer quick actions">
+                                 <button type="button" class="timer-add-button timer__btn--add1">+1 min</button>
+                                 <button type="button" class="timer-add-button timer__btn--add5">+5 min</button>
+                             </div>
+                         </div>
+                     </div>
+                 </td>
                 <td align="left" class="infopad-td">
                     <div class="infopad">
                         <div class="title">resume at</div>
@@ -90,6 +94,66 @@
             }
             <tr>
                 <td colspan="2" valign="top">
+                    @if (!string.IsNullOrWhiteSpace(Model.SessionTitle) ||
+                        !string.IsNullOrWhiteSpace(Model.CustomerName) ||
+                        !string.IsNullOrWhiteSpace(Model.RegionLocation) ||
+                        !string.IsNullOrWhiteSpace(Model.ClassHours) ||
+                        !string.IsNullOrWhiteSpace(Model.InstructorName))
+                    {
+                        <section class="session-details" aria-label="Session details">
+                            @if (!string.IsNullOrWhiteSpace(Model.SessionTitle))
+                            {
+                                <h1>@Model.SessionTitle</h1>
+                            }
+                            <div class="session-details-grid">
+                                @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
+                                {
+                                    <div><span>Customer</span>@Model.CustomerName</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
+                                {
+                                    <div><span>Region/location</span>@Model.RegionLocation</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
+                                {
+                                    <div><span>Class hours</span>@Model.ClassHours</div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
+                                {
+                                    <div><span>Instructor</span>@Model.InstructorName</div>
+                                }
+                            </div>
+                        </section>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaValidationMessage))
+                    {
+                        <div class="showcase-media showcase-media-error">@Model.ShowcaseMediaValidationMessage</div>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaUrl))
+                    {
+                        <section class="showcase-media" aria-label="Showcase media">
+                            @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaCaption))
+                            {
+                                <div class="showcase-caption">@Model.ShowcaseMediaCaption</div>
+                            }
+                            @switch (Model.ShowcaseMediaKind)
+                            {
+                                case ShowcaseMediaKind.Image:
+                                    <img src="@Model.ShowcaseMediaUrl" alt="Showcase media" />
+                                    break;
+                                case ShowcaseMediaKind.Video:
+                                    <video src="@Model.ShowcaseMediaUrl" controls loop playsinline></video>
+                                    break;
+                                case ShowcaseMediaKind.Embed:
+                                    <iframe src="@Model.ShowcaseMediaUrl"
+                                            title="Showcase video"
+                                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                                            allowfullscreen
+                                            loading="lazy"></iframe>
+                                    break;
+                            }
+                        </section>
+                    }
                     <div id="editormain">
                         <!--div id="note">note +</!div-->
                         <div id="editor">
@@ -150,6 +214,23 @@
            } else {
                // Fallback to default only if needed
                document.querySelector("#gbmainbg").style.backgroundImage = "url(../bg-lib/default.jpg)";
+           }
+           if (@Model.UseBingDailyBackground.ToString().ToLower()) {
+               fetch('@Url.Action("BingImage", "Home")')
+                   .then(response => response.ok ? response.json() : null)
+                   .then(image => {
+                       if (!image || !image.url) {
+                           return;
+                       }
+
+                       document.querySelector("#gbmainbg").style.backgroundImage = `url('${image.url}')`;
+                       document.querySelector("#bingbg").style.display = "block";
+                   })
+                   .catch(error => {
+                       if (window.appInsights) {
+                           appInsights.trackException({ exception: error });
+                       }
+                   });
            }
            menuUpdate();
            

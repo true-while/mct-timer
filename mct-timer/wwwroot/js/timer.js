@@ -8,6 +8,8 @@
             home: timerroot.querySelector(".timer__btn--home"),
             reset: timerroot.querySelector(".timer__btn--reset"), 
             music: timerroot.querySelector(".timer__btn--music"), 
+            add1: timerroot.querySelector(".timer__btn--add1"),
+            add5: timerroot.querySelector(".timer__btn--add5"),
             whenpart1: resumeroot.querySelector("#when__part1"),
             whenpart2: resumeroot.querySelector("#when__part2"),
             whendiv: resumeroot.querySelector("#when__devider"),
@@ -74,6 +76,14 @@
             }
                 
 
+        });
+
+        this.el.add1?.addEventListener("click", () => {
+            this.addSeconds(60);
+        });
+
+        this.el.add5?.addEventListener("click", () => {
+            this.addSeconds(300);
         });
     }
 
@@ -151,6 +161,17 @@
     stopMusicPlayer() {
         if (this.musicPlayer) {
             this.musicPlayer.stop();
+        }
+    }
+
+    addSeconds(seconds) {
+        this.originalSeconds += seconds;
+        this.remainingSeconds += seconds;
+        this.originalEnd = this.originalEnd.add(seconds, 'seconds');
+        this.updateInterfaceTime();
+
+        if (!this.interval && this.remainingSeconds > 0) {
+            this.start();
         }
     }
 

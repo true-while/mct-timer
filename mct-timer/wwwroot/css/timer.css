@@ -135,6 +135,92 @@
     background-color: purple;
 }
 
+.timer-quick-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 4px;
+}
+
+.timer-add-button {
+    background: darkblue;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font: 600 12px Segoe UI;
+    padding: 5px 8px;
+}
+
+.session-details {
+    background: white;
+    border: 3px solid darkgrey;
+    border-radius: 15px;
+    box-sizing: border-box;
+    color: black;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.session-details h1 {
+    color: darkblue;
+    font: 700 24px Segoe UI;
+    margin: 0 0 8px 0;
+}
+
+.session-details-grid {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.session-details-grid div {
+    font: 500 15px Segoe UI;
+}
+
+.session-details-grid span {
+    color: darkblue;
+    display: block;
+    font: 700 12px Segoe UI;
+    text-transform: uppercase;
+}
+
+.showcase-media {
+    background: white;
+    border: 3px solid darkgrey;
+    border-radius: 15px;
+    box-sizing: border-box;
+    color: black;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+
+.showcase-caption {
+    color: darkblue;
+    font: 700 18px Segoe UI;
+    margin-bottom: 8px;
+}
+
+.showcase-media img,
+.showcase-media video,
+.showcase-media iframe {
+    border: none;
+    border-radius: 12px;
+    display: block;
+    max-height: 360px;
+    max-width: 100%;
+    width: 100%;
+}
+
+.showcase-media iframe {
+    aspect-ratio: 16 / 9;
+}
+
+.showcase-media-error {
+    color: darkred;
+    font: 500 16px Segoe UI;
+}
+
 .spotify-player {
     background: white;
     border: 3px solid darkgrey;

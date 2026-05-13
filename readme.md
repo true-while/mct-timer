@@ -42,6 +42,17 @@ Supported input formats:
 
 The countdown page shows a Spotify embedded playlist player when a playlist is provided. Music does not autoplay on page load; use **Play playlist** and then the Spotify play button inside the embedded player. Use the countdown page controls to show or hide the player, stop playback, or clear the playlist from the timer session. When the timer reaches zero, the embedded player is reset so music does not continue unnoticed.
 
+## Session Details and Showcase Media
+
+Timer setup can include optional session details that travel with the timer URL: session title, customer name, region/location, class hours, and instructor name. The countdown page displays those details above the message editor so trainers can brand a break or lab timer for a specific class.
+
+The setup page also supports:
+
+- AI-generated background: creates a one-off background from the session title and context when Azure OpenAI image generation is configured.
+- Feeling lucky Bing background: loads the latest Bing image of the day on each countdown page refresh.
+- Showcase media: displays an image, animated GIF, video file, YouTube video, or Vimeo video above the message editor for advertisements, upcoming topics, references, or instructor promotional content.
+- Quick countdown controls: **+1 min** and **+5 min** buttons on the countdown page extend the active timer without restarting the session.
+
 
 ## Configuration
 
