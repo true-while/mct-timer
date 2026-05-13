@@ -13,6 +13,10 @@ on:
         description: "Azure region"
         required: true
         default: "eastus2"
+      appServiceSkuName:
+        description: "App Service Plan SKU, for example B1, S1, P0v3"
+        required: true
+        default: "B1"
 
 permissions:
   contents: read
@@ -25,6 +29,7 @@ env:
   PUBLISH_DIR: "${{ github.workspace }}/publish"
   AZURE_ENV_NAME: ${{ inputs.environmentName || vars.AZURE_ENV_NAME || 'dev' }}
   AZURE_LOCATION: ${{ inputs.location || vars.AZURE_LOCATION || 'eastus2' }}
+  APP_SERVICE_SKU_NAME: ${{ inputs.appServiceSkuName || vars.APP_SERVICE_SKU_NAME || 'B1' }}
 
 jobs:
   build-test-provision-deploy:
@@ -81,6 +86,7 @@ jobs:
             --template-file ./infra/main.bicep \
             --parameters environmentName="${AZURE_ENV_NAME}" \
                          location="${AZURE_LOCATION}" \
+                         appServiceSkuName="${APP_SERVICE_SKU_NAME}" \
                          openAiEndpoint="${AZURE_OPENAI_ENDPOINT}" \
                          openAiKey="${AZURE_OPENAI_KEY}" \
                          openAiModel="${AZURE_OPENAI_MODEL}" \
