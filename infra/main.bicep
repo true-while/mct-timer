@@ -111,7 +111,9 @@ resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   }
   kind: 'StorageV2'
   properties: {
-    allowBlobPublicAccess: false
+    // Static website hosting is public by design; Azure rejects staticWebsite.enabled
+    // when blob public access is disabled at the storage account level.
+    allowBlobPublicAccess: true
     allowSharedKeyAccess: true
     minimumTlsVersion: 'TLS1_2'
     supportsHttpsTrafficOnly: true
