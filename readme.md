@@ -48,9 +48,9 @@ Timer setup can include optional session details that travel with the timer URL:
 
 The setup page also supports:
 
-- AI-generated background: creates a one-off background from the session title and context when Azure OpenAI image generation is configured.
+- AI-generated background: creates a one-off background from the session title and context when Azure OpenAI image generation is configured. If configuration is missing or generation fails, the timer shows a friendly message and keeps the standard background.
 - Feeling lucky Bing background: loads the latest Bing image of the day on each countdown page refresh.
-- Showcase media: displays an image, animated GIF, video file, YouTube video, or Vimeo video above the message editor for advertisements, upcoming topics, references, or instructor promotional content.
+- Showcase media: displays an image, animated GIF, video file, YouTube video, or Vimeo video above the message editor for advertisements, upcoming topics, references, or instructor promotional content. Media must be a public URL; local file paths must be uploaded or hosted first. Videos autoplay muted when browser policy allows it.
 - Quick countdown controls: **+1 min** and **+5 min** buttons on the countdown page extend the active timer without restarting the session.
 
 
@@ -69,7 +69,7 @@ For local execution the configuration file should be provided with following tem
   "ConfigMng": {
     "OpenAIEndpoint": "https://<your service>.openai.azure.com/",
     "OpenAIKey": "<your key copied from portal>",
-    "OpenAIModel": "<name of the dale model>",
+    "OpenAIModel": "<name of the DALL-E image deployment>",
     "StorageAccountName": "<your storage account name>",
     "ContainerName": "<blob container name for images, usually $web>",
     "JWT": "<generated token to encrypt jwt>",
@@ -179,8 +179,8 @@ In your GitHub repository, create these **Actions secrets**:
 | `AZURE_TENANT_ID` | `$TENANT_ID` |
 | `AZURE_SUBSCRIPTION_ID` | `$SUBSCRIPTION_ID` |
 | `JWT_SECRET` | Strong random value used by the app for JWT/ALTCHA signing |
-| `AZURE_OPENAI_ENDPOINT` | Optional Azure OpenAI endpoint |
-| `AZURE_OPENAI_KEY` | Optional Azure OpenAI key |
+| `AZURE_OPENAI_ENDPOINT` | Optional Azure OpenAI endpoint. Required for AI background generation. |
+| `AZURE_OPENAI_KEY` | Optional Azure OpenAI key. Required for AI background generation. |
 | `PWD_RESET_REQUEST_URL` | Optional password reset email endpoint |
 
 Create these **Actions variables**:
@@ -189,7 +189,9 @@ Create these **Actions variables**:
 |----------|-------|
 | `AZURE_ENV_NAME` | `dev` or another short environment name |
 | `AZURE_LOCATION` | Azure region, for example `eastus2` |
-| `AZURE_OPENAI_MODEL` | Optional image model deployment name, for example `dall-e-3` |
+| `AZURE_OPENAI_MODEL` | Optional image model deployment name, for example `dall-e-3`. Required for AI background generation. |
+
+AI background generation uses an existing Azure OpenAI image deployment; the deployment workflow does not create Azure OpenAI capacity for you. Leave these settings empty to disable AI backgrounds, or set the endpoint, key, and deployment name to enable the checkbox on the timer setup page.
 
 ### 5. Run the deployment workflow
 

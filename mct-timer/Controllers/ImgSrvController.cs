@@ -95,6 +95,13 @@ namespace mct_timer.Controllers
                                 { "userIp", mdata.ContainsKey("IP") ? mdata["IP"] : "unknown" }
                             };
                             _tmClient.TrackEvent("AIImageGenerationRequested", aiRequestProperties);
+                            if (!_dalle.IsConfigured)
+                            {
+                                aiRequestProperties["status"] = "not_configured";
+                                _tmClient.TrackEvent("AIImageGenerationNotConfigured", aiRequestProperties);
+                                return new BadRequestObjectResult("AI image generation is not configured. Provide Azure OpenAI endpoint, key, and image deployment name.");
+                            }
+
                               // Validate prompt before sending to AI service
                             var validationResult = _dalle.ValidatePrompt(prompt);
                             if (!validationResult.IsValid)

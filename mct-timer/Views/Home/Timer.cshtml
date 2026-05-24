@@ -3,6 +3,9 @@
 
 @{
     ViewData["Title"] = "MCT Timer";
+    var hasShowcaseMedia = !string.IsNullOrWhiteSpace(Model.ShowcaseMediaUrl);
+    var hasSpotifyPlaylist = !string.IsNullOrWhiteSpace(Model.SpotifyPlaylistEmbedUrl);
+    var hasSidePanel = hasShowcaseMedia || hasSpotifyPlaylist;
 }
 <div id="gbmainbg" style="overflow:auto">
     <div id="menu" class="menu">
@@ -56,103 +59,110 @@
                         </div>
                     </div>
                 </td>
-                @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistEmbedUrl))
+                <td align="left">
+                    <div class="infopad session-infopad">
+                        <div class="title">class session</div>
+                        <div class="session-card-title">
+                            @(string.IsNullOrWhiteSpace(Model.SessionTitle) ? "MCT Timer" : Model.SessionTitle)
+                        </div>
+                        <div class="session-card-details">
+                            @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
+                            {
+                                <div><span>Session</span>@Model.ClassHours</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
+                            {
+                                <div><span>Instructor</span>@Model.InstructorName</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
+                            {
+                                <div><span>Customer</span>@Model.CustomerName</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
+                            {
+                                <div><span>Location</span>@Model.RegionLocation</div>
+                            }
+                            @if (string.IsNullOrWhiteSpace(Model.ClassHours) &&
+                                string.IsNullOrWhiteSpace(Model.InstructorName) &&
+                                string.IsNullOrWhiteSpace(Model.CustomerName) &&
+                                string.IsNullOrWhiteSpace(Model.RegionLocation))
+                            {
+                                <div><span>Session</span>Add details from timer setup</div>
+                            }
+                        </div>
+                    </div>
+                </td>
+                @if (hasSidePanel)
                 {
-                    <td class="spotify-player-td" rowspan="2" valign="top">
-                        <section id="spotify-player" class="spotify-player spotify-player--side" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
-                            <div class="spotify-player-header">
-                                <span class="spotify-player-title">Spotify playlist</span>
-                                <div class="spotify-player-controls">
-                                    <button id="spotify-playlist-start" type="button">Play playlist</button>
-                                    <button id="spotify-player-toggle" type="button">Hide player</button>
-                                    <button id="spotify-player-stop" type="button">Stop music</button>
-                                    <button id="spotify-player-clear" type="button">Clear playlist</button>
-                                </div>
-                            </div>
-                            <div id="spotify-player-status" class="spotify-player-status">Use the Spotify play button in the embedded player to start music.</div>
-                            <div id="spotify-player-frame-wrap" class="spotify-player-frame-wrap">
-                                <iframe id="spotify-playlist-iframe"
-                                        title="Spotify playlist"
-                                        src="@Model.SpotifyPlaylistEmbedUrl"
-                                        width="100%"
-                                        height="352"
-                                        frameborder="0"
-                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                        loading="lazy"></iframe>
-                            </div>
-                        </section>
+                    <td class="side-panel-td" rowspan="2" valign="top">
+                        <aside class="timer-side-panel" aria-label="Timer side panel">
+                            @if (hasShowcaseMedia)
+                            {
+                                <section class="showcase-media showcase-media--side" aria-label="Showcase media">
+                                    @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaCaption))
+                                    {
+                                        <div class="showcase-caption">@Model.ShowcaseMediaCaption</div>
+                                    }
+                                    @switch (Model.ShowcaseMediaKind)
+                                    {
+                                        case ShowcaseMediaKind.Image:
+                                            <img src="@Model.ShowcaseMediaUrl" alt="Showcase media" />
+                                            break;
+                                        case ShowcaseMediaKind.Video:
+                                            <video src="@Model.ShowcaseMediaUrl" controls autoplay muted loop playsinline></video>
+                                            break;
+                                        case ShowcaseMediaKind.Embed:
+                                            <iframe src="@Model.ShowcaseMediaUrl"
+                                                    title="Showcase video"
+                                                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                                                    allowfullscreen
+                                                    loading="lazy"></iframe>
+                                            break;
+                                    }
+                                </section>
+                            }
+                            @if (hasSpotifyPlaylist)
+                            {
+                                <section id="spotify-player" class="spotify-player spotify-player--side" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
+                                    <div class="spotify-player-header">
+                                        <span class="spotify-player-title">Spotify playlist</span>
+                                        <div class="spotify-player-controls">
+                                            <button id="spotify-playlist-start" type="button">Play playlist</button>
+                                            <button id="spotify-player-toggle" type="button">Hide player</button>
+                                            <button id="spotify-player-stop" type="button">Stop music</button>
+                                            <button id="spotify-player-clear" type="button">Clear playlist</button>
+                                        </div>
+                                    </div>
+                                    <div id="spotify-player-status" class="spotify-player-status">Use the Spotify play button in the embedded player to start music.</div>
+                                    <div id="spotify-player-frame-wrap" class="spotify-player-frame-wrap">
+                                        <iframe id="spotify-playlist-iframe"
+                                                title="Spotify playlist"
+                                                src="@Model.SpotifyPlaylistEmbedUrl"
+                                                width="100%"
+                                                height="352"
+                                                frameborder="0"
+                                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                                loading="lazy"></iframe>
+                                    </div>
+                                </section>
+                            }
+                        </aside>
                     </td>
                 }
             </tr>
-            @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
-            {
-                <tr>
-                    <td colspan="2" valign="top">
-                        <div class="spotify-player spotify-error-message">@Model.SpotifyPlaylistValidationMessage</div>
-                    </td>
-                </tr>
-            }
             <tr>
-                <td colspan="2" valign="top">
-                    @if (!string.IsNullOrWhiteSpace(Model.SessionTitle) ||
-                        !string.IsNullOrWhiteSpace(Model.CustomerName) ||
-                        !string.IsNullOrWhiteSpace(Model.RegionLocation) ||
-                        !string.IsNullOrWhiteSpace(Model.ClassHours) ||
-                        !string.IsNullOrWhiteSpace(Model.InstructorName))
+                <td colspan="3" valign="top">
+                    @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
                     {
-                        <section class="session-details" aria-label="Session details">
-                            @if (!string.IsNullOrWhiteSpace(Model.SessionTitle))
-                            {
-                                <h1>@Model.SessionTitle</h1>
-                            }
-                            <div class="session-details-grid">
-                                @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
-                                {
-                                    <div><span>Customer</span>@Model.CustomerName</div>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
-                                {
-                                    <div><span>Region/location</span>@Model.RegionLocation</div>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
-                                {
-                                    <div><span>Class hours</span>@Model.ClassHours</div>
-                                }
-                                @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
-                                {
-                                    <div><span>Instructor</span>@Model.InstructorName</div>
-                                }
-                            </div>
-                        </section>
+                        <div class="spotify-player spotify-error-message">@Model.SpotifyPlaylistValidationMessage</div>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaValidationMessage))
                     {
                         <div class="showcase-media showcase-media-error">@Model.ShowcaseMediaValidationMessage</div>
                     }
-                    @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaUrl))
+                    @if (!string.IsNullOrWhiteSpace(Model.AiBackgroundValidationMessage))
                     {
-                        <section class="showcase-media" aria-label="Showcase media">
-                            @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaCaption))
-                            {
-                                <div class="showcase-caption">@Model.ShowcaseMediaCaption</div>
-                            }
-                            @switch (Model.ShowcaseMediaKind)
-                            {
-                                case ShowcaseMediaKind.Image:
-                                    <img src="@Model.ShowcaseMediaUrl" alt="Showcase media" />
-                                    break;
-                                case ShowcaseMediaKind.Video:
-                                    <video src="@Model.ShowcaseMediaUrl" controls loop playsinline></video>
-                                    break;
-                                case ShowcaseMediaKind.Embed:
-                                    <iframe src="@Model.ShowcaseMediaUrl"
-                                            title="Showcase video"
-                                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                                            allowfullscreen
-                                            loading="lazy"></iframe>
-                                    break;
-                            }
-                        </section>
+                        <div class="ai-background-message">@Model.AiBackgroundValidationMessage</div>
                     }
                     <div id="editormain">
                         <!--div id="note">note +</!div-->

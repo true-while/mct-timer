@@ -96,7 +96,7 @@ namespace mct_timer.Models
                 return false;
             }
 
-            embedUrl = $"https://www.youtube.com/embed/{videoId}";
+            embedUrl = $"https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&playsinline=1&rel=0";
             return true;
         }
 
@@ -115,7 +115,7 @@ namespace mct_timer.Models
                 return false;
             }
 
-            embedUrl = $"https://player.vimeo.com/video/{videoId}";
+            embedUrl = $"https://player.vimeo.com/video/{videoId}?autoplay=1&muted=1&loop=1";
             return true;
         }
 

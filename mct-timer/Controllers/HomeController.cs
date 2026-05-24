@@ -176,7 +176,7 @@ namespace mct_timer.Controllers
                 }
                 else
                 {
-                    model.ShowcaseMediaValidationMessage = "The showcase media URL was not recognized. Use an image, MP4/WebM/Ogg video, YouTube, or Vimeo URL.";
+                    model.ShowcaseMediaValidationMessage = "The showcase media URL was not recognized. Use a publicly reachable image, MP4/WebM/Ogg video, YouTube, or Vimeo URL. Local paths like C:\\... must be uploaded or hosted first.";
                 }
             }
 
@@ -193,11 +193,15 @@ namespace mct_timer.Controllers
 
             if (aiBg)
             {
-                var aiBackgroundUrl = await TryCreateAiBackgroundAsync(model, bType);
+                var (aiBackgroundUrl, aiBackgroundMessage) = await TryCreateAiBackgroundAsync(model, bType);
                 if (!string.IsNullOrWhiteSpace(aiBackgroundUrl))
                 {
                     model.BGUrl = aiBackgroundUrl;
                     model.IsBing = false;
+                }
+                else if (!string.IsNullOrWhiteSpace(aiBackgroundMessage))
+                {
+                    model.AiBackgroundValidationMessage = aiBackgroundMessage;
                 }
             }
 
@@ -234,10 +238,15 @@ namespace mct_timer.Controllers
             }
         }
 
-        private async Task<string> TryCreateAiBackgroundAsync(Models.Timer model, PresetType breakType)
+        private async Task<(string Url, string Message)> TryCreateAiBackgroundAsync(Models.Timer model, PresetType breakType)
         {
             try
             {
+                if (!_dalle.IsConfigured)
+                {
+                    return (string.Empty, "AI background generation is not configured. Add the Azure OpenAI endpoint, key, and image deployment name before using this option.");
+                }
+
                 var promptParts = new[]
                 {
                     $"Create a professional classroom countdown timer background for a {breakType} session.",
@@ -260,12 +269,17 @@ namespace mct_timer.Controllers
                 };
 
                 await _blobRepo.SaveImageAsync((BlobRepo.LaregeImgfolder + fileName).ToLowerInvariant(), image.ImageBytes, metadata);
-                return new Uri(new Uri(_config.Value.WebCDN), BlobRepo.LaregeImgfolder + fileName).ToString();
+                return (new Uri(new Uri(_config.Value.WebCDN), BlobRepo.LaregeImgfolder + fileName).ToString(), string.Empty);
+            }
+            catch (ArgumentException ex)
+            {
+                _logger.TrackException(ex);
+                return (string.Empty, "AI background prompt was rejected. Update the session title or context and try again.");
             }
             catch (Exception ex)
             {
                 _logger.TrackException(ex);
-                return string.Empty;
+                return (string.Empty, "AI background generation failed, so the timer is using a standard background instead.");
             }
         }
 

@@ -1,15 +1,18 @@
 #editormain {
     background: white;
+    box-sizing: border-box;
     padding: 10px;
     border-radius: 15px;
+    width: 100%;
    
 }
 
 .ql-editor {
     font-size:18pt;
     resize: both;
-    min-width: 400px;
-    width: 400px;
+    min-height: 190px;
+    min-width: 760px;
+    width: 100%;
     overflow-y: scroll;
     border-style: solid;
     border-width: 2px;
@@ -51,20 +54,21 @@
 .infopad-td
 {
     text-align: left;
-    width: 100%;
+    width: auto;
 }
 
 
 .infopad {
     color: black;
-    padding: 10px 10px 10px 10px;
+    padding: 14px;
     border-radius: 20px;
     background: white;
-    width: 200px;
-    height: 200px;
+    width: 260px;
+    height: 250px;
     text-align: center;
     border: 3px solid darkgrey;
     position: relative;
+    box-sizing: border-box;
 }
 
     .infopad #alert {
@@ -76,17 +80,17 @@
     }
 
     .infopad .title {
-        font: 600 20px Segoe UI;
+        font: 600 24px Segoe UI;
         color: darkblue;
     }
 
     .infopad .numbers {
-        font: 400 60px Segoe UI;
+        font: 400 72px Segoe UI;
         color: black;
     }
 
     .infopad #zone {
-        font: 500 30px Segoe UI;
+        font: 500 34px Segoe UI;
         color: black;
         margin-top: 12px;
     }
@@ -152,36 +156,41 @@
     padding: 5px 8px;
 }
 
-.session-details {
-    background: white;
-    border: 3px solid darkgrey;
-    border-radius: 15px;
-    box-sizing: border-box;
+.session-infopad {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: hidden;
+    text-align: left;
+}
+
+.session-infopad .title {
+    text-align: center;
+}
+
+.session-card-title {
     color: black;
-    margin-bottom: 10px;
-    padding: 10px;
+    font: 700 28px Segoe UI;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
 }
 
-.session-details h1 {
-    color: darkblue;
-    font: 700 24px Segoe UI;
-    margin: 0 0 8px 0;
-}
-
-.session-details-grid {
+.session-card-details {
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-.session-details-grid div {
-    font: 500 15px Segoe UI;
+.session-card-details div {
+    font: 500 14px Segoe UI;
+    min-width: 0;
+    overflow-wrap: anywhere;
 }
 
-.session-details-grid span {
+.session-card-details span {
     color: darkblue;
     display: block;
-    font: 700 12px Segoe UI;
+    font: 700 11px Segoe UI;
     text-transform: uppercase;
 }
 
@@ -216,9 +225,42 @@
     aspect-ratio: 16 / 9;
 }
 
+.showcase-media--side {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    margin-bottom: 0;
+    min-height: 430px;
+    width: 100%;
+}
+
+.showcase-media--side img,
+.showcase-media--side video,
+.showcase-media--side iframe {
+    flex: 1;
+    max-height: none;
+    min-height: 360px;
+    object-fit: cover;
+}
+
+.showcase-media--side iframe {
+    height: 100%;
+}
+
 .showcase-media-error {
     color: darkred;
     font: 500 16px Segoe UI;
+}
+
+.ai-background-message {
+    background: white;
+    border: 3px solid darkorange;
+    border-radius: 15px;
+    box-sizing: border-box;
+    color: #5f3700;
+    font: 500 16px Segoe UI;
+    margin-bottom: 10px;
+    padding: 10px;
 }
 
 .spotify-player {
@@ -231,16 +273,23 @@
     padding: 10px;
 }
 
-.spotify-player-td {
-    width: 340px;
+.side-panel-td {
+    width: 430px;
+}
+
+.timer-side-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 100%;
+    width: 420px;
 }
 
 .spotify-player--side {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: 430px;
-    width: 320px;
+    min-height: 320px;
+    width: 100%;
 }
 
 .spotify-player-header {
@@ -302,7 +351,7 @@
 
 .spotify-player--side .spotify-player-frame-wrap {
     flex: 1;
-    min-height: 352px;
+    min-height: 280px;
 }
 
 .spotify-player-frame-wrap iframe {
@@ -312,7 +361,7 @@
 
 .spotify-player--side .spotify-player-frame-wrap iframe {
     height: 100%;
-    min-height: 352px;
+    min-height: 280px;
 }
 
 .spotify-error-message {

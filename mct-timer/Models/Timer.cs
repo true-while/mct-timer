@@ -20,6 +20,7 @@ namespace mct_timer.Models
         public string ShowcaseMediaCaption = string.Empty;
         public string ShowcaseMediaValidationMessage = string.Empty;
         public ShowcaseMediaKind ShowcaseMediaKind = ShowcaseMediaKind.None;
+        public string AiBackgroundValidationMessage = string.Empty;
         public bool UseBingDailyBackground;
 
         [DefaultValue(false)]
