@@ -16,160 +16,151 @@
         <a href="https://www.bing.com/apps/wallpaper"><img src="/bg-lib/bingbg.png" title="Bing backgrounds"/></a>
     </div>
     <div id="group">
-        <table id="group-tbl">
-            <tr>
-                <td colspan="@(hasSidePanel ? 3 : 2)">
-                    <section class="session-banner" aria-label="Session details">
-                        <span class="session-banner-title">
-                            @(string.IsNullOrWhiteSpace(Model.SessionTitle) ? "MCT Timer" : Model.SessionTitle)
-                        </span>
-                        @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
-                        {
-                            <span>Session: @Model.ClassHours</span>
-                        }
-                        @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
-                        {
-                            <span>Instructor: @Model.InstructorName</span>
-                        }
-                        @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
-                        {
-                            <span>Customer: @Model.CustomerName</span>
-                        }
-                        @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
-                        {
-                            <span>Location: @Model.RegionLocation</span>
-                        }
-                    </section>
-                </td>
-            </tr>
-            <tr>
-                <td >
-                    <div class="infopad">
-                        
-                    
-                        <div class="title">remain time</div>
-                        <div id="timer">
-                            <img id="alert" src="/icons/bells-off.png" width="25" />
-                            <audio id="time-is-up" src="/audio/beep30.mp3"></audio>
-                            <audio id="intro-music" src="/audio/intro.mp3"></audio>
-                            <div class="numbers">
-                                <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
-                            </div>
-                             <div>
-                                 <button type="button" class="timer__btn timer__btn--music">
-                                     <img class="material-icons" src="/icons/music.png" title="play music" />
-                                 </button>
-                                <button type="button" class="timer__btn timer__btn--home">
-                                    <img class="material-icons" src="/icons/home-w.png" title="return to home"/>
-                                </button>
-                                 <button type="button" class="timer__btn timer__btn--reset">
-                                     <img class="material-icons" src="/icons/reset-w.png" title="restart timer"/>
-                                 </button>
-                             </div>
-                             <div class="timer-quick-actions" aria-label="Timer quick actions">
-                                 <button type="button" class="timer-add-button timer__btn--add1">+1 min</button>
-                                 <button type="button" class="timer-add-button timer__btn--add5">+5 min</button>
-                             </div>
-                         </div>
-                     </div>
-                 </td>
-                <td align="left" class="infopad-td">
-                    <div class="infopad">
-                        <div class="title">resume at</div>
-                        <div id="resume" class="numbers">
-                            <div>
-                                <span id="when__part1"></span><span id="when__devider"></span><span id="when__part2"></span><span id="am"></span>
-                            </div>
-                            <div id="zone"></div>
-                            <div id="zone-full"></div>
-                        </div>
-                    </div>
-                </td>
-                @if (hasSidePanel)
+        <div id="group-grid" class="timer-layout @(hasSidePanel ? "timer-layout--with-side" : "timer-layout--without-side")">
+            <section class="session-banner" aria-label="Session details">
+                <span class="session-banner-title">
+                    @(string.IsNullOrWhiteSpace(Model.SessionTitle) ? "MCT Timer" : Model.SessionTitle)
+                </span>
+                @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
                 {
-                    <td class="side-panel-td" rowspan="2" valign="top">
-                        <aside class="timer-side-panel" aria-label="Timer side panel">
-                            @if (hasShowcaseMedia)
-                            {
-                                <section class="showcase-media showcase-media--side" aria-label="Showcase media">
-                                    @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaCaption))
-                                    {
-                                        <div class="showcase-caption">@Model.ShowcaseMediaCaption</div>
-                                    }
-                                    @switch (Model.ShowcaseMediaKind)
-                                    {
-                                        case ShowcaseMediaKind.Image:
-                                            <img src="@Model.ShowcaseMediaUrl" alt="Showcase media" />
-                                            break;
-                                        case ShowcaseMediaKind.Video:
-                                            <video src="@Model.ShowcaseMediaUrl" controls autoplay muted loop playsinline></video>
-                                            break;
-                                        case ShowcaseMediaKind.Embed:
-                                            <iframe src="@Model.ShowcaseMediaUrl"
-                                                    title="Showcase video"
-                                                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-                                                    allowfullscreen
-                                                    loading="lazy"></iframe>
-                                            break;
-                                    }
-                                </section>
-                            }
-                            @if (hasSpotifyPlaylist)
-                            {
-                                <section id="spotify-player" class="spotify-player spotify-player--side" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
-                                    <div class="spotify-player-header">
-                                        <span class="spotify-player-title">Spotify playlist</span>
-                                        <div class="spotify-player-controls">
-                                            <button id="spotify-playlist-start" type="button">Play playlist</button>
-                                            <button id="spotify-player-toggle" type="button">Hide player</button>
-                                            <button id="spotify-player-stop" type="button">Stop music</button>
-                                            <button id="spotify-player-clear" type="button">Clear playlist</button>
-                                        </div>
-                                    </div>
-                                    <div id="spotify-player-status" class="spotify-player-status">Use the Spotify play button in the embedded player to start music.</div>
-                                    <div id="spotify-player-frame-wrap" class="spotify-player-frame-wrap">
-                                        <iframe id="spotify-playlist-iframe"
-                                                title="Spotify playlist"
-                                                src="@Model.SpotifyPlaylistEmbedUrl"
-                                                width="100%"
-                                                height="352"
-                                                frameborder="0"
-                                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                                loading="lazy"></iframe>
-                                    </div>
-                                </section>
-                            }
-                        </aside>
-                    </td>
+                    <span>Session: @Model.ClassHours</span>
                 }
-            </tr>
-            <tr>
-                <td colspan="2" valign="top">
-                    @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
-                    {
-                        <div class="spotify-player spotify-error-message">@Model.SpotifyPlaylistValidationMessage</div>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaValidationMessage))
-                    {
-                        <div class="showcase-media showcase-media-error">@Model.ShowcaseMediaValidationMessage</div>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(Model.AiBackgroundValidationMessage))
-                    {
-                        <div class="ai-background-message">@Model.AiBackgroundValidationMessage</div>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(Model.InstructorProfileValidationMessage))
-                    {
-                        <div class="ai-background-message">@Model.InstructorProfileValidationMessage</div>
-                    }
-                    <div id="editormain">
-                        <!--div id="note">note +</!div-->
-                        <div id="editor">
+                @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
+                {
+                    <span>Instructor: @Model.InstructorName</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
+                {
+                    <span>Customer: @Model.CustomerName</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
+                {
+                    <span>Location: @Model.RegionLocation</span>
+                }
+            </section>
+
+            <div class="timer-card timer-card--remaining">
+                <div class="infopad">
+                    <div class="title">remain time</div>
+                    <div id="timer">
+                        <img id="alert" src="/icons/bells-off.png" width="25" />
+                        <audio id="time-is-up" src="/audio/beep30.mp3"></audio>
+                        <audio id="intro-music" src="/audio/intro.mp3"></audio>
+                        <div class="numbers">
+                            <span id="timer__part1">00</span><span id="timer__devider">:</span><span id="timer__part2">00</span>
+                        </div>
+                        <div>
+                            <button type="button" class="timer__btn timer__btn--music">
+                                <img class="material-icons" src="/icons/music.png" title="play music" />
+                            </button>
+                            <button type="button" class="timer__btn timer__btn--home">
+                                <img class="material-icons" src="/icons/home-w.png" title="return to home"/>
+                            </button>
+                            <button type="button" class="timer__btn timer__btn--reset">
+                                <img class="material-icons" src="/icons/reset-w.png" title="restart timer"/>
+                            </button>
+                        </div>
+                        <div class="timer-quick-actions" aria-label="Timer quick actions">
+                            <button type="button" class="timer-add-button timer__btn--add1">+1 min</button>
+                            <button type="button" class="timer-add-button timer__btn--add5">+5 min</button>
                         </div>
                     </div>
-                </td>
-            </tr>
+                </div>
+            </div>
 
-        </table>
+            <div class="timer-card timer-card--resume">
+                <div class="infopad">
+                    <div class="title">resume at</div>
+                    <div id="resume" class="numbers">
+                        <div>
+                            <span id="when__part1"></span><span id="when__devider"></span><span id="when__part2"></span><span id="am"></span>
+                        </div>
+                        <div id="zone"></div>
+                        <div id="zone-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            @if (hasSidePanel)
+            {
+                <aside class="timer-side-panel" aria-label="Timer side panel">
+                    @if (hasShowcaseMedia)
+                    {
+                        <section class="showcase-media showcase-media--side" aria-label="Showcase media">
+                            @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaCaption))
+                            {
+                                <div class="showcase-caption">@Model.ShowcaseMediaCaption</div>
+                            }
+                            @switch (Model.ShowcaseMediaKind)
+                            {
+                                case ShowcaseMediaKind.Image:
+                                    <img src="@Model.ShowcaseMediaUrl" alt="Showcase media" />
+                                    break;
+                                case ShowcaseMediaKind.Video:
+                                    <video src="@Model.ShowcaseMediaUrl" controls autoplay muted loop playsinline></video>
+                                    break;
+                                case ShowcaseMediaKind.Embed:
+                                    <iframe src="@Model.ShowcaseMediaUrl"
+                                            title="Showcase video"
+                                            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                                            allowfullscreen
+                                            loading="lazy"></iframe>
+                                    break;
+                            }
+                        </section>
+                    }
+                    @if (hasSpotifyPlaylist)
+                    {
+                        <section id="spotify-player" class="spotify-player spotify-player--side" data-spotify-src="@Model.SpotifyPlaylistEmbedUrl" aria-label="Spotify playlist player">
+                            <div class="spotify-player-header">
+                                <span class="spotify-player-title">Spotify playlist</span>
+                                <div class="spotify-player-controls">
+                                    <button id="spotify-playlist-start" type="button">Play playlist</button>
+                                    <button id="spotify-player-toggle" type="button">Hide player</button>
+                                    <button id="spotify-player-stop" type="button">Stop music</button>
+                                    <button id="spotify-player-clear" type="button">Clear playlist</button>
+                                </div>
+                            </div>
+                            <div id="spotify-player-status" class="spotify-player-status">Use the Spotify play button in the embedded player to start music.</div>
+                            <div id="spotify-player-frame-wrap" class="spotify-player-frame-wrap">
+                                <iframe id="spotify-playlist-iframe"
+                                        title="Spotify playlist"
+                                        src="@Model.SpotifyPlaylistEmbedUrl"
+                                        width="100%"
+                                        height="352"
+                                        frameborder="0"
+                                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                        loading="lazy"></iframe>
+                            </div>
+                        </section>
+                    }
+                </aside>
+            }
+
+            <section class="main-message-panel" aria-label="Main message">
+                @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
+                {
+                    <div class="spotify-player spotify-error-message">@Model.SpotifyPlaylistValidationMessage</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.ShowcaseMediaValidationMessage))
+                {
+                    <div class="showcase-media showcase-media-error">@Model.ShowcaseMediaValidationMessage</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.AiBackgroundValidationMessage))
+                {
+                    <div class="ai-background-message">@Model.AiBackgroundValidationMessage</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.InstructorProfileValidationMessage))
+                {
+                    <div class="ai-background-message">@Model.InstructorProfileValidationMessage</div>
+                }
+                <div id="editormain">
+                    <!--div id="note">note +</!div-->
+                    <div id="editor">
+                    </div>
+                </div>
+            </section>
+        </div>
 
         @if (hasInstructorProfile)
         {
