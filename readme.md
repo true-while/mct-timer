@@ -16,6 +16,9 @@ One of the core principles of the MCT Timer project is accessibility. The websit
 - Spotify playlist support: Trainers can attach a public Spotify playlist to a timer session and play it from the countdown page.
 
 
+![Timer setup page](docs/images/setup-page.png)
+
+
 ## Architecture
 
 The project contains the following resources deployed in Azure:
