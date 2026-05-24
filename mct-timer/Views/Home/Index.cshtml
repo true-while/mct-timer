@@ -7,6 +7,7 @@
 <div id="gbmainbg" style="overflow: auto">
     <div id="menu" class="menu">
         <img class="option" src="~/icons/home-w.png" title="back to home" onclick="javascript:location.href = '/'" />
+        <img class="option" src="~/icons/gear-w.png" title="settings" onclick="javascript:location.href='/sets'" />
         <img class="option" src="~/icons/info-w.png" title="info" onclick="javascript:location.href='/info'" />
     </div>
     <div id="loc" class="location">
@@ -94,6 +95,16 @@
                                     <input id="ai-background" type="checkbox" />
                                     Use AI to create a background from the session title and context
                                 </label>
+
+                                <div class="session-bg-upload">
+                                    <label class="title" for="custom-bg-file">Custom background image</label>
+                                    <div class="session-bg-row">
+                                        <input id="custom-bg-file" type="file" accept="image/png,image/jpeg,image/webp" />
+                                        <button id="custom-bg-clear" type="button">clear</button>
+                                    </div>
+                                    <input id="custom-bg-url" type="hidden" value="" />
+                                    <div id="custom-bg-status" class="session-bg-status" aria-live="polite">Optional. Overrides Bing daily and AI backgrounds.</div>
+                                </div>
                             </div>
 
                             <div class="spotify-setup">

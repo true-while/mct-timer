@@ -56,7 +56,11 @@
             instructorQr: root.querySelector("#instructor-qr"),
             aiBackground: root.querySelector("#ai-background"),
             showcaseMedia: root.querySelector("#showcase-media"),
-            showcaseCaption: root.querySelector("#showcase-caption")
+            showcaseCaption: root.querySelector("#showcase-caption"),
+            customBgFile: root.querySelector("#custom-bg-file"),
+            customBgClear: root.querySelector("#custom-bg-clear"),
+            customBgUrl: root.querySelector("#custom-bg-url"),
+            customBgStatus: root.querySelector("#custom-bg-status")
         };
 
 
@@ -197,6 +201,18 @@
             });
         }
 
+        if (this.el.customBgFile) {
+            this.el.customBgFile.addEventListener("change", () => {
+                this.uploadCustomBackground();
+            });
+        }
+
+        if (this.el.customBgClear) {
+            this.el.customBgClear.addEventListener("click", () => {
+                this.clearCustomBackground();
+            });
+        }
+
         this.el.plus1.addEventListener("click", () => {
             this.addMinutes(1);
         });
@@ -269,6 +285,7 @@
         this.appendQueryValue(query, "instructorQr", this.el.instructorQr?.value);
         this.appendQueryValue(query, "media", this.el.showcaseMedia?.value);
         this.appendQueryValue(query, "mediaCaption", this.el.showcaseCaption?.value);
+        this.appendQueryValue(query, "customBg", this.el.customBgUrl?.value);
 
         if (this.el.aiBackground?.checked) {
             query.set("aiBg", "true");
@@ -288,7 +305,64 @@
             query.set(key, value.trim());
         }
     }
-    
+
+    uploadCustomBackground() {
+        const fileInput = this.el.customBgFile;
+        const status = this.el.customBgStatus;
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const maxBytes = 4 * 1024 * 1024;
+        const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+
+        if (!allowedTypes.includes(file.type)) {
+            this.setCustomBgStatus("Unsupported image type. Use PNG, JPEG, or WebP.", true);
+            fileInput.value = "";
+            return;
+        }
+        if (file.size > maxBytes) {
+            this.setCustomBgStatus("Image is too large. Maximum size is 4 MB.", true);
+            fileInput.value = "";
+            return;
+        }
+
+        const form = new FormData();
+        form.append("file", file);
+        this.setCustomBgStatus("Uploading background...", false);
+
+        fetch("/Home/UploadSessionBackground", { method: "POST", body: form })
+            .then(async (response) => {
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(data?.error || "Upload failed.");
+                }
+                if (!data || !data.url) {
+                    throw new Error("Unexpected upload response.");
+                }
+                this.el.customBgUrl.value = data.url;
+                this.setCustomBgStatus(`Background ready: ${file.name}. This overrides Bing and AI backgrounds.`, false);
+            })
+            .catch((err) => {
+                this.el.customBgUrl.value = "";
+                this.setCustomBgStatus(err.message || "Upload failed.", true);
+                fileInput.value = "";
+            });
+    }
+
+    clearCustomBackground() {
+        if (this.el.customBgFile) this.el.customBgFile.value = "";
+        if (this.el.customBgUrl) this.el.customBgUrl.value = "";
+        this.setCustomBgStatus("Optional. Overrides Bing daily and AI backgrounds.", false);
+    }
+
+    setCustomBgStatus(message, isError) {
+        if (!this.el.customBgStatus) return;
+        this.el.customBgStatus.textContent = message;
+        this.el.customBgStatus.style.color = isError ? "red" : "";
+    }
+
     startDefaultTimer(duration, timerType) {
         const timezone = this.el.timezone.value;
         

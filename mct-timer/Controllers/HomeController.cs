@@ -13,6 +13,9 @@ using Microsoft.Net.Http.Headers;
 using System.Net;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
+using Microsoft.AspNetCore.Hosting;
+using System.IO;
+using System.Text.RegularExpressions;
 
 namespace mct_timer.Controllers
 {
@@ -24,6 +27,24 @@ namespace mct_timer.Controllers
         private readonly UsersContext _ac_context;
         private readonly IDalleGenerator _dalle;
         private readonly IBlobRepo _blobRepo;
+        private readonly IWebHostEnvironment _env;
+
+        // Allowed image content types and extensions for the manual session background upload.
+        // Kept narrow on purpose so we can serve uploaded files directly from wwwroot.
+        private static readonly HashSet<string> AllowedBgContentTypes = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "image/png", "image/jpeg", "image/jpg", "image/webp"
+        };
+        private static readonly HashSet<string> AllowedBgExtensions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ".png", ".jpg", ".jpeg", ".webp"
+        };
+        private const long MaxSessionBgBytes = 4L * 1024 * 1024; // 4 MB
+        private const string SessionBgRelativeRoot = "/uploads/session/";
+        // GUID + safe extension only - strictly validates the customBg URL we will trust.
+        private static readonly Regex SessionBgUrlRegex = new(
+            @"^/uploads/session/[a-z0-9\-]{8,64}\.(png|jpe?g|webp)$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         public string CDNUrl() { return _config.Value.WebCDN; }
 
@@ -33,7 +54,8 @@ namespace mct_timer.Controllers
             IHttpContextAccessor context,
             UsersContext ac_context,
             IDalleGenerator dalle,
-            IBlobRepo blobRepo)
+            IBlobRepo blobRepo,
+            IWebHostEnvironment env)
 
         {
             _logger = logger;
@@ -42,6 +64,7 @@ namespace mct_timer.Controllers
             _ac_context = ac_context;
             _dalle = dalle;
             _blobRepo = blobRepo;
+            _env = env;
 
             if (AuthService.GetInstance == null)
                 AuthService.Init(logger, config);
@@ -106,7 +129,8 @@ namespace mct_timer.Controllers
             string? instructorQr = null,
             bool aiBg = false,
             string? media = null,
-            string? mediaCaption = null)
+            string? mediaCaption = null,
+            string? customBg = null)
         {
             // Validate and sanitize input parameters
             if (!int.TryParse(m, out var minutes) || minutes <= 0)
@@ -203,7 +227,18 @@ namespace mct_timer.Controllers
             Random rn = new Random(DateTime.Now.Second);
             var index = rn.Next(0, bgList.Count());
 
-            if (bgList.Count > 0)
+            // A manually uploaded background image wins over Bing daily and AI generation.
+            // We only trust paths that match our strict /uploads/session/{guid}.{ext} pattern.
+            var customBgUrl = NormalizeSessionBackgroundUrl(customBg);
+            var hasCustomBackground = !string.IsNullOrEmpty(customBgUrl);
+
+            if (hasCustomBackground)
+            {
+                model.BGUrl = customBgUrl!;
+                model.IsBing = false;
+                model.UseBingDailyBackground = false;
+            }
+            else if (bgList.Count > 0)
             {
                 var selectedBackground = bgList[index];
                 model.BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + selectedBackground.Url).ToString();
@@ -216,7 +251,8 @@ namespace mct_timer.Controllers
                 model.UseBingDailyBackground = true;
             }
 
-            if (aiBg)
+            // AI background only runs when the user did not provide a custom upload.
+            if (aiBg && !hasCustomBackground)
             {
                 var (aiBackgroundUrl, aiBackgroundMessage) = await TryCreateAiBackgroundAsync(model, bType);
                 if (!string.IsNullOrWhiteSpace(aiBackgroundUrl))
@@ -232,6 +268,68 @@ namespace mct_timer.Controllers
             }
 
             return View(model);
+        }
+
+        // Accepts an image upload that is used only as a custom background for the
+        // very next timer launch. We save the file to wwwroot/uploads/session/ with a
+        // GUID name so it is publicly servable and predictable to validate later.
+        [HttpPost]
+        [RequestSizeLimit(MaxSessionBgBytes + 64 * 1024)] // allow some multipart overhead
+        public async Task<IActionResult> UploadSessionBackground(IFormFile? file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest(new { error = "No file was uploaded." });
+            }
+
+            if (file.Length > MaxSessionBgBytes)
+            {
+                return BadRequest(new { error = "Image is too large. Maximum size is 4 MB." });
+            }
+
+            if (!AllowedBgContentTypes.Contains(file.ContentType ?? string.Empty))
+            {
+                return BadRequest(new { error = "Unsupported image type. Use PNG, JPEG, or WebP." });
+            }
+
+            var ext = Path.GetExtension(file.FileName);
+            if (string.IsNullOrEmpty(ext) || !AllowedBgExtensions.Contains(ext))
+            {
+                return BadRequest(new { error = "Unsupported file extension. Use .png, .jpg, .jpeg, or .webp." });
+            }
+            ext = ext.ToLowerInvariant();
+            if (ext == ".jpg") ext = ".jpeg";
+
+            try
+            {
+                var webRoot = _env.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                var targetDir = Path.Combine(webRoot, "uploads", "session");
+                Directory.CreateDirectory(targetDir);
+
+                var fileName = $"{Guid.NewGuid():N}{ext}";
+                var fullPath = Path.Combine(targetDir, fileName);
+
+                using (var stream = System.IO.File.Create(fullPath))
+                {
+                    await file.CopyToAsync(stream);
+                }
+
+                var relativeUrl = SessionBgRelativeRoot + fileName;
+                return Json(new { url = relativeUrl });
+            }
+            catch (Exception ex)
+            {
+                _logger.TrackException(ex);
+                return StatusCode(500, new { error = "Failed to save the uploaded background." });
+            }
+        }
+
+        // Returns the trusted app-relative URL only if it matches our upload pattern.
+        private static string? NormalizeSessionBackgroundUrl(string? candidate)
+        {
+            if (string.IsNullOrWhiteSpace(candidate)) return null;
+            var trimmed = candidate.Trim();
+            return SessionBgUrlRegex.IsMatch(trimmed) ? trimmed : null;
         }
 
         [HttpGet]

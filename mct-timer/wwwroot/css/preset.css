@@ -312,6 +312,43 @@
     color: darkred;
 }
 
+.session-bg-upload {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.session-bg-upload .title {
+    font: 600 13px Segoe UI;
+    color: darkblue;
+}
+
+.session-bg-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.session-bg-row input[type="file"] {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+}
+
+.session-bg-row button {
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.session-bg-status {
+    min-height: 16px;
+    font: 500 12px Segoe UI;
+    color: #555;
+}
+
 .setup-quick-panel {
     align-self: stretch;
 }
