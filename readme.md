@@ -18,6 +18,10 @@ One of the core principles of the MCT Timer project is accessibility. The websit
 
 ![Timer setup page](docs/images/setup-page.png)
 
+The countdown page shows the remaining time and resume-at clock, the trainer's main message, an optional showcase video (top right), and an embedded Spotify playlist player (bottom right) when a playlist has been attached to the session.
+
+![Countdown page with Spotify playlist and showcase video](docs/images/countdown-spotify-video.png)
+
 
 ## Architecture
 
