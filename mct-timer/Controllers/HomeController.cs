@@ -102,6 +102,8 @@ namespace mct_timer.Controllers
             string? region = null,
             string? hours = null,
             string? instructor = null,
+            string? instructorLinkedIn = null,
+            string? instructorQr = null,
             bool aiBg = false,
             bool bingDaily = false,
             string? media = null,
@@ -153,6 +155,26 @@ namespace mct_timer.Controllers
                 ShowcaseMediaCaption = CleanSessionText(mediaCaption, 160),
                 UseBingDailyBackground = bingDaily,
             };
+
+            if (!InstructorProfileHelper.TryNormalizeLinkedInUrl(instructorLinkedIn, out var normalizedLinkedInUrl))
+            {
+                model.InstructorProfileValidationMessage = "The instructor LinkedIn URL was not recognized. Use a linkedin.com profile URL.";
+            }
+            else
+            {
+                model.InstructorLinkedInUrl = normalizedLinkedInUrl;
+            }
+
+            if (!InstructorProfileHelper.TryNormalizeQrCodeUrl(instructorQr, out var normalizedQrCodeUrl))
+            {
+                model.InstructorProfileValidationMessage = string.IsNullOrWhiteSpace(model.InstructorProfileValidationMessage)
+                    ? "The instructor QR code URL was not recognized. Use a publicly reachable image URL."
+                    : $"{model.InstructorProfileValidationMessage} The instructor QR code URL was not recognized. Use a publicly reachable image URL.";
+            }
+            else
+            {
+                model.InstructorQrCodeUrl = normalizedQrCodeUrl;
+            }
 
             if (!string.IsNullOrWhiteSpace(spotify))
             {

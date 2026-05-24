@@ -197,6 +197,7 @@
 }
 
 .session-setup input[type="text"],
+.session-setup input[type="url"],
 .showcase-setup input {
     box-sizing: border-box;
     width: 100%;

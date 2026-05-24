@@ -156,42 +156,27 @@
     padding: 5px 8px;
 }
 
-.session-infopad {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    overflow: hidden;
-    text-align: left;
-}
-
-.session-infopad .title {
-    text-align: center;
-}
-
-.session-card-title {
+.session-banner {
+    align-items: center;
+    background: white;
+    border: 3px solid darkgrey;
+    border-radius: 15px;
+    box-sizing: border-box;
     color: black;
-    font: 700 28px Segoe UI;
-    line-height: 1.15;
+    display: flex;
+    flex-wrap: wrap;
+    font: 600 24px Segoe UI;
+    gap: 10px 18px;
+    justify-content: center;
+    padding: 10px 14px;
+    text-align: center;
+    width: 100%;
+}
+
+.session-banner-title {
+    color: black;
+    font-weight: 700;
     overflow-wrap: anywhere;
-}
-
-.session-card-details {
-    display: grid;
-    gap: 8px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.session-card-details div {
-    font: 500 14px Segoe UI;
-    min-width: 0;
-    overflow-wrap: anywhere;
-}
-
-.session-card-details span {
-    color: darkblue;
-    display: block;
-    font: 700 11px Segoe UI;
-    text-transform: uppercase;
 }
 
 .showcase-media {
@@ -261,6 +246,39 @@
     font: 500 16px Segoe UI;
     margin-bottom: 10px;
     padding: 10px;
+}
+
+.instructor-profile {
+    align-items: center;
+    background: white;
+    border: 3px solid darkgrey;
+    border-radius: 15px;
+    bottom: 18px;
+    box-sizing: border-box;
+    color: black;
+    display: flex;
+    gap: 12px;
+    left: 50%;
+    max-width: calc(100vw - 40px);
+    padding: 10px 14px;
+    position: fixed;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+.instructor-profile a {
+    color: darkblue;
+    font: 700 18px Segoe UI;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.instructor-profile img {
+    border: 1px solid darkgrey;
+    border-radius: 8px;
+    display: block;
+    height: 96px;
+    width: 96px;
 }
 
 .spotify-player {

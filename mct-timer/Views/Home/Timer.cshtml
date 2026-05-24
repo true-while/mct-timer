@@ -6,6 +6,8 @@
     var hasShowcaseMedia = !string.IsNullOrWhiteSpace(Model.ShowcaseMediaUrl);
     var hasSpotifyPlaylist = !string.IsNullOrWhiteSpace(Model.SpotifyPlaylistEmbedUrl);
     var hasSidePanel = hasShowcaseMedia || hasSpotifyPlaylist;
+    var hasInstructorProfile = !string.IsNullOrWhiteSpace(Model.InstructorLinkedInUrl) ||
+        !string.IsNullOrWhiteSpace(Model.InstructorQrCodeUrl);
 }
 <div id="gbmainbg" style="overflow:auto">
     <div id="menu" class="menu">
@@ -15,6 +17,31 @@
     </div>
     <div id="group">
         <table id="group-tbl">
+            <tr>
+                <td colspan="@(hasSidePanel ? 3 : 2)">
+                    <section class="session-banner" aria-label="Session details">
+                        <span class="session-banner-title">
+                            @(string.IsNullOrWhiteSpace(Model.SessionTitle) ? "MCT Timer" : Model.SessionTitle)
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
+                        {
+                            <span>Session: @Model.ClassHours</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
+                        {
+                            <span>Instructor: @Model.InstructorName</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
+                        {
+                            <span>Customer: @Model.CustomerName</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
+                        {
+                            <span>Location: @Model.RegionLocation</span>
+                        }
+                    </section>
+                </td>
+            </tr>
             <tr>
                 <td >
                     <div class="infopad">
@@ -55,39 +82,6 @@
                             </div>
                             <div id="zone"></div>
                             <div id="zone-full"></div>
-                        </div>
-                    </div>
-                </td>
-                <td align="left">
-                    <div class="infopad session-infopad">
-                        <div class="title">class session</div>
-                        <div class="session-card-title">
-                            @(string.IsNullOrWhiteSpace(Model.SessionTitle) ? "MCT Timer" : Model.SessionTitle)
-                        </div>
-                        <div class="session-card-details">
-                            @if (!string.IsNullOrWhiteSpace(Model.ClassHours))
-                            {
-                                <div><span>Session</span>@Model.ClassHours</div>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(Model.InstructorName))
-                            {
-                                <div><span>Instructor</span>@Model.InstructorName</div>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(Model.CustomerName))
-                            {
-                                <div><span>Customer</span>@Model.CustomerName</div>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(Model.RegionLocation))
-                            {
-                                <div><span>Location</span>@Model.RegionLocation</div>
-                            }
-                            @if (string.IsNullOrWhiteSpace(Model.ClassHours) &&
-                                string.IsNullOrWhiteSpace(Model.InstructorName) &&
-                                string.IsNullOrWhiteSpace(Model.CustomerName) &&
-                                string.IsNullOrWhiteSpace(Model.RegionLocation))
-                            {
-                                <div><span>Session</span>Add details from timer setup</div>
-                            }
                         </div>
                     </div>
                 </td>
@@ -150,7 +144,7 @@
                 }
             </tr>
             <tr>
-                <td colspan="3" valign="top">
+                <td colspan="2" valign="top">
                     @if (!string.IsNullOrWhiteSpace(Model.SpotifyPlaylistValidationMessage))
                     {
                         <div class="spotify-player spotify-error-message">@Model.SpotifyPlaylistValidationMessage</div>
@@ -163,6 +157,10 @@
                     {
                         <div class="ai-background-message">@Model.AiBackgroundValidationMessage</div>
                     }
+                    @if (!string.IsNullOrWhiteSpace(Model.InstructorProfileValidationMessage))
+                    {
+                        <div class="ai-background-message">@Model.InstructorProfileValidationMessage</div>
+                    }
                     <div id="editormain">
                         <!--div id="note">note +</!div-->
                         <div id="editor">
@@ -173,6 +171,21 @@
 
         </table>
 
+        @if (hasInstructorProfile)
+        {
+            <section class="instructor-profile" aria-label="Instructor profile">
+                @if (!string.IsNullOrWhiteSpace(Model.InstructorLinkedInUrl))
+                {
+                    <a href="@Model.InstructorLinkedInUrl" target="_blank" rel="noopener noreferrer">
+                        @(string.IsNullOrWhiteSpace(Model.InstructorName) ? "Instructor LinkedIn" : $"{Model.InstructorName} on LinkedIn")
+                    </a>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.InstructorQrCodeUrl))
+                {
+                    <img src="@Model.InstructorQrCodeUrl" alt="Instructor QR code" />
+                }
+            </section>
+        }
 
     </div>
 </div>

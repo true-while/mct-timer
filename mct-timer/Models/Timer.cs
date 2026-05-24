@@ -16,6 +16,9 @@ namespace mct_timer.Models
         public string RegionLocation = string.Empty;
         public string ClassHours = string.Empty;
         public string InstructorName = string.Empty;
+        public string InstructorLinkedInUrl = string.Empty;
+        public string InstructorQrCodeUrl = string.Empty;
+        public string InstructorProfileValidationMessage = string.Empty;
         public string ShowcaseMediaUrl = string.Empty;
         public string ShowcaseMediaCaption = string.Empty;
         public string ShowcaseMediaValidationMessage = string.Empty;

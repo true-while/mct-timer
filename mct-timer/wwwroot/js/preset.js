@@ -52,6 +52,8 @@
             sessionLocation: root.querySelector("#session-location"),
             classHours: root.querySelector("#class-hours"),
             instructorName: root.querySelector("#instructor-name"),
+            instructorLinkedIn: root.querySelector("#instructor-linkedin"),
+            instructorQr: root.querySelector("#instructor-qr"),
             aiBackground: root.querySelector("#ai-background"),
             bingDailyBackground: root.querySelector("#bing-daily-background"),
             showcaseMedia: root.querySelector("#showcase-media"),
@@ -264,6 +266,8 @@
         this.appendQueryValue(query, "region", this.el.sessionLocation?.value);
         this.appendQueryValue(query, "hours", this.el.classHours?.value);
         this.appendQueryValue(query, "instructor", this.el.instructorName?.value);
+        this.appendQueryValue(query, "instructorLinkedIn", this.el.instructorLinkedIn?.value);
+        this.appendQueryValue(query, "instructorQr", this.el.instructorQr?.value);
         this.appendQueryValue(query, "media", this.el.showcaseMedia?.value);
         this.appendQueryValue(query, "mediaCaption", this.el.showcaseCaption?.value);
 
