@@ -47,15 +47,61 @@ The countdown page shows the remaining time and resume-at clock, the trainer's m
 
 ## Architecture
 
-The project contains the following resources deployed in Azure:
-- Azure Container Apps hosts the ASP.NET Core MVC project.
-- Azure Container Registry stores the application container image.
-- Azure Cosmos DB is used to persist metadata and information about customized settings and user profiles and user generated backgrounds.
-- Azure Storage account will be used for persisting customized images. 
-- Azure Keyvault is used to persist cryptography keys for encrypt user's sensitive information.
-- Azure Open AI service provisioned DALE3 model that used for image generation.
+The MCT Timer runs as a containerized ASP.NET Core MVC app on Azure Container Apps. All Azure resources are provisioned by `infra/main.bicep` and the app authenticates to data and secret services with a user-assigned managed identity (no connection strings or keys in app settings).
 
-![schema](schena.png)
+Azure resources:
+
+- **Azure Container Apps** hosts the ASP.NET Core MVC site. A user-assigned managed identity is attached for all outbound Azure calls.
+- **Azure Container Apps Environment** provides the runtime and integrates with Log Analytics.
+- **Azure Container Registry** stores the application container image; the app pulls with `AcrPull` via managed identity.
+- **Azure Cosmos DB (SQL API)** persists timer sessions, user profiles, instructor profiles, and customization metadata. Access is via Cosmos SQL Data Contributor on the managed identity (RBAC, no keys).
+- **Azure Storage (Blob)** stores user-uploaded backgrounds, showcase media, and DALL-E generated images. Access is via Storage Blob Data Contributor on the managed identity.
+- **Azure Key Vault** stores the cryptographic key used to encrypt sensitive user data. The app uses Key Vault Crypto User via managed identity.
+- **Azure OpenAI (DALL-E 3)** generates optional AI background images from user prompts.
+- **Application Insights + Log Analytics** capture telemetry, logs, and request traces.
+- **External (no Azure resource):** the countdown page embeds Spotify's public playlist player and an optional YouTube showcase video directly in the browser; the app never calls these services server-side and stores no credentials.
+
+```mermaid
+flowchart LR
+    User([Trainer / Learners<br/>Browser])
+
+    subgraph Azure["Azure subscription"]
+        direction LR
+        ACR[Azure Container Registry<br/>app container image]
+
+        subgraph CAE["Container Apps Environment"]
+            CA["Container App<br/>ASP.NET Core MVC<br/>(MCT Timer)"]
+        end
+
+        MI[User-assigned<br/>Managed Identity]
+        Cosmos[(Azure Cosmos DB<br/>SQL API)]
+        Blob[(Azure Storage<br/>Blob container)]
+        KV[Azure Key Vault<br/>encryption key]
+        OpenAI[Azure OpenAI<br/>DALL-E 3]
+        AppI[Application Insights]
+        Logs[Log Analytics]
+    end
+
+    subgraph External["External services (browser-only)"]
+        Spotify[Spotify embed player]
+        YouTube[YouTube embed player]
+    end
+
+    User -- HTTPS --> CA
+    User -. iframe .-> Spotify
+    User -. iframe .-> YouTube
+
+    CA -- pulls image --> ACR
+    CA -- uses --> MI
+    MI -- Cosmos Data Contributor --> Cosmos
+    MI -- Blob Data Contributor --> Blob
+    MI -- Crypto User --> KV
+    CA -- generate image --> OpenAI
+    CA -- telemetry --> AppI
+    CAE -- logs --> Logs
+```
+
+CI/CD: `.github/workflows/azure-webapps-dotnet-core.yml` builds the container image, pushes it to ACR, and deploys to the Container App. The workflow uses federated OIDC credentials so no client secrets are stored in GitHub.
 
 ## Spotify Playlist Support
 
