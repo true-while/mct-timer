@@ -1,6 +1,8 @@
 ﻿## Project description
 
-The "MCT Timer" project is an innovative tool designed to assist the Microsoft Certified Trainer (MCT) community. It simplifies the process of setting up and managing timers for classroom sessions directly from a web page. This project aims to enhance the teaching and learning experience by providing a seamless way to notify learners when classes resume.
+[![Provision and deploy MCT Timer](https://github.com/dngoins/mct-timer/actions/workflows/azure-webapps-dotnet-core.yml/badge.svg?branch=main)](https://github.com/dngoins/mct-timer/actions/workflows/azure-webapps-dotnet-core.yml)
+
+The "MCT Timer" projectis an innovative tool designed to assist the Microsoft Certified Trainer (MCT) community. It simplifies the process of setting up and managing timers for classroom sessions directly from a web page. This project aims to enhance the teaching and learning experience by providing a seamless way to notify learners when classes resume.
 
 ### Project Hosting
 The MCT Timer can be hosted on Azure Container Apps using the infrastructure and GitHub Actions workflow included in this repository. This keeps the app deployable without an Azure App Service Plan while still using managed Azure services for storage, identity, data, and monitoring.
