@@ -9,7 +9,7 @@
 [![Azure Container Apps](https://img.shields.io/badge/Azure-Container%20Apps-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/azure/container-apps/)
 [![Cosmos DB](https://img.shields.io/badge/Azure-Cosmos%20DB-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/azure/cosmos-db/)
 
-[![License](https://img.shields.io/github/license/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/dngoins/mct-timer)](LICENSE)
 [![Last commit](https://img.shields.io/github/last-commit/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/commits/main)
 [![Open issues](https://img.shields.io/github/issues/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/issues)
 [![Open PRs](https://img.shields.io/github/issues-pr/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/pulls)
