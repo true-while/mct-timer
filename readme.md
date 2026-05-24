@@ -44,7 +44,7 @@ The countdown page shows a Spotify embedded playlist player when a playlist is p
 
 ## Session Details and Showcase Media
 
-Timer setup can include optional session details that travel with the timer URL: session title, customer name, region/location, class hours, instructor name, and instructor LinkedIn or QR-code image links. The countdown page displays those details in a slim header above the timer and can show instructor profile links at the bottom of the screen.
+Timer setup can include optional session details that travel with the timer URL: session title, customer name, region/location, class hours, instructor name, and instructor LinkedIn or QR-code image links. The countdown page displays those details in a slim header above the timer and can show instructor profile links at the bottom of the screen. A bundled LinkedIn QR image is available at `/profile/linkedin-qr.png` and is publicly served by the app when deployed.
 
 The setup page also supports:
 

@@ -43,6 +43,17 @@ namespace mct_timer.Models
                 return true;
             }
 
+            var trimmed = value.Trim();
+            if (trimmed.StartsWith("/", StringComparison.Ordinal) &&
+                !trimmed.StartsWith("//", StringComparison.Ordinal) &&
+                !trimmed.Contains('\\') &&
+                !trimmed.Contains("..", StringComparison.Ordinal) &&
+                IsSupportedImagePath(trimmed))
+            {
+                qrCodeUrl = trimmed;
+                return true;
+            }
+
             if (!SessionMediaHelper.TryNormalizeMediaUrl(value, out var mediaUrl, out var kind) ||
                 kind != ShowcaseMediaKind.Image)
             {
@@ -51,6 +62,17 @@ namespace mct_timer.Models
 
             qrCodeUrl = mediaUrl;
             return true;
+        }
+
+        private static bool IsSupportedImagePath(string path)
+        {
+            var pathWithoutQuery = path.Split('?', '#')[0];
+            var extension = Path.GetExtension(pathWithoutQuery);
+            return extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".png", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".gif", StringComparison.OrdinalIgnoreCase) ||
+                extension.Equals(".webp", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

@@ -38,6 +38,15 @@ public class InstructorProfileHelperTests
     }
 
     [Fact]
+    public void TryNormalizeQrCodeUrl_ReturnsImageUrl_ForAppRelativeImage()
+    {
+        var result = InstructorProfileHelper.TryNormalizeQrCodeUrl("/profile/linkedin-qr.png", out var qrCodeUrl);
+
+        Assert.True(result);
+        Assert.Equal("/profile/linkedin-qr.png", qrCodeUrl);
+    }
+
+    [Fact]
     public void TryNormalizeQrCodeUrl_ReturnsFalse_ForNonImage()
     {
         var result = InstructorProfileHelper.TryNormalizeQrCodeUrl("https://example.com/qr.pdf", out var qrCodeUrl);
