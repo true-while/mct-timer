@@ -1,19 +1,23 @@
 
 #preset-secondbg {
+    box-sizing: border-box;
     padding: 7px;
-    margin: 30px;
+    margin: clamp(16px, 4vw, 36px) auto;
     background-color: rgba(0, 0, 0, 0.3);
-    width: fit-content;
+    max-width: 1200px;
+    min-height: calc(100vh - clamp(32px, 8vw, 72px));
+    width: min(calc(100% - 32px), 1200px);
     border-radius: 10px;
 }
 
 .timer-defaults {
+    box-sizing: border-box;
     color: black;
     margin: 7px 7px 7px 7px;
     padding: 10px 10px 10px 10px;
     border-radius: 10px;
     background: white;
-    width: stretch;
+    width: calc(100% - 14px);
     border: 3px solid darkgray;
     position: relative
 }
@@ -29,7 +33,7 @@
         font: 600 18px Segoe UI;
         border: 2px solid black;
         background-color: whitesmoke;
-        width: stretch;
+        width: 100%;
         white-space: nowrap;
     }
     
@@ -83,12 +87,13 @@
     width: fit-content;
 }*/
 .custom-timer {
+    box-sizing: border-box;
     color: black;
     margin: 7px 7px 7px 7px;
     padding: 10px 10px 10px 10px;
     border-radius: 10px;
     background: white;
-    width: 410px;
+    width: calc(100% - 14px);
     border: 3px solid darkgray;
     position: relative
 }
@@ -102,21 +107,24 @@
     }
 
     .custom-timer .adds-group {
-        margin-top: 10px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: space-between;
+        margin-top: 14px;
     }
 
 .custom-timer .adds-buttons {
+    align-items: center;
     color: white;
-    margin-right: 5px;
     background-color: purple;
     border-radius: 10px;
-    padding-left: 7px;
-    padding-right: 7px;
-    padding-top:5px;
-    padding-bottom:5px;
-    width: 120px;
-    height: 40px;
+    display: inline-flex;
+    flex: 1 1 120px;
     justify-content: center;
+    min-height: 40px;
+    min-width: 110px;
+    padding: 5px 12px;
     font: 600 15px Segoe UI;
     cursor: pointer;
 }
@@ -134,9 +142,11 @@
 
 
 .custom-timer .timer-go-set {
-    display: inline-flex ;
-    justify-content: left;
-    width:100%
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-start;
+    width: 100%
 }
 
 .custom-timer .title {
@@ -151,8 +161,8 @@
     background: green;
     border-radius: 15px;
     padding: 5px;
-    margin-left: 5px;
-    width: 50px;
+    margin-left: 0;
+    min-width: 180px;
     height: 50px;
     display: flex;
     justify-content: center;
@@ -272,17 +282,27 @@
 }
 
 
+.timer-choice-grid {
+    display: grid;
+    gap: clamp(18px, 3vw, 34px);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    padding: clamp(12px, 2vw, 24px) 7px;
+}
+
 .timer-choice {
+    box-sizing: border-box;
     color: black;
-    display: inline-block;
-    padding: 7px 7px 7px 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 18px;
     border-radius: 10px;
     background-color: white;
-    width: 127px;
-    height: 127px;
+    min-height: clamp(150px, 18vw, 230px);
     text-align: center;
     border: 3px solid darkgray;
     cursor: pointer;
+    width: 100%;
 }
 
 .timer-choice .title {
@@ -291,10 +311,33 @@
 }
 
 .timer-choice .title img {
-    width: 60px;
+    width: clamp(48px, 7vw, 72px);
 }
 
 .timer-choice .numbers {
-    font: 400 30px Segoe UI;
+    font: 400 clamp(32px, 5vw, 56px) Segoe UI;
     color: black;
+}
+
+@media (max-width: 700px) {
+    .custom-timer .timer-go-set {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .custom-timer #custom-input,
+    .custom-timer #ampm,
+    .custom-timer .button {
+        box-sizing: border-box;
+        margin-left: 0;
+        width: 100% !important;
+    }
+
+    .session-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timer-choice-grid {
+        grid-template-columns: 1fr;
+    }
 }

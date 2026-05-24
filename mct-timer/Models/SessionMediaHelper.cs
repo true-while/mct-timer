@@ -96,7 +96,7 @@ namespace mct_timer.Models
                 return false;
             }
 
-            embedUrl = $"https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&playsinline=1&rel=0";
+            embedUrl = $"https://www.youtube.com/embed/{videoId}?autoplay=1&mute=1&playsinline=1&loop=1&playlist={videoId}&rel=0";
             return true;
         }
 

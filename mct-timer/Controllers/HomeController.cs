@@ -202,6 +202,7 @@ namespace mct_timer.Controllers
                 else if (!string.IsNullOrWhiteSpace(aiBackgroundMessage))
                 {
                     model.AiBackgroundValidationMessage = aiBackgroundMessage;
+                    model.UseBingDailyBackground = true;
                 }
             }
 
@@ -244,7 +245,7 @@ namespace mct_timer.Controllers
             {
                 if (!_dalle.IsConfigured)
                 {
-                    return (string.Empty, "AI background generation is not configured. Add the Azure OpenAI endpoint, key, and image deployment name before using this option.");
+                    return (string.Empty, "AI background generation is not configured. Using today's Bing image instead.");
                 }
 
                 var promptParts = new[]
@@ -274,12 +275,12 @@ namespace mct_timer.Controllers
             catch (ArgumentException ex)
             {
                 _logger.TrackException(ex);
-                return (string.Empty, "AI background prompt was rejected. Update the session title or context and try again.");
+                return (string.Empty, "AI background prompt was rejected. Using today's Bing image instead.");
             }
             catch (Exception ex)
             {
                 _logger.TrackException(ex);
-                return (string.Empty, "AI background generation failed, so the timer is using a standard background instead.");
+                return (string.Empty, "AI background generation failed. Using today's Bing image instead.");
             }
         }
 

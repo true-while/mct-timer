@@ -127,27 +127,22 @@
         </div>
         </div>
 
-        <table cellpadding="7">
+        <div class="timer-choice-grid">
             @foreach (var grp in Model.Groups)
             {
-                <tr>
-                    @foreach (var item in grp.Items)
-                    {
-
-                        <td>
-                            <div class="timer-choice" onclick="timer.startDefaultTimer(@item.Length, '@item.Type.ToString()')">
-                            <div class="numbers">
-                                @item.Length min
-                            </div>
-                            <div class="title">
-                                <img src="/icons/@item.Type.ToString()-b.png" />
-                            </div>
+                @foreach (var item in grp.Items)
+                {
+                    <div class="timer-choice" onclick="timer.startDefaultTimer(@item.Length, '@item.Type.ToString()')">
+                        <div class="numbers">
+                            @item.Length min
                         </div>
-                        </td>                        
-                    }
-                </tr>
+                        <div class="title">
+                            <img src="/icons/@(item.Type.ToString().ToLowerInvariant())-b.png" alt="@item.Type timer" />
+                        </div>
+                    </div>
+                }
             }
-        </table>        
+        </div>
 </div>
 
 
