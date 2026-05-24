@@ -42,14 +42,14 @@ namespace mct_timer.Models
                 return false;
             }
 
-            var extension = Path.GetExtension(uri.AbsolutePath);
-            if (ImageExtensions.Contains(extension))
+            if (IsSupportedImagePath(uri.AbsolutePath))
             {
                 mediaUrl = uri.ToString();
                 kind = ShowcaseMediaKind.Image;
                 return true;
             }
 
+            var extension = Path.GetExtension(uri.AbsolutePath);
             if (VideoExtensions.Contains(extension))
             {
                 mediaUrl = uri.ToString();
@@ -66,6 +66,13 @@ namespace mct_timer.Models
             mediaUrl = string.Empty;
             kind = ShowcaseMediaKind.None;
             return false;
+        }
+
+        public static bool IsSupportedImagePath(string path)
+        {
+            var pathWithoutQuery = path.Split('?', '#')[0];
+            var extension = Path.GetExtension(pathWithoutQuery);
+            return ImageExtensions.Contains(extension);
         }
 
         private static bool TryNormalizeYouTubeUrl(Uri uri, out string embedUrl)

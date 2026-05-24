@@ -48,7 +48,7 @@ namespace mct_timer.Models
                 !trimmed.StartsWith("//", StringComparison.Ordinal) &&
                 !trimmed.Contains('\\') &&
                 !trimmed.Contains("..", StringComparison.Ordinal) &&
-                IsSupportedImagePath(trimmed))
+                SessionMediaHelper.IsSupportedImagePath(trimmed))
             {
                 qrCodeUrl = trimmed;
                 return true;
@@ -62,17 +62,6 @@ namespace mct_timer.Models
 
             qrCodeUrl = mediaUrl;
             return true;
-        }
-
-        private static bool IsSupportedImagePath(string path)
-        {
-            var pathWithoutQuery = path.Split('?', '#')[0];
-            var extension = Path.GetExtension(pathWithoutQuery);
-            return extension.Equals(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                extension.Equals(".jpeg", StringComparison.OrdinalIgnoreCase) ||
-                extension.Equals(".png", StringComparison.OrdinalIgnoreCase) ||
-                extension.Equals(".gif", StringComparison.OrdinalIgnoreCase) ||
-                extension.Equals(".webp", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

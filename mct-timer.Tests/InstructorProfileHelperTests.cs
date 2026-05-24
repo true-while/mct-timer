@@ -46,6 +46,19 @@ public class InstructorProfileHelperTests
         Assert.Equal("/profile/linkedin-qr.png", qrCodeUrl);
     }
 
+    [Theory]
+    [InlineData("//example.com/a.png")]
+    [InlineData("/profile/../a.png")]
+    [InlineData("/profile\\a.png")]
+    [InlineData("/profile/a.svg")]
+    public void TryNormalizeQrCodeUrl_ReturnsFalse_ForUnsafeAppRelativeImages(string input)
+    {
+        var result = InstructorProfileHelper.TryNormalizeQrCodeUrl(input, out var qrCodeUrl);
+
+        Assert.False(result);
+        Assert.Equal(string.Empty, qrCodeUrl);
+    }
+
     [Fact]
     public void TryNormalizeQrCodeUrl_ReturnsFalse_ForNonImage()
     {
