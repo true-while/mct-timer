@@ -105,7 +105,6 @@ namespace mct_timer.Controllers
             string? instructorLinkedIn = null,
             string? instructorQr = null,
             bool aiBg = false,
-            bool bingDaily = false,
             string? media = null,
             string? mediaCaption = null)
         {
@@ -153,7 +152,6 @@ namespace mct_timer.Controllers
                 ClassHours = CleanSessionText(hours, 120),
                 InstructorName = CleanSessionText(instructor, 120),
                 ShowcaseMediaCaption = CleanSessionText(mediaCaption, 160),
-                UseBingDailyBackground = bingDaily,
             };
 
             if (!InstructorProfileHelper.TryNormalizeLinkedInUrl(instructorLinkedIn, out var normalizedLinkedInUrl))
@@ -207,11 +205,16 @@ namespace mct_timer.Controllers
 
             if (bgList.Count > 0)
             {
-                model.BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + bgList[index].Url).ToString();
-                model.IsBing = bgList[index].IsBingBg;
+                var selectedBackground = bgList[index];
+                model.BGUrl = new Uri(new Uri(_config.Value.WebCDN), @"/l/" + selectedBackground.Url).ToString();
+                model.IsBing = selectedBackground.IsBingBg;
+                model.UseBingDailyBackground = selectedBackground.Locked;
             }
             else
+            {
                 model.BGUrl = "~/bg-lib/default.png";
+                model.UseBingDailyBackground = true;
+            }
 
             if (aiBg)
             {

@@ -1,36 +1,52 @@
 
 #preset-secondbg {
     box-sizing: border-box;
-    padding: 7px;
-    margin: clamp(16px, 4vw, 36px) auto;
+    padding: 8px;
+    margin: clamp(8px, 2vh, 18px) auto;
     background-color: rgba(0, 0, 0, 0.3);
-    max-width: 1200px;
-    min-height: calc(100vh - clamp(32px, 8vw, 72px));
-    width: min(calc(100% - 32px), 1200px);
+    max-width: 1320px;
+    min-height: calc(100vh - clamp(16px, 4vh, 36px));
+    width: min(calc(100% - 18px), 1320px);
     border-radius: 10px;
+}
+
+.setup-layout {
+    display: grid;
+    grid-template-columns: minmax(430px, 560px) minmax(320px, 1fr);
+    gap: 10px;
+    min-height: calc(100vh - clamp(34px, 5vh, 58px));
+}
+
+.setup-main,
+.setup-quick-panel {
+    min-width: 0;
+}
+
+#timer-go {
+    height: 100%;
 }
 
 .timer-defaults {
     box-sizing: border-box;
     color: black;
-    margin: 7px 7px 7px 7px;
-    padding: 10px 10px 10px 10px;
+    margin: 0 0 8px;
+    padding: 8px;
     border-radius: 10px;
     background: white;
-    width: calc(100% - 14px);
+    width: 100%;
     border: 3px solid darkgray;
     position: relative
 }
 
     .timer-defaults .title {
-        font: 600 24px Segoe UI;
+        font: 600 18px Segoe UI;
         text-align: left;
         color: darkblue;
-        margin-bottom: 7px;
+        margin-bottom: 4px;
     }    .timer-defaults #timezone {
         border-radius: 7px;
         text-align: left;
-        font: 600 18px Segoe UI;
+        font: 600 15px Segoe UI;
         border: 2px solid black;
         background-color: whitesmoke;
         width: 100%;
@@ -39,12 +55,12 @@
     
     /* Match ampm font styling for Select2 */
     .timer-defaults .select2-container--default .select2-selection--single {
-        font: 600 18px Segoe UI !important;
+        font: 600 15px Segoe UI !important;
         padding: 0px 7px;
         border-radius: 7px;
         background-color: whitesmoke;
         border: 2px solid black !important;
-        height: 34px;
+        height: 30px;
     }
     
     .timer-defaults .select2-container--default .select2-selection--single .select2-selection__rendered {
@@ -52,7 +68,7 @@
         color: black;
     }
       .select2-container--default .select2-results__option {
-        font: 600 18px Segoe UI;
+        font: 600 15px Segoe UI;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -89,18 +105,32 @@
 .custom-timer {
     box-sizing: border-box;
     color: black;
-    margin: 7px 7px 7px 7px;
-    padding: 10px 10px 10px 10px;
+    margin: 0;
+    padding: 8px;
     border-radius: 10px;
     background: white;
-    width: calc(100% - 14px);
+    width: 100%;
     border: 3px solid darkgray;
     position: relative
 }
+
+    .custom-timer .timer-heading {
+        align-items: center;
+        display: flex;
+        gap: 8px;
+        justify-content: space-between;
+        margin-bottom: 6px;
+    }
+
+    .custom-timer .type-icon-row {
+        display: inline-flex;
+        gap: 4px;
+    }
+
     .custom-timer .type-icons {
-        width: 40px;
-        padding: 3px;
-        margin:3px;
+        width: 30px;
+        padding: 2px;
+        margin: 0;
         background-color: white;
         cursor: pointer;
         border: none;
@@ -109,9 +139,9 @@
     .custom-timer .adds-group {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 6px;
         justify-content: space-between;
-        margin-top: 14px;
+        margin-top: 8px;
     }
 
 .custom-timer .adds-buttons {
@@ -122,21 +152,21 @@
     display: inline-flex;
     flex: 1 1 120px;
     justify-content: center;
-    min-height: 40px;
-    min-width: 110px;
-    padding: 5px 12px;
-    font: 600 15px Segoe UI;
+    min-height: 32px;
+    min-width: 88px;
+    padding: 4px 8px;
+    font: 600 13px Segoe UI;
     cursor: pointer;
 }
 
 .custom-timer #ampm {
-    padding: 7px 7px 7px 7px;
+    padding: 4px 7px;
     margin-left: 5px;
     border-radius: 7px;
     text-align: center;
-    font: 600 24px Segoe UI;
+    font: 600 20px Segoe UI;
     border: 2px solid black;
-    width:100px;
+    width: 86px;
     background-color: whitesmoke;
 }
 
@@ -150,50 +180,50 @@
 }
 
 .custom-timer .title {
-    font: 600 24px Segoe UI;
+    font: 600 18px Segoe UI;
     text-align: left;
     color: darkblue;
-    margin-bottom: 7px;
+    margin-bottom: 0;
 }
 
 .custom-timer .button {
     color: white;
     background: green;
     border-radius: 15px;
-    padding: 5px;
+    padding: 4px 12px;
     margin-left: 0;
-    min-width: 180px;
-    height: 50px;
+    min-width: 135px;
+    height: 42px;
     display: flex;
     justify-content: center;
-    font-size: 18pt;
+    font-size: 16pt;
     vertical-align: middle;  
     cursor: pointer;
 }
 
 .custom-timer #custom-input {
-    padding: 7px 7px 7px 7px;
+    padding: 4px 7px;
     margin: 0px;
     border-radius: 7px;
     text-align: center;
-    width: 110px;
-    font: 600 24px Segoe UI;
+    width: 94px;
+    font: 600 20px Segoe UI;
     border: 2px solid black;
     background-color: whitesmoke;
 }
 
 .session-setup,
 .showcase-setup {
-    margin-top: 12px;
+    margin-top: 8px;
     text-align: left;
 }
 
 .session-setup .title,
 .showcase-setup .title {
     display: block;
-    font: 600 20px Segoe UI;
+    font: 600 16px Segoe UI;
     color: darkblue;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .session-setup input[type="text"],
@@ -201,47 +231,47 @@
 .showcase-setup input {
     box-sizing: border-box;
     width: 100%;
-    padding: 7px;
+    padding: 5px 7px;
     border-radius: 7px;
     border: 2px solid black;
     background-color: whitesmoke;
-    font: 500 14px Segoe UI;
+    font: 500 13px Segoe UI;
 }
 
 .session-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 6px;
+    margin-top: 6px;
 }
 
 .session-grid label,
 .session-option {
     color: #333;
     display: block;
-    font: 600 13px Segoe UI;
-    margin-bottom: 3px;
+    font: 600 12px Segoe UI;
+    margin-bottom: 2px;
 }
 
 .session-option {
     font-weight: 500;
-    margin-top: 8px;
-}
-
-.showcase-setup input + input {
     margin-top: 6px;
 }
 
+.showcase-setup input + input {
+    margin-top: 5px;
+}
+
 .spotify-setup {
-    margin-top: 12px;
+    margin-top: 8px;
     text-align: left;
 }
 
 .spotify-setup .title {
     display: block;
-    font: 600 20px Segoe UI;
+    font: 600 16px Segoe UI;
     color: darkblue;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 }
 
 .spotify-input-row {
@@ -252,11 +282,11 @@
 .spotify-input-row input {
     flex: 1;
     min-width: 0;
-    padding: 7px;
+    padding: 5px 7px;
     border-radius: 7px;
     border: 2px solid black;
     background-color: whitesmoke;
-    font: 500 14px Segoe UI;
+    font: 500 13px Segoe UI;
 }
 
 .spotify-input-row button {
@@ -265,7 +295,7 @@
     border: none;
     border-radius: 10px;
     padding: 0 10px;
-    font: 600 14px Segoe UI;
+    font: 600 13px Segoe UI;
     cursor: pointer;
 }
 
@@ -277,17 +307,21 @@
 
 .spotify-error {
     min-height: 18px;
-    margin-top: 4px;
-    font: 500 13px Segoe UI;
+    margin-top: 3px;
+    font: 500 12px Segoe UI;
     color: darkred;
 }
 
+.setup-quick-panel {
+    align-self: stretch;
+}
 
 .timer-choice-grid {
     display: grid;
-    gap: clamp(18px, 3vw, 34px);
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    padding: clamp(12px, 2vw, 24px) 7px;
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(130px, 1fr));
+    height: 100%;
+    padding: 0;
 }
 
 .timer-choice {
@@ -296,10 +330,10 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 18px;
+    padding: 10px;
     border-radius: 10px;
     background-color: white;
-    min-height: clamp(150px, 18vw, 230px);
+    min-height: 90px;
     text-align: center;
     border: 3px solid darkgray;
     cursor: pointer;
@@ -307,17 +341,27 @@
 }
 
 .timer-choice .title {
-    font: 600 20px Segoe UI;
+    font: 600 16px Segoe UI;
     color: darkblue;
 }
 
 .timer-choice .title img {
-    width: clamp(48px, 7vw, 72px);
+    width: clamp(34px, 4vw, 52px);
 }
 
 .timer-choice .numbers {
-    font: 400 clamp(32px, 5vw, 56px) Segoe UI;
+    font: 400 clamp(24px, 3.4vw, 42px) Segoe UI;
     color: black;
+}
+
+@media (max-width: 900px) {
+    .setup-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .timer-choice-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    }
 }
 
 @media (max-width: 700px) {

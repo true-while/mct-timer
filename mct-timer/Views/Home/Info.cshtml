@@ -5,7 +5,6 @@
 <div id="gbmainbg">
     <div id="menu" class="menu">
         <img class="option" src="~/icons/home-w.png" title="back to home" onclick="javascript:location.href = '/'" />
-        <img class="option" src="~/icons/gear-w.png" title="settings" onclick="javascript:location.href='/sets'" />
         <img class="option" src="~/icons/info-w.png" title="info" onclick="javascript:location.href='/info'" />
     </div>
 
@@ -28,46 +27,25 @@
                     <div class="info-header" id="about-header" onclick="showAboutProject()">About the Project</div>
                 </div>
                 <h1>Getting Started</h1>
-                <p>The MCT Timer is a simple and intuitive web application designed to help you manage class timers.
-                    Follow these steps to get started:</p>
+                <p>The MCT Timer helps instructors run classroom breaks, labs, and resume reminders from a public timer page.</p>
 
-                <hr>
-                <p>The preset section allows you to quickly select from pre-configured timer durations and presets to
-                    streamline your workflow.</em>
-                    <img src="~/help/preset.png" alt="Preset"
-                        style="width:100%; max-width:800px; margin-bottom:20px;" />
-                </p>
+                <h2>Start a timer</h2>
+                <p>Choose a preset button on the right or enter a resume time, select AM/PM, and click <strong>START</strong>. Use the quick adjustment buttons to jump to the top of the next hour or add/remove minutes before starting.</p>
 
-                <hr>
-                <p>The timer section allows you to monitor and manage your class timers effectively. You can start,
-                    pause, reset timers, and receive notifications when classes will resume.</p>
-                <img src="~/help/timer.png" alt="Timer" style="width:100%; max-width:800px; margin-bottom:20px;" />
-                </p>
+                <h2>Session details</h2>
+                <p>Add a session title, customer, location, class hours, and instructor name. These appear as a compact banner across the top of the countdown page.</p>
 
-                <hr>
-                <p>The settings section allows you to customize your timer preferences and application settings.</p>
-                <img src="~/help/top.png" alt="Top" style="width:100%; max-width:400px; margin-bottom:20px;" />
-                </p>
+                <h2>Instructor LinkedIn and QR code</h2>
+                <p>Paste an instructor LinkedIn profile URL and, optionally, a public QR-code image URL. The bundled QR image is available at <code>/profile/linkedin-qr.png</code>. The countdown page shows the link and QR code at the bottom of the screen.</p>
 
-                <hr>
-                <p>The settings section allows you to customize your timer preferences and application settings.</p>
-                <img src="~/help/preset.png" alt="Preset" style="width:100%; max-width:800px; margin-bottom:20px;" />
-                </p>
-                <hr>
-                <p>You can hide or show the background image for different timers.</p>
-                <img src="~/help/gen-bg.png" alt="Generate Background"
-                    style="width:100%; max-width:800px; margin-bottom:20px;" />
-                </p>
+                <h2>Spotify playlist music</h2>
+                <p>Paste a Spotify playlist URL, Spotify URI, embed URL, or playlist ID. The countdown page shows a Spotify embed player. Spotify music does not autoplay; click the player or the playlist control to start it.</p>
 
-                <hr>
-                <p>You can also upload your personal background for different timers.</p>
-                <img src="~/help/upload.png" alt="Upload" style="width:100%; max-width:800px; margin-bottom:20px;" />
-                </p>
-                <hr>
-                <p>Generate custom background with Open AI model DALLE by entering a prompt in the input box and
-                    clicking the generate button.</p>
-                <img src="~/help/generate.png" alt="Generate"
-                    style="width:100%; max-width:800px; margin-bottom:20px;" />
+                <h2>Showcase media and video</h2>
+                <p>Add a public image, GIF, MP4/WebM/Ogg video, YouTube URL, or Vimeo URL to show references, upcoming topics, or promotional content beside the timer. Videos autoplay muted and loop when browser and provider policy allow it.</p>
+
+                <h2>Backgrounds</h2>
+                <p>The countdown page uses the latest Bing image by default. If AI background generation is selected and configured, the generated image replaces Bing. If AI fails, the timer falls back to Bing automatically.</p>
             </div>
 
             <div id="about-project" class="info-text">
@@ -77,41 +55,49 @@
                     <div class="info-header" id="about-header"> <b>About the Project</b></div>
                 </div>
                 <h1>Project Hosting</h1>
-                <p>The MCT Timer is hosted on a robust and reliable platform, the Microsoft Azure Web App. This ensures
-                    that the service is scalable, secure, and always available for users. The project is managed and
-                    maintained by the Microsoft Trainers Team, who bring their expertise and dedication to ensure its
-                    smooth operation and continuous improvement.</p>
-                <p>One of the core principles of the MCT Timer project is accessibility. The website is publicly
-                    accessible, meaning anyone can use it without any restrictions. Moreover, the service is provided
-                    free of charge, making it an invaluable resource for the MCT community and beyond.</p>
+                <p>The MCT Timer is an open source classroom countdown timer for trainers, instructors, and event hosts.
+                    It is designed to run as a lightweight ASP.NET Core web app and can be hosted in Azure or your own
+                    preferred environment.</p>
+                <p>The active project repository is <a href="https://github.com/dngoins/mct-timer"
+                        target="_blank" rel="noopener noreferrer">https://github.com/dngoins/mct-timer</a>. Use the
+                    repository to review the source code, deploy your own copy, report issues, or suggest improvements.</p>
+                <p>One of the core principles of the MCT Timer project is accessibility. The timer is public, easy to
+                    share, and does not require learners to sign in, making it useful for classrooms, workshops, online
+                    events, and breaks.</p>
                 <h1>Features and Benefits</h1>
-                <p>
                 <ul>
-                    <li>Easy Setup: The web interface is user-friendly, allowing trainers to quickly set up timers with
+                    <li><strong>Easy setup:</strong> The web interface is user-friendly, allowing trainers to quickly set up timers with
                         minimal effort.</li>
-                    <li>Real-Time Notifications: Learners are promptly informed when classes will resume, ensuring that
+                    <li><strong>Real-time resume notifications:</strong> Learners are promptly informed when classes will resume, ensuring that
                         everyone stays on schedule.</li>
-                    <li>Public Access: The site is accessible to all, fostering a collaborative and inclusive learning
+                    <li><strong>Public access:</strong> The site is accessible to all, fostering a collaborative and inclusive learning
                         environment.</li>
-                    <li>Cost-Free: The service is provided at no cost, removing any financial barriers to its use.</li>
-                    <li>Background customization: The service will allowed to upload personal background for different
-                        timers and generate custom background with Open AI model DALLE</li>
+                    <li><strong>Flexible timer presets:</strong> Quick buttons and manual time entry help instructors start common break,
+                        lunch, lab, or wait timers quickly.</li>
+                    <li><strong>Session branding:</strong> Add the class title, customer, location, hours, and instructor so the timer doubles
+                        as a useful classroom information screen.</li>
+                    <li><strong>Spotify playlist support:</strong> Add optional playlist music with Spotify public embeds while keeping
+                        playback under user control.</li>
+                    <li><strong>Showcase media:</strong> Display images, GIFs, videos, YouTube, or Vimeo content beside the countdown for
+                        announcements, agendas, or sponsor/reference material.</li>
+                    <li><strong>Instructor profile sharing:</strong> Add a LinkedIn profile and QR code so learners can connect after class.</li>
+                    <li><strong>Modern backgrounds:</strong> Use the Bing image of the day by default, generate AI backgrounds when configured,
+                        or use custom backgrounds for different timer types.</li>
+                    <li><strong>Lightweight deployment:</strong> The app does not require Spotify credentials or paid/private media APIs, and it
+                        can be deployed into your own Azure subscription.</li>
                 </ul>
-                </p>
                 <h1>Feedback and Contact</h1>
-                <p>The development team values feedback and ideas from users to continually enhance the MCT Timer. To
-                    provide feedback, submit ideas, or contact the developers, please follow visit <a
-                        href="https://github.com/true-while/mct-timer/issues">GitHub repo</a></p>
+                <p>Feedback and ideas are welcome. To report a bug, request a feature, or contribute a change, visit the
+                    <a href="https://github.com/dngoins/mct-timer/issues" target="_blank" rel="noopener noreferrer">Dngoins MCT Timer issues page</a>.</p>
                 <h1>Conclusion</h1>
-                <p>The MCT Timer project exemplifies the commitment of the Microsoft Certified Trainer community to
-                    improving educational experiences through innovative solutions. By providing a simple, accessible,
-                    and free tool to manage class timings, the project supports both trainers and learners in achieving
-                    their educational goals effectively.</p>
+                <p>The MCT Timer supports smoother learning experiences by combining clear countdowns, session context,
+                    music, media, and instructor information in one shareable classroom display.</p>
             </div>
         </div>
 
     </div>
 
+</div>
 
 @section Scripts
 {

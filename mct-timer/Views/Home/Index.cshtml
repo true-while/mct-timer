@@ -7,7 +7,6 @@
 <div id="gbmainbg" style="overflow: auto">
     <div id="menu" class="menu">
         <img class="option" src="~/icons/home-w.png" title="back to home" onclick="javascript:location.href = '/'" />
-        <img class="option" src="~/icons/gear-w.png" title="settings" onclick="javascript:location.href='/sets'" />
         <img class="option" src="~/icons/info-w.png" title="info" onclick="javascript:location.href='/info'" />
     </div>
     <div id="loc" class="location">
@@ -21,136 +20,129 @@
     </div>
 
     <div id="preset-secondbg">
-
-        <div id="timer-go">
-
-    
-        <div class="timer-defaults">
-                <table  cellpadding="0" cellspacing="0" style="width:100%">
-                    <tr>
-                        <td class="title" style="flex-wrap:nowrap">time zone</td>
-                        <td align="right"><img id="def-tz" src="~/icons/def-tz.png" height="20px" style="cursor:pointer" title="current location" /></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            <select id="timezone">
-                            </select>
-                        </td>
-                    </tr>
-                </table>
-        </div>
-     
-
-
-        <div id="timer-set-go">
-            <div class="custom-timer" >
-                    <table cellpadding="5" cellspacing="0" width="100%"><tr>
-                        <td class="title" style="padding:0px">start timer:</td>
-                            <td style="width:100%; display: flex; justify-content: flex-end;">
-                                <img class="type-icons" src="~/icons/coffee-b.png"  tp="coffee"/>
-                                <img class="type-icons" src="~/icons/lunch-b.png" tp="lunch"/>                                
-                                <img class="type-icons" src="~/icons/lab-b.png" tp="lab" />
-                                <img class="type-icons" id="def-type-icons" src="~/icons/wait-b.png" tp="wait" />
-                            </td>
-                        </tr>
-                    </table>
-                <div class="timer-go-set">
-                    <span>
-                            <input id="brtype" type="hidden" value="wait" />
-                        <input id="datevalue" type="hidden" value="" />
-                        <input id="custom-input" type="text" value="" />
-                    </span>
-                    <span>
-                        <select id="ampm">
-                            <option value="AM">AM</option>
-                            <option value="PM">PM</option>
-                        </select>
-                    </span>
-
-                        <span class="button" id="go" style="width:200px"><b>START</b></span>
-                </div>
-                <div class="session-setup">
-                    <label class="title" for="session-title">Session title</label>
-                    <input id="session-title" type="text" maxlength="120" placeholder="Course, module, or break title" />
-
-                    <div class="session-grid">
-                        <div>
-                            <label for="customer-name">Customer</label>
-                            <input id="customer-name" type="text" maxlength="120" placeholder="Customer or audience" />
-                        </div>
-                        <div>
-                            <label for="session-location">Region/location</label>
-                            <input id="session-location" type="text" maxlength="120" placeholder="City, region, or room" />
-                        </div>
-                        <div>
-                            <label for="class-hours">Class hours</label>
-                            <input id="class-hours" type="text" maxlength="120" placeholder="9:00 AM - 5:00 PM" />
-                        </div>
-                        <div>
-                            <label for="instructor-name">Instructor</label>
-                            <input id="instructor-name" type="text" maxlength="120" placeholder="Instructor name" />
-                        </div>
-                        <div>
-                            <label for="instructor-linkedin">Instructor LinkedIn</label>
-                            <input id="instructor-linkedin" type="url" maxlength="240" placeholder="https://www.linkedin.com/in/name" />
-                        </div>
-                        <div>
-                            <label for="instructor-qr">Instructor QR code image</label>
-                            <input id="instructor-qr" type="text" maxlength="240" placeholder="/profile/linkedin-qr.png or public image URL" />
-                        </div>
+        <div class="setup-layout">
+            <main class="setup-main">
+                <div id="timer-go">
+                    <div class="timer-defaults">
+                        <table cellpadding="0" cellspacing="0" style="width:100%">
+                            <tr>
+                                <td class="title" style="flex-wrap:nowrap">time zone</td>
+                                <td align="right"><img id="def-tz" src="~/icons/def-tz.png" height="20px" style="cursor:pointer" title="current location" /></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <select id="timezone"></select>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
 
-                    <label class="session-option">
-                        <input id="ai-background" type="checkbox" />
-                        Use AI to create a background from the session title and context
-                    </label>
-                    <label class="session-option">
-                        <input id="bing-daily-background" type="checkbox" />
-                        Feeling lucky: use today's Bing image when the countdown page refreshes
-                    </label>
-                </div>
-                <div class="spotify-setup">
-                    <label class="title" for="spotify-playlist">Spotify Playlist</label>
-                    <div class="spotify-input-row">
-                        <input id="spotify-playlist" type="text" placeholder="Playlist URL, URI, embed URL, or ID" />
-                        <button id="spotify-playlist-clear" type="button">clear</button>
-                    </div>
-                    <div class="spotify-help">Optional. Music starts only after using the Spotify player on the countdown page.</div>
-                    <div id="spotify-playlist-error" class="spotify-error" aria-live="polite"></div>
-                </div>
-                <div class="showcase-setup">
-                    <label class="title" for="showcase-media">Showcase media</label>
-                    <input id="showcase-media" type="url" placeholder="Image, GIF, MP4/WebM/Ogg, YouTube, or Vimeo URL" />
-                    <input id="showcase-caption" type="text" maxlength="160" placeholder="Optional caption or call to action" />
-                    <div class="spotify-help">Optional. Use this for upcoming topics, references, ads, animated images, or videos. Media must be a public URL; local C:\ paths cannot play from the hosted site. Videos autoplay muted when the page loads.</div>
-                </div>
-                <div class="adds-group">
-                    <span class="adds-buttons" id="tophour">top hour</span>
-                        <span class="adds-buttons" id="plus1">+1 min</span>
-                    <span class="adds-buttons" id="minus1">-1 min</span>
-                        <span class="adds-buttons" id="plus5">+5 min</span>
-                        <span class="adds-buttons" id="plus10">+10 min</span>
-                </div>
-            </div>
-        </div>
-        </div>
+                    <div id="timer-set-go">
+                        <div class="custom-timer">
+                            <div class="timer-heading">
+                                <span class="title">start timer:</span>
+                                <span class="type-icon-row">
+                                    <img class="type-icons" src="~/icons/coffee-b.png" tp="coffee"/>
+                                    <img class="type-icons" src="~/icons/lunch-b.png" tp="lunch"/>
+                                    <img class="type-icons" src="~/icons/lab-b.png" tp="lab" />
+                                    <img class="type-icons" id="def-type-icons" src="~/icons/wait-b.png" tp="wait" />
+                                </span>
+                            </div>
+                            <div class="timer-go-set">
+                                <input id="brtype" type="hidden" value="wait" />
+                                <input id="datevalue" type="hidden" value="" />
+                                <input id="custom-input" type="text" value="" />
+                                <select id="ampm">
+                                    <option value="AM">AM</option>
+                                    <option value="PM">PM</option>
+                                </select>
+                                <span class="button" id="go"><b>START</b></span>
+                            </div>
 
-        <div class="timer-choice-grid">
-            @foreach (var grp in Model.Groups)
-            {
-                @foreach (var item in grp.Items)
-                {
-                    <div class="timer-choice" onclick="timer.startDefaultTimer(@item.Length, '@item.Type.ToString()')">
-                        <div class="numbers">
-                            @item.Length min
-                        </div>
-                        <div class="title">
-                            <img src="/icons/@(item.Type.ToString().ToLowerInvariant())-b.png" alt="@item.Type timer" />
+                            <div class="session-setup">
+                                <label class="title" for="session-title">Session title</label>
+                                <input id="session-title" type="text" maxlength="120" placeholder="Course, module, or break title" />
+
+                                <div class="session-grid">
+                                    <div>
+                                        <label for="customer-name">Customer</label>
+                                        <input id="customer-name" type="text" maxlength="120" placeholder="Customer or audience" />
+                                    </div>
+                                    <div>
+                                        <label for="session-location">Region/location</label>
+                                        <input id="session-location" type="text" maxlength="120" placeholder="City, region, or room" />
+                                    </div>
+                                    <div>
+                                        <label for="class-hours">Class hours</label>
+                                        <input id="class-hours" type="text" maxlength="120" placeholder="9:00 AM - 5:00 PM" />
+                                    </div>
+                                    <div>
+                                        <label for="instructor-name">Instructor</label>
+                                        <input id="instructor-name" type="text" maxlength="120" placeholder="Instructor name" />
+                                    </div>
+                                    <div>
+                                        <label for="instructor-linkedin">Instructor LinkedIn</label>
+                                        <input id="instructor-linkedin" type="url" maxlength="240" placeholder="https://www.linkedin.com/in/name" />
+                                    </div>
+                                    <div>
+                                        <label for="instructor-qr">Instructor QR code image</label>
+                                        <input id="instructor-qr" type="text" maxlength="240" placeholder="/profile/linkedin-qr.png or public image URL" />
+                                    </div>
+                                </div>
+
+                                <label class="session-option">
+                                    <input id="ai-background" type="checkbox" />
+                                    Use AI to create a background from the session title and context
+                                </label>
+                            </div>
+
+                            <div class="spotify-setup">
+                                <label class="title" for="spotify-playlist">Spotify Playlist</label>
+                                <div class="spotify-input-row">
+                                    <input id="spotify-playlist" type="text" placeholder="Playlist URL, URI, embed URL, or ID" />
+                                    <button id="spotify-playlist-clear" type="button">clear</button>
+                                </div>
+                                <div id="spotify-playlist-error" class="spotify-error" aria-live="polite"></div>
+                            </div>
+
+                            <div class="showcase-setup">
+                                <label class="title" for="showcase-media">Showcase media</label>
+                                <input id="showcase-media" type="url" placeholder="Image, GIF, MP4/WebM/Ogg, YouTube, or Vimeo URL" />
+                                <input id="showcase-caption" type="text" maxlength="160" placeholder="Optional caption or call to action" />
+                            </div>
+
+                            <div class="adds-group">
+                                <span class="adds-buttons" id="tophour">top hour</span>
+                                <span class="adds-buttons" id="plus1">+1 min</span>
+                                <span class="adds-buttons" id="minus1">-1 min</span>
+                                <span class="adds-buttons" id="plus5">+5 min</span>
+                                <span class="adds-buttons" id="plus10">+10 min</span>
+                            </div>
                         </div>
                     </div>
-                }
-            }
+                </div>
+            </main>
+
+            <aside class="setup-quick-panel" aria-label="Quick timer choices">
+                <div class="timer-choice-grid">
+                    @foreach (var grp in Model.Groups)
+                    {
+                        @foreach (var item in grp.Items)
+                        {
+                            <div class="timer-choice" onclick="timer.startDefaultTimer(@item.Length, '@item.Type.ToString()')">
+                                <div class="numbers">
+                                    @item.Length min
+                                </div>
+                                <div class="title">
+                                    <img src="/icons/@(item.Type.ToString().ToLowerInvariant())-b.png" alt="@item.Type timer" />
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </aside>
         </div>
+    </div>
 </div>
 
 

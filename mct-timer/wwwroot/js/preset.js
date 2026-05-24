@@ -55,7 +55,6 @@
             instructorLinkedIn: root.querySelector("#instructor-linkedin"),
             instructorQr: root.querySelector("#instructor-qr"),
             aiBackground: root.querySelector("#ai-background"),
-            bingDailyBackground: root.querySelector("#bing-daily-background"),
             showcaseMedia: root.querySelector("#showcase-media"),
             showcaseCaption: root.querySelector("#showcase-caption")
         };
@@ -273,10 +272,6 @@
 
         if (this.el.aiBackground?.checked) {
             query.set("aiBg", "true");
-        }
-
-        if (this.el.bingDailyBackground?.checked) {
-            query.set("bingDaily", "true");
         }
 
         let timerUri = `./timer/${duration}/${timezoneUrlEncoded}/${timerType}`;
