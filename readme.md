@@ -1,6 +1,26 @@
 ﻿## Project description
 
 [![Provision and deploy MCT Timer](https://github.com/dngoins/mct-timer/actions/workflows/azure-webapps-dotnet-core.yml/badge.svg?branch=main)](https://github.com/dngoins/mct-timer/actions/workflows/azure-webapps-dotnet-core.yml)
+[![Dependabot](https://img.shields.io/badge/dependabot-enabled-success?logo=dependabot)](.github/dependabot.yml)
+
+[![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
+[![ASP.NET Core MVC](https://img.shields.io/badge/ASP.NET%20Core-MVC-512BD4?logo=dotnet&logoColor=white)](https://learn.microsoft.com/aspnet/core/mvc/overview)
+[![Bicep](https://img.shields.io/badge/IaC-Bicep-0078D4?logo=azurepipelines&logoColor=white)](https://learn.microsoft.com/azure/azure-resource-manager/bicep/)
+[![Azure Container Apps](https://img.shields.io/badge/Azure-Container%20Apps-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/azure/container-apps/)
+[![Cosmos DB](https://img.shields.io/badge/Azure-Cosmos%20DB-0078D4?logo=microsoftazure&logoColor=white)](https://learn.microsoft.com/azure/cosmos-db/)
+
+[![License](https://img.shields.io/github/license/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/blob/main/LICENSE)
+[![Last commit](https://img.shields.io/github/last-commit/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/commits/main)
+[![Open issues](https://img.shields.io/github/issues/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/issues)
+[![Open PRs](https://img.shields.io/github/issues-pr/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/pulls)
+[![Contributors](https://img.shields.io/github/contributors/dngoins/mct-timer)](https://github.com/dngoins/mct-timer/graphs/contributors)
+[![Stars](https://img.shields.io/github/stars/dngoins/mct-timer?style=social)](https://github.com/dngoins/mct-timer/stargazers)
+[![Forks](https://img.shields.io/github/forks/dngoins/mct-timer?style=social)](https://github.com/dngoins/mct-timer/network/members)
+[![Top language](https://img.shields.io/github/languages/top/dngoins/mct-timer)](https://github.com/dngoins/mct-timer)
+[![Code size](https://img.shields.io/github/languages/code-size/dngoins/mct-timer)](https://github.com/dngoins/mct-timer)
+[![Latest release](https://img.shields.io/github/v/release/dngoins/mct-timer?include_prereleases&sort=semver)](https://github.com/dngoins/mct-timer/releases)
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdngoins%2Fmct-timer%2Fmain%2Finfra%2Fmain.bicep)
 
 The "MCT Timer" projectis an innovative tool designed to assist the Microsoft Certified Trainer (MCT) community. It simplifies the process of setting up and managing timers for classroom sessions directly from a web page. This project aims to enhance the teaching and learning experience by providing a seamless way to notify learners when classes resume.
 
