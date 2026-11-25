@@ -1,5 +1,20 @@
 ﻿@{
     ViewData["Title"] = "About the project";
+
+    // Static website endpoint; the blob endpoint rejects anonymous access on this account.
+    var cdn = (ViewData["CDNUrl"] as string ?? "").TrimEnd('/');
+
+    var videos = new List<(string Title, string Url, string Poster, string Description)>
+    {
+        ("Scenario 1: Welcome screen before class",
+         $"{cdn}/video/Scenario1.mp4",
+         $"{cdn}/video/Scenario1.jpg",
+         "Set the time zone, use the Top Hour and add-minutes buttons to schedule a short countdown, then start the timer and compose a formatted welcome message. Resize the message box and timer, start the music, and share your computer sound in Teams while participants join."),
+        ("Scenario 2: 10-minute coffee break",
+         $"{cdn}/video/Scenario2.mp4",
+         $"{cdn}/video/Scenario2.jpg",
+         "Start a 10-minute coffee break either with the plus 10 button and the coffee cup icon, or with the one-click 10-minute coffee break button, then use the green button to restart the countdown and the bell icon to enable music and notifications. The alarm sounds eight seconds before the end, but fully covering the browser window with another one stops the timer from updating and the alarm from playing."),
+    };
 }
 
 <div id="gbmainbg">
@@ -19,14 +34,16 @@
     </div>
 
     <div id="info-secondbg">
+        <div class="info-header-container">
+            <div class="info-header" id="manual-header" onclick="showTab('user-manual')">User Manual</div>
+            <div class="info-divider">|</div>
+            <div class="info-header" id="videos-header" onclick="showTab('videos')">Videos</div>
+            <div class="info-divider">|</div>
+            <div class="info-header" id="about-header" onclick="showTab('about-project')">About the Project</div>
+        </div>
         <div id="info-set">
 
             <div id="user-manual" class="info-text" style="display: none;">
-                <div class="info-header-container">
-                    <div class="info-header" id="manual-header"><b>User Manual</b></div>
-                    <div class="info-divider">|</div>
-                    <div class="info-header" id="about-header" onclick="showAboutProject()">About the Project</div>
-                </div>
                 <h1>Getting Started</h1>
                 <p>The MCT Timer is a simple and intuitive web application designed to help you manage class timers.
                     Follow these steps to get started:</p>
@@ -34,27 +51,32 @@
                 <hr>
                 <p>The preset section allows you to quickly select from pre-configured timer durations and presets to
                     streamline your workflow.</em>
+                    <br />
                     <img src="~/help/preset.png" alt="Preset"
                         style="width:100%; max-width:800px; margin-bottom:20px;" />
                 </p>
 
                 <hr>
                 <p>The timer section allows you to monitor and manage your class timers effectively. You can start,
-                    pause, reset timers, and receive notifications when classes will resume.</p>
+                    pause, reset timers, and receive notifications when classes will resume.
+                    <br />
                 <img src="~/help/timer.png" alt="Timer" style="width:100%; max-width:800px; margin-bottom:20px;" />
                 </p>
 
                 <hr>
-                <p>The settings section allows you to customize your timer preferences and application settings.</p>
+                <p>The settings section allows you to customize your timer preferences and application settings.
+                    <br />
                 <img src="~/help/top.png" alt="Top" style="width:100%; max-width:400px; margin-bottom:20px;" />
                 </p>
 
                 <hr>
-                <p>The settings section allows you to customize your timer preferences and application settings.</p>
+                <p>The settings section allows you to customize your timer preferences and application settings.
+                    <br />
                 <img src="~/help/preset.png" alt="Preset" style="width:100%; max-width:800px; margin-bottom:20px;" />
                 </p>
                 <hr>
-                <p>You can hide or show the background image for different timers.</p>
+                <p>You can hide or show the background image for different timers.
+                    <br />
                 <img src="~/help/gen-bg.png" alt="Generate Background"
                     style="width:100%; max-width:800px; margin-bottom:20px;" />
                 </p>
@@ -70,12 +92,30 @@
                     style="width:100%; max-width:800px; margin-bottom:20px;" />
             </div>
 
+            <div id="videos" class="info-text" style="display: none;">
+                <h1>Videos</h1>
+                @if (videos.Count == 0)
+                {
+                    <p>No videos available yet.</p>
+                }
+                else
+                {
+                    <div class="video-grid">
+                        @foreach (var v in videos)
+                        {
+                            <div class="video-item">
+                                <div class="video-title">@v.Title</div>
+                                <div class="video-frame">
+                                    <video controls preload="none" poster="@v.Poster" src="@v.Url" title="@v.Title"></video>
+                                </div>
+                                <p>@v.Description</p>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+
             <div id="about-project" class="info-text">
-                <div class="info-header-container">
-                    <div class="info-header" id="manual-header" onclick="showUserManual()">User Manual</div>
-                    <div class="info-divider">|</div>
-                    <div class="info-header" id="about-header"> <b>About the Project</b></div>
-                </div>
                 <h1>Project Hosting</h1>
                 <p>The MCT Timer is hosted on a robust and reliable platform, the Microsoft Azure Web App. This ensures
                     that the service is scalable, secure, and always available for users. The project is managed and
@@ -121,24 +161,20 @@
                 outOfScrollPosition(document.querySelector("#gbmainbg"), document.querySelector("#loc"));
             }
 
-            function showUserManual() {
-                document.getElementById("user-manual").style.display = "block";
-                document.getElementById("about-project").style.display = "none";
-                document.getElementById("manual-header").classList.add("active");
-                document.getElementById("about-header").classList.remove("active");
-            }
+            const tabs = { "user-manual": "manual-header", "videos": "videos-header", "about-project": "about-header" };
 
-            function showAboutProject() {
-                document.getElementById("user-manual").style.display = "none";
-                document.getElementById("about-project").style.display = "block";
-                document.getElementById("about-header").classList.add("active");
-                document.getElementById("manual-header").classList.remove("active");
+            function showTab(name) {
+                for (const [panel, header] of Object.entries(tabs)) {
+                    const on = panel === name;
+                    document.getElementById(panel).style.display = on ? "block" : "none";
+                    document.getElementById(header).classList.toggle("active", on);
+                }
             }
 
             $(document).ready(function () {
                 document.querySelector("#gbmainbg").style.backgroundImage = "url(/bg-lib/info.jpg)";
                 menuUpdate();
-                showUserManual(); // Show User Manual by default
+                showTab("user-manual"); // Show User Manual by default
             })
 
             $(window).resize(() => menuUpdate());

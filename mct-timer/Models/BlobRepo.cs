@@ -102,7 +102,28 @@ namespace mct_timer.Models
                 _telemetryClient?.TrackException(ex, properties);
                 throw;
             }
-        }public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
+        }
+
+        // Metadata travels in HTTP headers: Azure allows ~8KB total, ASCII only, no line breaks.
+        private static Dictionary<string, string> SanitizeMetadata(IDictionary<string, string> mdata)
+        {
+            const int maxValueLength = 1000;
+            const int maxTotalLength = 7000;
+            var result = new Dictionary<string, string>();
+            int total = 0;
+            foreach (var kv in mdata)
+            {
+                var chars = (kv.Value ?? "").Where(c => c >= ' ' && c <= '~').Take(maxValueLength).ToArray();
+                var value = new string(chars).Trim();
+                if (total + kv.Key.Length + value.Length > maxTotalLength)
+                    continue;
+                total += kv.Key.Length + value.Length;
+                result[kv.Key] = value;
+            }
+            return result;
+        }
+
+        public async Task<Uri> SaveImageAsync(String name, BinaryData data, Dictionary<string, string> mdata)
         {
             try
             {
@@ -117,31 +138,13 @@ namespace mct_timer.Models
                 await file.DeleteIfExistsAsync();
                 
                 // Upload the new blob
-                await file.UploadAsync(data.ToStream(), overwrite: false);
+                // Metadata is sent with the upload; a separate body-less SetMetadata PUT fails with HTTP 411 here.
+                var uploadOptions = new BlobUploadOptions();
+                if (mdata != null && mdata.Count > 0)
+                    uploadOptions.Metadata = SanitizeMetadata(mdata);
+                await file.UploadAsync(data.ToStream(), uploadOptions);
                 
                 _telemetryClient?.TrackEvent("BlobSaveSuccess", new Dictionary<string, string> { { "blobName", name } });
-                
-                // Set metadata only if the dictionary contains entries
-                // This prevents HTTP 411 (Length Required) error from Azure Blob Storage
-                if (mdata != null && mdata.Count > 0)
-                {
-                    try
-                    {
-                        BlobInfo info = await file.SetMetadataAsync(mdata);
-                    }
-                    catch (Exception ex)
-                    {
-                        // Log the error but don't fail the upload - the blob is already stored
-                        var properties = new Dictionary<string, string>
-                        {
-                            { "blobName", name },
-                            { "operation", "SetMetadata" },
-                            { "exceptionType", ex.GetType().Name },
-                            { "errorMessage", ex.Message }
-                        };
-                        _telemetryClient?.TrackException(ex, properties);
-                    }
-                }
 
                 return file.Uri;
             }

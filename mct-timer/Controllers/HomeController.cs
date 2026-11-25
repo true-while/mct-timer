@@ -63,6 +63,7 @@ namespace mct_timer.Controllers
 
         public IActionResult Info()
         {
+            ViewData["CDNUrl"] = _config.Value.WebCDN;
             return View();
         }
 
